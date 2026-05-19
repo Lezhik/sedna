@@ -8,7 +8,6 @@ import io.sedna.forward.llm.DisabledLlmClient;
 import io.sedna.registry.InMemorySemanticRegistry;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -17,9 +16,8 @@ class ForwardCompileIntegrationTest {
 
   @Test
   void forwardFixtureCompilesWithGradle(@TempDir Path outputDir) throws Exception {
-    Path repoRoot = locateRepoRoot();
-    Path gradlew =
-        repoRoot.resolve(System.getProperty("os.name").toLowerCase().contains("win") ? "gradlew.bat" : "gradlew");
+    Path repoRoot = RepoPaths.locateRoot();
+    Path gradlew = RepoPaths.gradlew(repoRoot);
     Path fixture = repoRoot.resolve("examples/cms-reference-fixture.sdna");
     Path generated = outputDir.resolve("generated");
 
@@ -45,15 +43,4 @@ class ForwardCompileIntegrationTest {
     assertEquals(0, process.exitValue(), "Gradle build failed:\n" + log);
   }
 
-  private static Path locateRepoRoot() {
-    Path cwd = Paths.get("").toAbsolutePath();
-    if (Files.exists(cwd.resolve("examples/cms-reference-fixture.sdna"))) {
-      return cwd;
-    }
-    Path parent = cwd.resolve("..").normalize();
-    if (Files.exists(parent.resolve("examples/cms-reference-fixture.sdna"))) {
-      return parent;
-    }
-    throw new IllegalStateException("Cannot locate repository root from " + cwd);
-  }
 }

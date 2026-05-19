@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.sedna.core.SemanticGraph;
 import io.sedna.dna.DnaServices;
+import io.sedna.dna.SednaFoldMotifCodec;
 import io.sedna.dna.fixture.CmsReferenceFixtureGraph;
 import io.sedna.forward.ForwardServices;
 import io.sedna.forward.llm.DisabledLlmClient;
@@ -29,7 +30,9 @@ class ReverseForwardEquivalenceTest {
     var reversed = ReverseServices.pipeline().reverseGraph(generated);
     assertTrue(reversed.isOk(), () -> String.valueOf(reversed.error()));
 
-    var equivalent = SemanticEquivalenceChecker.checkEquivalent(fixture, reversed.value());
+    var expanded = SednaFoldMotifCodec.INSTANCE.expand(reversed.value());
+    assertTrue(expanded.isOk(), () -> String.valueOf(expanded.error()));
+    var equivalent = SemanticEquivalenceChecker.checkEquivalent(fixture, expanded.value());
     assertTrue(equivalent.isOk(), () -> String.valueOf(equivalent.error()));
   }
 }

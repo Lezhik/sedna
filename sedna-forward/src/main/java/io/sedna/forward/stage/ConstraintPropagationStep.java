@@ -26,7 +26,12 @@ public final class ConstraintPropagationStep {
   private static boolean isKnownConstraint(String code) {
     return switch (code) {
       case "STATELESS_ONLY", "TRANSACTIONAL", "READ_ONLY" -> true;
-      default -> code.startsWith("SOURCE_PACKAGE:");
+      default ->
+          code.startsWith("SOURCE_PACKAGE:")
+              || code.startsWith("SOURCE_CLASS:")
+              || code.startsWith("MOTIF_REF:")
+              || code.startsWith("SEDNA_FOLD_V1:")
+              || code.equals("PARTIAL_MATCH:true");
     };
   }
 }

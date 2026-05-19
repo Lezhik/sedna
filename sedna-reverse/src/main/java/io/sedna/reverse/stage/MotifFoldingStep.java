@@ -5,7 +5,7 @@ import io.sedna.core.SemanticError;
 import io.sedna.core.SemanticGraph;
 import io.sedna.dna.MotifFolder;
 
-/** Step 5 — motif folding (identity for MVP; SEDNA-FOLD-v1 deferred). */
+/** Step 5 — motif folding (SEDNA-FOLD-v1 CRUD_STACK detection). */
 public final class MotifFoldingStep {
 
   private final MotifFolder motifFolder;

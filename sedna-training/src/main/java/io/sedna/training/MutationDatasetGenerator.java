@@ -23,6 +23,12 @@ public final class MutationDatasetGenerator {
             new MutationDatasetEntry(node.nodeId(), MutationType.CONSTRAINT_INJECTION, "READ_ONLY"));
         case ENTITY -> entries.add(
             new MutationDatasetEntry(node.nodeId(), MutationType.CONTRACT_UPGRADE, "CAPABILITY_BUMP"));
+        case MOTIF -> {
+          entries.add(
+              new MutationDatasetEntry(node.nodeId(), MutationType.MOTIF_EXPAND, "CRUD_STACK"));
+          entries.add(
+              new MutationDatasetEntry(node.nodeId(), MutationType.MOTIF_FOLD, "CRUD_STACK"));
+        }
         default -> {}
       }
     }

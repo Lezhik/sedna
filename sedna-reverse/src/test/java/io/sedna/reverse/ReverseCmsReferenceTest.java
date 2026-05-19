@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.sedna.dna.DnaServices;
+import io.sedna.dna.SednaFoldMotifCodec;
 import io.sedna.dna.fixture.CmsReferenceFixtureGraph;
 import io.sedna.validation.SemanticEquivalenceChecker;
 import java.nio.file.Path;
@@ -22,13 +23,17 @@ class ReverseCmsReferenceTest {
     assertTrue(graph.isOk(), () -> String.valueOf(graph.error()));
 
     var expected = CmsReferenceFixtureGraph.create();
-    var equivalent = SemanticEquivalenceChecker.checkEquivalent(expected, graph.value());
+    var expanded = SednaFoldMotifCodec.INSTANCE.expand(graph.value());
+    assertTrue(expanded.isOk(), () -> String.valueOf(expanded.error()));
+    var equivalent = SemanticEquivalenceChecker.checkEquivalent(expected, expanded.value());
     assertTrue(equivalent.isOk(), () -> String.valueOf(equivalent.error()));
   }
 
   @Test
   void reverseCmsReferenceProducesDeterministicDnaBytes() {
-    byte[] golden = DnaServices.encoder().encode(CmsReferenceFixtureGraph.create()).value();
+    var folded = SednaFoldMotifCodec.INSTANCE.fold(CmsReferenceFixtureGraph.create());
+    assertTrue(folded.isOk());
+    byte[] golden = DnaServices.encoder().encode(folded.value()).value();
     var pipeline = ReverseServices.pipeline();
 
     byte[] first = pipeline.reverse(CMS_REFERENCE).value();

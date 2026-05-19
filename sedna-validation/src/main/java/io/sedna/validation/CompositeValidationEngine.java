@@ -20,11 +20,13 @@ public final class CompositeValidationEngine implements ValidationEngine {
     chain.add(new GraphValidationEngine());
     chain.add(new VocabularyVersionValidationEngine(registry));
     chain.add(new VocabularyValidationEngine(registry));
+    chain.add(new MotifValidationEngine());
     return new CompositeValidationEngine(chain);
   }
 
   @Override
   public Result<ValidationReport, SemanticError> validate(SemanticGraph graph) {
+    List<String> flags = new ArrayList<>();
     for (ValidationEngine engine : engines) {
       Result<ValidationReport, SemanticError> result = engine.validate(graph);
       if (!result.isOk()) {
@@ -33,7 +35,11 @@ public final class CompositeValidationEngine implements ValidationEngine {
       if (!result.value().valid()) {
         return result;
       }
+      flags.addAll(result.value().flags());
     }
-    return Result.ok(ValidationReport.success());
+    if (flags.isEmpty()) {
+      return Result.ok(ValidationReport.success());
+    }
+    return Result.ok(ValidationReport.successWithFlags(flags));
   }
 }

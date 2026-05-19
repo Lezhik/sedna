@@ -4,6 +4,8 @@ import io.sedna.core.Result;
 import io.sedna.core.SemanticError;
 import io.sedna.core.SemanticGraph;
 import io.sedna.dna.DnaDecoder;
+import io.sedna.dna.MotifExpander;
+import io.sedna.dna.SednaFoldMotifCodec;
 import io.sedna.forward.llm.LlmClient;
 import io.sedna.forward.model.GeneratedProject;
 import io.sedna.forward.stage.CodeGenerationStep;
@@ -23,6 +25,7 @@ import java.nio.file.Path;
 public final class ForwardPipeline {
 
   private final DnaParseStep dnaParseStep;
+  private final MotifExpander motifExpander;
   private final RegistryResolutionStep registryResolutionStep;
   private final HypergraphConstructionStep hypergraphConstructionStep;
   private final ContractResolutionStep contractResolutionStep;
@@ -37,6 +40,7 @@ public final class ForwardPipeline {
       LlmClient llmClient,
       ValidationEngine validationEngine) {
     this.dnaParseStep = new DnaParseStep(decoder);
+    this.motifExpander = SednaFoldMotifCodec.INSTANCE;
     this.registryResolutionStep = new RegistryResolutionStep(registry);
     this.hypergraphConstructionStep = new HypergraphConstructionStep();
     this.contractResolutionStep = new ContractResolutionStep();
@@ -56,7 +60,11 @@ public final class ForwardPipeline {
     if (!parsed.isOk()) {
       return Result.err(parsed.error());
     }
-    return run(parsed.value());
+    var expanded = motifExpander.expand(parsed.value());
+    if (!expanded.isOk()) {
+      return Result.err(expanded.error());
+    }
+    return run(expanded.value());
   }
 
   public Result<GeneratedProject, SemanticError> run(SemanticGraph graph) {

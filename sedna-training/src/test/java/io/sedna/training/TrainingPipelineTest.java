@@ -23,7 +23,7 @@ class TrainingPipelineTest {
     var result = pipeline.trainProject(CMS_REFERENCE);
     assertTrue(result.isOk(), () -> String.valueOf(result.error()));
     var project = result.value();
-    assertEquals(3, project.embeddings().size());
+    assertEquals(1, project.embeddings().size());
     assertFalse(project.mutationDataset().isEmpty());
     assertFalse(project.registryProposals().isEmpty());
     assertEquals(1, project.trajectory().snapshots().size());

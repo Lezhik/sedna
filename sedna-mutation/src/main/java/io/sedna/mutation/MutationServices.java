@@ -1,7 +1,7 @@
 package io.sedna.mutation;
 
 import io.sedna.dna.DnaServices;
-import io.sedna.dna.PassThroughMotifCodec;
+import io.sedna.dna.SednaFoldMotifCodec;
 import io.sedna.registry.InMemorySemanticRegistry;
 import io.sedna.validation.CompositeValidationEngine;
 import io.sedna.validation.DnaRoundTripCodegenProbe;
@@ -14,8 +14,8 @@ public final class MutationServices {
   public static MutationEngine engine() {
     var registry = InMemorySemanticRegistry.bootstrap();
     return new DefaultMutationEngine(
-        PassThroughMotifCodec.INSTANCE,
-        PassThroughMotifCodec.INSTANCE,
+        SednaFoldMotifCodec.INSTANCE,
+        SednaFoldMotifCodec.INSTANCE,
         new MutationSafetyEngine(),
         CompositeValidationEngine.standard(registry),
         new DnaRoundTripCodegenProbe(DnaServices.encoder(), DnaServices.decoder()));

@@ -61,6 +61,7 @@ public final class SpringBootCodeGenerator {
           generateApplicationClass(basePackage, appSimpleName));
 
       ClassName serviceType = null;
+      String serviceMethodName = "handle";
       for (long nodeId : plan.orderedNodeIds()) {
         GenomeNode node =
             plan.graph().nodes().stream()
@@ -71,6 +72,8 @@ public final class SpringBootCodeGenerator {
         switch (node.kind()) {
           case ENTITY -> files.put(pathFor(qualified), generateEntity(node, qualified));
           case SERVICE -> {
+            String signature = serviceMethodSignature(node);
+            serviceMethodName = extractMethodName(signature);
             String source = generateService(node, qualified);
             files.put(pathFor(qualified), source);
             serviceType = ClassName.bestGuess(qualified);
@@ -78,8 +81,12 @@ public final class SpringBootCodeGenerator {
           case CONTROLLER -> {
             if (serviceType == null) {
               serviceType = inferServiceType(plan, basePackage);
+              serviceMethodName =
+                  extractMethodName(serviceMethodSignature(findServiceNode(plan)));
             }
-            files.put(pathFor(qualified), generateController(node, qualified, serviceType));
+            files.put(
+                pathFor(qualified),
+                generateController(node, qualified, serviceType, serviceMethodName));
           }
           default -> {
             return Result.err(
@@ -98,9 +105,13 @@ public final class SpringBootCodeGenerator {
   }
 
   private static ClassName inferServiceType(ExecutionPlan plan, String basePackage) {
+    return ClassName.bestGuess(
+        SpringBootNaming.qualifiedClassName(findServiceNode(plan), basePackage));
+  }
+
+  private static GenomeNode findServiceNode(ExecutionPlan plan) {
     return plan.graph().nodes().stream()
         .filter(node -> node.kind() == NodeKind.SERVICE)
-        .map(node -> ClassName.bestGuess(SpringBootNaming.qualifiedClassName(node, basePackage)))
         .findFirst()
         .orElseThrow();
   }
@@ -178,7 +189,8 @@ public final class SpringBootCodeGenerator {
     return JavaFile.builder(packageName, type).build().toString();
   }
 
-  private String generateController(GenomeNode node, String qualified, ClassName serviceType)
+  private String generateController(
+      GenomeNode node, String qualified, ClassName serviceType, String serviceMethodName)
       throws IOException {
     int lastDot = qualified.lastIndexOf('.');
     String packageName = qualified.substring(0, lastDot);
@@ -205,7 +217,7 @@ public final class SpringBootCodeGenerator {
                             .addMember("value", "$S", "/api/handle")
                             .build())
                     .returns(void.class)
-                    .addStatement("$L.handle()", serviceField)
+                    .addStatement("$L.$L()", serviceField, serviceMethodName)
                     .build())
             .build();
     return JavaFile.builder(packageName, type).build().toString();

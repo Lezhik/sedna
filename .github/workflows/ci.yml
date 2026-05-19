@@ -29,4 +29,10 @@ jobs:
         run: ./gradlew :tests:test --tests "io.sedna.tests.ModuleArchitectureTest" --tests "io.sedna.tests.EncodingFuzzTest" --tests "io.sedna.tests.MutationFuzzTest" --no-daemon
 
       - name: Forward compile acceptance
-        run: ./gradlew :tests:test --tests "io.sedna.tests.ForwardCompileIntegrationTest" --no-daemon
+        run: ./gradlew :tests:test --tests "io.sedna.tests.ForwardCompileIntegrationTest" --tests "io.sedna.tests.SpringBootMultiFixtureIntegrationTest" --tests "io.sedna.tests.SpringBootReverseForwardEquivalenceTest" --no-daemon
+
+      - name: Golden fixture README SHA gate
+        run: ./gradlew :tests:test --tests "io.sedna.tests.GoldenFixtureReadmeShaTest" --no-daemon
+
+      - name: SEDNA-FOLD-v1 motif gates
+        run: ./gradlew :sedna-dna:test --tests "io.sedna.dna.SednaFoldMotifCodecTest" :sedna-validation:test --tests "io.sedna.validation.SednaFoldEquivalenceTest" --no-daemon

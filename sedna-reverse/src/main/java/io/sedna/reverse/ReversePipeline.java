@@ -8,7 +8,7 @@ import io.sedna.dna.DnaEncoder;
 import io.sedna.dna.MotifFolder;
 import io.sedna.registry.SemanticRegistry;
 import io.sedna.reverse.git.GitTrajectoryStep;
-import io.sedna.reverse.motif.IdentityMotifFolder;
+import io.sedna.reverse.motif.GraphSignatureMotifFolder;
 import io.sedna.reverse.parse.JavaSourceParseStep;
 import io.sedna.reverse.stage.ContextReconstructionStep;
 import io.sedna.reverse.stage.ContractReconstructionStep;
@@ -42,7 +42,7 @@ public final class ReversePipeline {
   }
 
   public static ReversePipeline standard(DnaEncoder encoder, SemanticRegistry registry) {
-    return new ReversePipeline(encoder, registry, IdentityMotifFolder.INSTANCE);
+    return new ReversePipeline(encoder, registry, GraphSignatureMotifFolder.INSTANCE);
   }
 
   public Result<SemanticGraph, SemanticError> reverseGraph(Path projectRoot) {

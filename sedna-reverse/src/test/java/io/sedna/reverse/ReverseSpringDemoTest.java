@@ -19,12 +19,15 @@ class ReverseSpringDemoTest {
     var pipeline = ReverseServices.pipeline();
     var graph = pipeline.reverseGraph(SPRING_DEMO);
     assertTrue(graph.isOk(), () -> String.valueOf(graph.error()));
-    assertTrue(
+    boolean hasPackage =
         graph.value().nodes().stream()
             .anyMatch(
                 node ->
                     node.constraints().stream()
-                        .anyMatch(c -> c.code().startsWith("SOURCE_PACKAGE:com.acme.demo"))));
+                        .anyMatch(c -> c.code().startsWith("SOURCE_PACKAGE:com.acme.demo")));
+    boolean foldedMotif =
+        graph.value().nodes().stream().anyMatch(node -> node.kind() == io.sedna.core.NodeKind.MOTIF);
+    assertTrue(hasPackage || foldedMotif, () -> "Expected SOURCE_PACKAGE or folded MOTIF");
   }
 
   @Test

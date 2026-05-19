@@ -20,7 +20,7 @@ The project combines:
 | Component           | Status      |
 | ------------------- | ----------- |
 | Specification Suite | v1 Complete |
-| Implementation      | v1.0 foundation (Phases 0–7 complete) |
+| Implementation      | v1.0 foundation (Phases 0–10); Phase 11 SEDNA-FOLD-v1 complete |
 | Runtime Profiles    | DAG Ready   |
 | STATEFUL Runtime    | Phase 12    |
 | SUPERVISOR Runtime  | Phase 12    |
@@ -345,6 +345,8 @@ SEDNA_LLM_MODEL=openai/gpt-4o-mini
 SEDNA_LLM_TIMEOUT_MS=30000       # HTTP read timeout
 OPENROUTER_API_KEY=<secret>      # required when LLM enabled
 ```
+
+See [docs/llm-configuration.md](docs/llm-configuration.md) for retry policy and security boundaries.
 
 ---
 

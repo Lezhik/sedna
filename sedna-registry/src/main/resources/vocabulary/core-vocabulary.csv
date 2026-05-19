@@ -2,6 +2,7 @@ vocabularyId,termPath,version,displayName
 core,DOMAIN.ENTITY.AGGREGATE,v1,Domain Entity Aggregate
 core,DOMAIN.SERVICE.APPLICATION,v1,Application Service
 core,DOMAIN.API.CONTROLLER,v1,API Controller
+core,MOTIF.CRUD_STACK,v1,CRUD Stack Motif
 core,CREATE.VALIDATED.TRANSACTIONAL,v1,Validated Transactional Create
 spring,SERVICE.STATELESS,v1,Stateless Spring Service
 spring,REPOSITORY.JPA,v1,JPA Repository

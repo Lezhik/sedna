@@ -9,6 +9,7 @@ import java.util.Optional;
 public final class SpringBootNaming {
 
   public static final String SOURCE_PACKAGE_PREFIX = "SOURCE_PACKAGE:";
+  public static final String SOURCE_CLASS_PREFIX = "SOURCE_CLASS:";
 
   private SpringBootNaming() {}
 
@@ -33,7 +34,17 @@ public final class SpringBootNaming {
         .map(schema -> schema.payload().substring("class:".length()))
         .sorted()
         .findFirst()
-        .orElseGet(() -> defaultQualifiedName(node, basePackage));
+        .orElseGet(
+            () -> resolveSourceClass(node).orElseGet(() -> defaultQualifiedName(node, basePackage)));
+  }
+
+  public static Optional<String> resolveSourceClass(GenomeNode node) {
+    return node.constraints().stream()
+        .map(Constraint::code)
+        .filter(code -> code.startsWith(SOURCE_CLASS_PREFIX))
+        .map(code -> code.substring(SOURCE_CLASS_PREFIX.length()))
+        .sorted()
+        .findFirst();
   }
 
   private static String defaultQualifiedName(GenomeNode node, String basePackage) {

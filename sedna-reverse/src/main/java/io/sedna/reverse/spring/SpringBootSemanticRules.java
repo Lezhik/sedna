@@ -26,6 +26,7 @@ import java.util.Optional;
 public final class SpringBootSemanticRules {
 
   public static final String SOURCE_PACKAGE_CONSTRAINT = "SOURCE_PACKAGE";
+  public static final String SOURCE_CLASS_CONSTRAINT = "SOURCE_CLASS";
 
   private static final VocabRef ENTITY = new VocabRef("core", "DOMAIN.ENTITY.AGGREGATE", "v1");
   private static final VocabRef SERVICE = new VocabRef("core", "DOMAIN.SERVICE.APPLICATION", "v1");
@@ -119,6 +120,7 @@ public final class SpringBootSemanticRules {
       ParsedClass parsed, ParsedClass entityClass, Constraint packageConstraint) {
     SemanticCore core = new SemanticCore(SERVICE, ENTITY, ENTITY, List.of());
     String signature = primaryMethodSignature(parsed);
+    Constraint sourceClass = new Constraint(SOURCE_CLASS_CONSTRAINT + ":" + parsed.qualifiedName());
     Contract contract =
         new Contract(
             List.of(capabilityFor(parsed.simpleName(), "SERVICE")),
@@ -127,7 +129,11 @@ public final class SpringBootSemanticRules {
             new SchemaRef(SchemaRef.JAVA_SIGNATURE, signature));
     return NodeIdHasher.withCanonicalNodeId(
         new GenomeNode(
-            0L, NodeKind.SERVICE, core, List.of(contract), List.of(packageConstraint)));
+            0L,
+            NodeKind.SERVICE,
+            core,
+            List.of(contract),
+            List.of(packageConstraint, sourceClass)));
   }
 
   private static GenomeNode toControllerNode(ParsedClass parsed, Constraint packageConstraint) {
