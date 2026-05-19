@@ -15,38 +15,38 @@ Execution checklist for AI agents and engineers. Follow order strictly unless a 
 
 ### P0 — Repository skeleton
 
-- [ ] Create Gradle Kotlin DSL multi-project `settings.gradle.kts` with modules: `sedna-core`, `sedna-dna`, `sedna-registry`, `sedna-validation`, `sedna-forward`, `sedna-reverse`, `sedna-runtime`, `sedna-mutation`, `sedna-training`, `sedna-persistence`, `sedna-cli`, `examples`, `tests`, `benchmarks`
-- [ ] Add `gradle.properties` semantic version per module (start `0.0.1-SNAPSHOT`)
-- [ ] Configure Java 21 toolchain, JUnit 5, Spotless, SpotBugs for all subprojects
-- [ ] Add CI workflow: `./gradlew build` + test on push
-- [ ] Add root `.gitignore` for `generated/`, `.sdna` scratch outputs, IDE files
+- [x] Create Gradle Kotlin DSL multi-project `settings.gradle.kts` with modules: `sedna-core`, `sedna-dna`, `sedna-registry`, `sedna-validation`, `sedna-forward`, `sedna-reverse`, `sedna-runtime`, `sedna-mutation`, `sedna-training`, `sedna-persistence`, `sedna-cli`, `examples`, `tests`, `benchmarks`
+- [x] Add `gradle.properties` semantic version per module (start `0.0.1-SNAPSHOT`)
+- [x] Configure Java 21 toolchain, JUnit 5, Spotless, SpotBugs for all subprojects
+- [x] Add CI workflow: `./gradlew build` + test on push
+- [x] Add root `.gitignore` for `generated/`, `.sdna` scratch outputs, IDE files
 
 ### P0 — sedna-core
 
-- [ ] Implement canonical records: `SemanticGraph`, `GenomeNode`, `SemanticLink`, `Contract`, `Constraint`, `ExecutionToken`, `Mutation`, `MutationResult`, `SemanticError`, `RegistryVersion`, `VocabRef`
-- [ ] Implement `NodeKind`, `LinkType`, `ErrorCode`, `MutationType` enums (stable ordinal documented)
-- [ ] Implement `CanonicalOrdering.comparator()` for nodes, links, contracts
-- [ ] Implement `Result<T, SemanticError>` type (no exceptions across boundary)
-- [ ] Unit tests: collection ordering stability, comparator tie-breaker by `nodeId`
+- [x] Implement canonical records: `SemanticGraph`, `GenomeNode`, `SemanticLink`, `Contract`, `Constraint`, `ExecutionToken`, `Mutation`, `MutationResult`, `SemanticError`, `RegistryVersion`, `VocabRef`
+- [x] Implement `NodeKind`, `LinkType`, `ErrorCode`, `MutationType` enums (stable ordinal documented)
+- [x] Implement `CanonicalOrdering.comparator()` for nodes, links, contracts
+- [x] Implement `Result<T, SemanticError>` type (no exceptions across boundary)
+- [x] Unit tests: collection ordering stability, comparator tie-breaker by `nodeId`
 
 ### P0 — sedna-registry (bootstrap skeleton)
 
-- [ ] Embed core vocabulary resource files
-- [ ] Implement `SemanticRegistry` interface + in-memory immutable registry
-- [ ] Implement bootstrap step 1: load embedded core vocabulary
-- [ ] Unit tests: resolve known `VocabRef`; fail on unknown
+- [x] Embed core vocabulary resource files
+- [x] Implement `SemanticRegistry` interface + in-memory immutable registry
+- [x] Implement bootstrap step 1: load embedded core vocabulary
+- [x] Unit tests: resolve known `VocabRef`; fail on unknown
 
 ### P0 — sedna-validation (skeleton)
 
-- [ ] Define `ValidationEngine` interface + `ValidationReport`
-- [ ] Stub validators returning `NOT_IMPLEMENTED` with structured error
-- [ ] Wire bootstrap: validation engine initializes before pipelines (per AGENTS)
+- [x] Define `ValidationEngine` interface + `ValidationReport`
+- [x] Stub validators returning `NOT_IMPLEMENTED` with structured error
+- [x] Wire bootstrap: validation engine initializes before pipelines (per AGENTS)
 
 ### P0 — Acceptance (Phase 0)
 
-- [ ] `./gradlew build` green (all modules compile as empty skeletons)
-- [ ] DTO immutability enforced (records + unmodifiable lists)
-- [ ] Module dependency graph matches design doc (Gradle dependency constraints only; ArchUnit rules run from Cross-cutting)
+- [x] `./gradlew build` green (all modules compile as empty skeletons)
+- [x] DTO immutability enforced (records + unmodifiable lists)
+- [x] Module dependency graph matches design doc (Gradle dependency constraints only; ArchUnit rules run from Cross-cutting)
 
 ---
 
@@ -54,14 +54,14 @@ Execution checklist for AI agents and engineers. Follow order strictly unless a 
 
 ### P0 — sedna-dna
 
-- [ ] Implement TLV encoder/decoder (little-endian, length-prefixed arrays, UTF-8)
-- [ ] Implement node header: NodeID, NodeKind, VocabularyVersion, execution profile
-- [ ] Implement SHA-256 NodeID generation (first 64 bits, canonical serialization input)
-- [ ] Implement `DnaEncoder` / `DnaDecoder` with `Result` error mapping
-- [ ] Encoder applies `CanonicalOrdering` before every serialize (FR-dna.02)
-- [ ] Implement round-trip tests: `encode(decode(dna)) == dna`
+- [x] Implement TLV encoder/decoder (little-endian, length-prefixed arrays, UTF-8)
+- [x] Implement node header: NodeID, NodeKind, VocabularyVersion, execution profile
+- [ ] Implement SHA-256 NodeID generation (first 64 bits, canonical serialization input) — `NodeIdHasher` utility present; decode-time validation pending
+- [x] Implement `DnaEncoder` / `DnaDecoder` with `Result` error mapping
+- [x] Encoder applies `CanonicalOrdering` before every serialize (FR-dna.02)
+- [x] Implement round-trip tests: `encode(decode(dna)) == dna`
 - [ ] Implement golden-byte fixtures from minimal hand-crafted graphs
-- [ ] Define `MotifFolder` / `MotifExpander` interfaces only (implementation deferred to Phase 3 per ROADMAP)
+- [x] Define `MotifFolder` / `MotifExpander` interfaces only (implementation deferred to Phase 3 per ROADMAP)
 
 ### P0 — sedna-registry (complete decode)
 
@@ -70,7 +70,7 @@ Execution checklist for AI agents and engineers. Follow order strictly unless a 
 
 ### P0 — sedna-validation (graph + DNA)
 
-- [ ] Validate topology: no orphan nodes, valid link endpoints
+- [x] Validate topology: no orphan nodes, valid link endpoints (`GraphValidationEngine`)
 - [ ] Validate NodeID consistency on decode
 - [ ] Validate vocabulary references resolvable
 
@@ -317,7 +317,9 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 - [x] Specification suite v1 (docs/)
 - [x] `AGENTS.md`, `README.md`, `ROADMAP.md`
 - [x] Detailed design document (`docs/sedna_detailed_design.md`)
-- [ ] **No Java implementation modules yet** — start Phase 0
+- [x] Phase 0 complete — Gradle multi-module, `sedna-core`, registry bootstrap, validation skeleton
+- [x] Phase 1 in progress — SEDNA-BIN-v1 codec (`DefaultDnaEncoder`/`DefaultDnaDecoder`), round-trip tests green
+- [ ] Next: golden-byte fixtures, NodeID validation on decode, JMH benchmarks (v0.1 acceptance)
 
 ---
 
