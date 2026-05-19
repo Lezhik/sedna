@@ -12,4 +12,5 @@ dependencies {
     implementation(project(":sedna-registry"))
     implementation(project(":sedna-validation"))
     implementation(project(":sedna-forward"))
+    implementation(project(":sedna-reverse"))
 }

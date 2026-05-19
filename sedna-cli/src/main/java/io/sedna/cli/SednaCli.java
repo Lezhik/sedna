@@ -7,6 +7,7 @@ import io.sedna.dna.DnaEncoder;
 import io.sedna.dna.DnaServices;
 import io.sedna.forward.ForwardServices;
 import io.sedna.registry.InMemorySemanticRegistry;
+import io.sedna.reverse.ReverseServices;
 import io.sedna.validation.CompositeValidationEngine;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,6 +38,7 @@ public final class SednaCli {
       case "decode" -> runDecode(options);
       case "encode" -> runEncode(options);
       case "validate" -> runValidate(options);
+      case "reverse" -> runReverse(options);
       default -> {
         System.err.println("Unknown command: " + command);
         printUsage();
@@ -111,6 +113,20 @@ public final class SednaCli {
     }
   }
 
+  private int runReverse(Map<String, String> options) {
+    Path input = requirePath(options, "input");
+    if (input == null) {
+      return 2;
+    }
+    Path output =
+        options.containsKey("output")
+            ? Path.of(options.get("output"))
+            : input.resolveSibling(input.getFileName() + ".sdna");
+    var result =
+        ReverseServices.pipeline().reverseToFile(input, output.toAbsolutePath().normalize());
+    return report(result, "Reverse completed: " + output);
+  }
+
   private int runValidate(Map<String, String> options) {
     Path input = requirePath(options, "input");
     if (input == null) {
@@ -183,6 +199,7 @@ public final class SednaCli {
           sedna decode  --input=<file.sdna>
           sedna encode  --input=<file.sdna> [--output=<file.sdna>]
           sedna validate --input=<file.sdna>
+          sedna reverse  --input=<project-dir> [--output=<file.sdna>]
         """);
   }
 }
