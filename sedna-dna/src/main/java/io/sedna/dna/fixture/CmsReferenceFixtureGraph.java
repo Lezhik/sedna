@@ -32,6 +32,13 @@ public final class CmsReferenceFixtureGraph {
     SemanticCore serviceCore = new SemanticCore(service, entity, entity, List.of());
     SemanticCore controllerCore = new SemanticCore(controller, service, entity, List.of());
 
+    Contract entityContract =
+        new Contract(
+            List.of(new CapabilityRef("USER_REPOSITORY", "1.0")),
+            List.of(),
+            Protocol.SYNC,
+            new SchemaRef(SchemaRef.JAVA_SIGNATURE, "interface UserRepository"));
+
     Contract serviceContract =
         new Contract(
             List.of(new CapabilityRef("USER_SERVICE", "1.0")),
@@ -41,7 +48,7 @@ public final class CmsReferenceFixtureGraph {
 
     GenomeNode entityNode =
         NodeIdHasher.withCanonicalNodeId(
-            new GenomeNode(0L, NodeKind.ENTITY, entityCore, List.of(), List.of()));
+            new GenomeNode(0L, NodeKind.ENTITY, entityCore, List.of(entityContract), List.of()));
     GenomeNode serviceNode =
         NodeIdHasher.withCanonicalNodeId(
             new GenomeNode(
@@ -50,12 +57,14 @@ public final class CmsReferenceFixtureGraph {
         NodeIdHasher.withCanonicalNodeId(
             new GenomeNode(0L, NodeKind.CONTROLLER, controllerCore, List.of(), List.of()));
 
-    SemanticLink link =
+    SemanticLink controllerToService =
         new SemanticLink(controllerNode.nodeId(), serviceNode.nodeId(), LinkType.DEPENDENCY);
+    SemanticLink serviceToEntity =
+        new SemanticLink(serviceNode.nodeId(), entityNode.nodeId(), LinkType.DEPENDENCY);
 
     return new SemanticGraph(
         List.of(entityNode, serviceNode, controllerNode),
-        List.of(link),
+        List.of(controllerToService, serviceToEntity),
         new RegistryVersion("core", 1, 0));
   }
 }

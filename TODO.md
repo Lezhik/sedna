@@ -92,29 +92,29 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P0 — sedna-forward stages
 
-- [ ] Step 1: DNA parsing (delegate `sedna-dna`)
-- [ ] Step 2: Registry resolution
-- [ ] Step 3: Hypergraph construction (LINKS remain semantic refs)
-- [ ] Step 4: Contract resolution (materialize edges)
-- [ ] Step 5: Constraint propagation (hard fail + rollback hook)
-- [ ] Step 6: Execution planning (topological sort + NodeID tie-break)
-- [ ] Step 7: Code generation (JavaPoet structure, Mustache templates)
+- [x] Step 1: DNA parsing (delegate `sedna-dna`)
+- [x] Step 2: Registry resolution
+- [x] Step 3: Hypergraph construction (LINKS remain semantic refs)
+- [x] Step 4: Contract resolution (materialize edges)
+- [x] Step 5: Constraint propagation (hard fail + rollback hook)
+- [x] Step 6: Execution planning (topological sort + NodeID tie-break)
+- [x] Step 7: Code generation (JavaPoet structure, Mustache templates)
 
 ### P0 — sedna-forward LLM boundary
 
-- [ ] OpenRouter HTTP client (`SEDNA_LLM_BASE_URL`, `OPENROUTER_API_KEY`, `SEDNA_LLM_MODEL`); disabled by default in CI
-- [ ] Empty method body skeleton fallback on LLM failure
-- [ ] Tests: structure hash identical with LLM off
+- [x] OpenRouter HTTP client (`SEDNA_LLM_BASE_URL`, `OPENROUTER_API_KEY`, `SEDNA_LLM_MODEL`); disabled by default in CI
+- [x] Empty method body skeleton fallback on LLM failure
+- [x] Tests: structure hash identical with LLM off (`ForwardDeterminismTest`)
 
 ### P0 — sedna-cli (minimal)
 
-- [ ] Commands: `forward`, `decode`, `encode`, `validate`
-- [ ] Non-zero exit on `SemanticError`
+- [x] Commands: `forward`, `decode`, `encode`, `validate`
+- [x] Non-zero exit on `SemanticError`
 
 ### P0 — examples/cms-reference
 
-- [ ] Add reference Spring Boot CMS project under `examples/cms-reference`
-- [ ] Hand-author minimal DNA fixture at `examples/cms-reference-fixture.sdna` for forward tests until reverse exists
+- [x] Add reference Spring Boot CMS project under `examples/cms-reference`
+- [x] Hand-author minimal DNA fixture at `examples/cms-reference-fixture.sdna` for forward tests until reverse exists
 
 **Minimum fixture specification (canonical, shared by Phase 2 and Phase 3 equivalence tests):**
 
@@ -131,9 +131,9 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P0 — Acceptance (Phase 2 / v0.2)
 
-- [ ] `sedna forward --input=examples/cms-reference-fixture.sdna --output=generated` compiles
-- [ ] Identical generated file tree hash (LLM disabled) across 10 runs
-- [ ] Validation runs before any file write
+- [ ] `sedna forward --input=examples/cms-reference-fixture.sdna --output=generated` compiles (manual/CI Gradle on generated tree)
+- [x] Identical generated file tree hash (LLM disabled) across 10 runs
+- [x] Validation runs before any file write
 
 ---
 
@@ -319,7 +319,8 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 - [x] Detailed design document (`docs/sedna_detailed_design.md`)
 - [x] Phase 0 complete — Gradle multi-module, `sedna-core`, registry bootstrap, validation skeleton
 - [x] Phase 1 complete (v0.1) — SEDNA-BIN-v1 codec, NodeID hash/validation, golden fixture, graph+vocabulary validation, JMH harness
-- [ ] Next: Phase 2 forward pipeline (`sedna-forward`), `examples/cms-reference`, minimal `sedna-cli`
+- [x] Phase 2 in progress (v0.2) — `ForwardPipeline`, CLI, `examples/cms-reference`, determinism tests green
+- [ ] Next: compile acceptance on generated CMS, Phase 3 reverse pipeline
 
 ---
 

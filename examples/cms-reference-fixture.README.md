@@ -16,8 +16,12 @@ Canonical minimum graph for forward/reverse equivalence tests (Phase 2–3).
 Updated automatically when `GoldenFixtureTest` runs after fixture regeneration.
 
 ```
-62782b17910b17e153c39c7069648554e2659cb37ea26519cf303cf336122fbf
+6d75d8431baaac07398e39448b19db34b62cc6df7eb84cbdc1484d5c2d7ed8f5
 ```
+
+## NodeIDs (canonical SHA-256 / 64-bit)
+
+Derived via `NodeIdHasher` from semantic content (regenerate with `CmsReferenceFixtureGraph` if vocabulary changes).
 
 ## Regenerate
 
