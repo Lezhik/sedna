@@ -18,6 +18,7 @@ public final class CompositeValidationEngine implements ValidationEngine {
   public static CompositeValidationEngine standard(io.sedna.registry.SemanticRegistry registry) {
     List<ValidationEngine> chain = new ArrayList<>();
     chain.add(new GraphValidationEngine());
+    chain.add(new VocabularyVersionValidationEngine(registry));
     chain.add(new VocabularyValidationEngine(registry));
     return new CompositeValidationEngine(chain);
   }

@@ -66,7 +66,7 @@ Execution checklist for AI agents and engineers. Follow order strictly unless a 
 ### P0 — sedna-registry (complete decode)
 
 - [x] Implement registry extension TLV decode (`EmptyRegistryExtensionDecoder` + `RegistryExtensionDecoder` interface; non-empty payload deferred to Phase 9)
-- [ ] Version pinning on `SemanticGraph.vocabularyVersion`
+- [x] Version pinning on `SemanticGraph.vocabularyVersion` (`RegistryVersionCompatibility`, Phase 8)
 
 ### P0 — sedna-validation (graph + DNA)
 
@@ -131,7 +131,7 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P0 — Acceptance (Phase 2 / v0.2)
 
-- [ ] `sedna forward --input=examples/cms-reference-fixture.sdna --output=generated` compiles (manual/CI Gradle on generated tree)
+- [x] `sedna forward --input=examples/cms-reference-fixture.sdna --output=generated` compiles (manual/CI Gradle on generated tree; `ForwardCompileIntegrationTest`)
 - [x] Identical generated file tree hash (LLM disabled) across 10 runs
 - [x] Validation runs before any file write
 
@@ -274,31 +274,32 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ## Phase 8 — Release Hardening (Weeks 26–28)
 
-Закрытие открытых критериев Phases 1–7 и подготовка к v1.0.
+Close open Phases 1–7 acceptance criteria and prepare for v1.0.
 
 ### P0 — CI acceptance gates
 
-- [ ] CI job: `sedna forward` on `examples/cms-reference-fixture.sdna` → `./gradlew build` in `generated/`
+- [x] CI job: `sedna forward` on `examples/cms-reference-fixture.sdna` → `./gradlew build` in `generated/` (`ForwardCompileIntegrationTest`)
 - [ ] CI job: golden SHA-256 from `examples/cms-reference-fixture.README.md` enforced
 - [ ] JMH gate: runtime scheduling p95 <50ms on reference graph (`RuntimeBenchmark`)
 - [ ] SpotBugs: zero high-priority findings across all modules
 
 ### P0 — Registry & DNA completeness (partial)
 
-- [ ] Version pinning policy on `SemanticGraph.vocabularyVersion` (compatible minor, strict major per FR-reg.03)
+- [x] Version pinning policy on `SemanticGraph.vocabularyVersion` (compatible minor, strict major per FR-reg.03)
 - [ ] Remove or wire `StubValidationEngine` out of production paths
 
 ### P0 — Security & LLM
 
 - [ ] No dynamic bytecode execution audit (ArchUnit + dependency scan)
-- [ ] No shell exec from LLM outputs (response sanitization)
-- [ ] LLM HTTP client: payload size limits, response validation, documented retry policy
+- [x] No shell exec from LLM outputs (`LlmResponseSanitizer`)
+- [x] LLM HTTP client: payload size limits, response validation (`OpenRouterLlmClient`, 64KB cap)
+- [ ] LLM retry policy documented
 - [ ] Sample `application.yml` / env docs for OpenRouter (`https://openrouter.ai/api/v1`)
 
 ### P1 — Developer experience
 
 - [ ] Shared Testcontainers PostgreSQL profile (`tests` or `sedna-persistence`) for **all** modules requiring DB (`sedna-persistence`, `sedna-runtime` replay)
-- [ ] CLI `run`: optional `--checkpoint-jdbc-url` for PostgreSQL checkpoints (default in-memory)
+- [x] CLI `run`: optional `--checkpoint-jdbc-url` for PostgreSQL checkpoints (default in-memory)
 
 ### P0 — Acceptance (Phase 8 / v1.0)
 
@@ -312,38 +313,38 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P0 — sedna-registry
 
-- [ ] Implement non-empty registry extension TLV decode (replace `EmptyRegistryExtensionDecoder` rejection path)
-- [ ] Extension version negotiation and deterministic merge into `SemanticRegistry`
-- [ ] Tests: round-trip graphs with custom vocabulary extensions
+- [x] Implement non-empty registry extension TLV decode (`TlvRegistryExtensionDecoder`, REG-EXT-v1)
+- [x] Extension version negotiation and deterministic merge into `SemanticRegistry` (`RegistryBootstrap`)
+- [x] Tests: round-trip graphs with custom vocabulary extensions (`TlvRegistryExtensionDecoderTest`)
 
 ### P0 — sedna-validation
 
 - [ ] Validate extension references and version compatibility
-- [ ] Pinning rules integrated with `RegistryResolutionStep` (forward) and decode path
+- [x] Pinning rules integrated with `RegistryResolutionStep` (forward) and `VocabularyVersionValidationEngine`
 
 ### P0 — Acceptance (Phase 9 / v1.1)
 
-- [ ] Custom extension payload encodes/decodes deterministically
-- [ ] Graphs with extensions pass `CompositeValidationEngine.standard`
+- [x] Custom extension payload encodes/decodes deterministically
+- [x] Graphs with extensions pass `CompositeValidationEngine.standard` (via bootstrap merge tests)
 - [ ] Forward/reverse on extension-augmented fixture graph
 
 ---
 
 ## Phase 10 — General Reverse & Forward (Weeks 32–38)
 
-Расширение за пределы CMS reference profile (`io.sedna.cms.*`).
+Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 
 ### P0 — sedna-reverse
 
 - [ ] Add Spoon as primary AST parser; ASM for bytecode-level edges
-- [ ] General `SemanticExtractionStep` (remove CMS-only gate)
+- [x] General `SemanticExtractionStep` (Spring Boot monolith via `SpringBootSemanticRules`)
 - [ ] UNKNOWN node classification with optional LLM label enrichment (topology unchanged)
-- [ ] Profile detection: Spring Boot REST monolith (Gradle), multi-module deferred
+- [x] Profile detection: Spring Boot REST monolith (Gradle), multi-module deferred — `examples/spring-demo`
 - [ ] Atomic semantic deltas per Git commit (Step 8 completion)
 
 ### P0 — sedna-forward
 
-- [ ] Profile-driven code generators (beyond `CmsCodeGenerator`)
+- [x] Profile-driven code generators (`SpringBootCodeGenerator` + `CodeGenerationStep` router)
 - [ ] Support additional `NodeKind` values used by general extraction
 - [ ] Generated project compiles for at least 3 non-CMS reference fixtures
 
@@ -496,9 +497,9 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P0 — Security
 
-- [ ] No dynamic bytecode execution
-- [ ] No shell exec from LLM outputs
-- [ ] LLM HTTP client timeouts and size limits
+- [ ] No dynamic bytecode execution audit (ArchUnit + dependency scan)
+- [x] No shell exec from LLM outputs (`LlmResponseSanitizer`)
+- [x] LLM HTTP client timeouts and size limits (`OpenRouterLlmClient`)
 
 ### P1 — Developer experience
 
@@ -511,36 +512,34 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ## Current repository status (2026-05-19)
 
-### Реализовано (фундамент v1.0, Phases 0–7)
+### Implemented (v1.0 foundation, Phases 0–10 partial)
 
-| Область | Состояние |
-|---------|-----------|
-| **sedna-core** | Полный набор канонических DTO, `Result`, `CanonicalOrdering` |
-| **sedna-dna** | SEDNA-BIN-v1 codec, NodeID SHA-256, golden fixture, детерминизм |
-| **sedna-registry** | Embedded vocabulary, bootstrap; расширения — только пустой payload |
-| **sedna-validation** | Топология, vocabulary, equivalence, mutation safety, DNA probe |
-| **sedna-forward** | 7 стадий, CMS codegen (ENTITY/SERVICE/CONTROLLER), LLM optional |
-| **sedna-reverse** | 8 стадий, JavaParser, **только** `examples/cms-reference` profile |
+| Area | Status |
+|------|--------|
+| **sedna-core** | Full canonical DTO set, `Result`, `CanonicalOrdering`, `RegistryVersionCompatibility` |
+| **sedna-dna** | SEDNA-BIN-v1 codec, NodeID SHA-256, golden fixture, determinism |
+| **sedna-registry** | Embedded vocabulary, `RegistryBootstrap`, REG-EXT-v1 extensions |
+| **sedna-validation** | Topology, vocabulary, version pinning, equivalence, mutation safety, DNA probe |
+| **sedna-forward** | 7 stages, CMS + Spring Boot codegen, LLM optional with sanitization |
+| **sedna-reverse** | 8 stages, JavaParser; CMS reference + Spring Boot monolith profiles |
 | **sedna-runtime** | DAG executor, replay; STATEFUL/SUPERVISOR → `UNSUPPORTED_PROFILE` |
 | **sedna-mutation** | Subtree mutations, transaction rollback |
 | **sedna-training** | HEAD snapshot, trajectories, embeddings, manifest |
 | **sedna-persistence** | PostgreSQL checkpoints (Testcontainers) |
-| **sedna-cli** | `forward`, `reverse`, `decode`, `encode`, `validate`, `run`, `train` |
-| **Качество** | JMH, fuzz, ArchUnit, CI determinism |
+| **sedna-cli** | `forward`, `reverse`, `decode`, `encode`, `validate`, `run`, `train`; JDBC checkpoints |
+| **Quality** | JMH, fuzz, ArchUnit, CI determinism, forward compile integration test |
 
-### Не реализовано для полноценного приложения
+### Not yet implemented (full application)
 
-| Пробел | Фаза |
-|--------|------|
-| CI: компиляция сгенерированного проекта после `forward` | 8 |
-| Version pinning vocabulary | 8–9 |
-| Непустые registry extensions | 9 |
-| Reverse/forward вне CMS profile | 10 |
-| Spoon/ASM, общая семантическая экстракция | 10 |
-| SEDNA-FOLD-v1 (реальное свёртывание мотивов) | 11 |
+| Gap | Phase |
+|-----|-------|
+| Spoon/ASM parser stack | 10 |
+| UNKNOWN node classification + LLM label enrichment | 10 |
+| ≥3 non-CMS fixtures with compile acceptance | 10 |
+| SEDNA-FOLD-v1 (real motif folding) | 11 |
 | STATEFUL / SUPERVISOR runtime + compensation | 12 |
 | Per-commit training trajectories | 13 |
-| Расширенный корпус (20–300 проектов) | 13 |
+| Expanded corpus (20–300 projects) | 13 |
 | IntelliJ plugin, visualization, distributed runtime | 14–15 |
 | Multi-language pipelines, Kubernetes | 15 |
 
@@ -548,7 +547,7 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ## Agent execution notes
 
-1. Phases 0–7 complete — start Phase 8 unless user directs otherwise.
+1. Phases 0–7 complete; Phases 8–10 partially complete — continue Phase 8 open items, then Phases 10–12 unless directed otherwise.
 2. Never duplicate DTOs outside `sedna-core`.
 3. Every public method returns `Result<T, SemanticError>` at module boundaries.
 4. Mark tasks `[x]` only when tests and CI gates for that task pass.

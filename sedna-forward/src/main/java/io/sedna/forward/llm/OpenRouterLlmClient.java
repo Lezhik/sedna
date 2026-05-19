@@ -66,7 +66,10 @@ public final class OpenRouterLlmClient implements LlmClient {
       if (response.statusCode() >= 400) {
         return DisabledLlmClient.INSTANCE.generateMethodBody(node, methodSignature);
       }
-      String body = extractContent(response.body());
+      if (json.length() > 65_536) {
+        return DisabledLlmClient.INSTANCE.generateMethodBody(node, methodSignature);
+      }
+      String body = LlmResponseSanitizer.sanitize(extractContent(response.body()));
       if (body.isBlank()) {
         return DisabledLlmClient.INSTANCE.generateMethodBody(node, methodSignature);
       }

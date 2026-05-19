@@ -6,8 +6,12 @@ import io.sedna.core.SemanticGraph;
 import io.sedna.dna.DnaEncoder;
 import io.sedna.dna.DnaServices;
 import io.sedna.forward.ForwardServices;
+import io.sedna.persistence.CheckpointStore;
+import io.sedna.persistence.InMemoryCheckpointStore;
+import io.sedna.persistence.JdbcCheckpointStore;
 import io.sedna.registry.InMemorySemanticRegistry;
 import io.sedna.reverse.ReverseServices;
+import io.sedna.runtime.RuntimeEngine;
 import io.sedna.runtime.RuntimeServices;
 import io.sedna.runtime.trace.TraceHasher;
 import io.sedna.training.ProjectListLoader;
@@ -20,6 +24,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import org.postgresql.ds.PGSimpleDataSource;
 
 /** Minimal CLI for Phase 2: forward, decode, encode, validate. */
 public final class SednaCli {
@@ -139,7 +144,8 @@ public final class SednaCli {
       if (!decoded.isOk()) {
         return report(decoded, null);
       }
-      var trace = RuntimeServices.engine().run(decoded.value());
+      RuntimeEngine engine = RuntimeServices.engine(resolveCheckpointStore(options));
+      var trace = engine.run(decoded.value());
       if (!trace.isOk()) {
         return report(trace, null);
       }
@@ -227,6 +233,30 @@ public final class SednaCli {
     }
   }
 
+  private static CheckpointStore resolveCheckpointStore(Map<String, String> options) {
+    String jdbcUrl = options.get("checkpoint-jdbc-url");
+    if (jdbcUrl == null || jdbcUrl.isBlank()) {
+      return new InMemoryCheckpointStore();
+    }
+    PGSimpleDataSource dataSource = new PGSimpleDataSource();
+    dataSource.setUrl(jdbcUrl);
+    String user = options.get("checkpoint-db-user");
+    String password = options.get("checkpoint-db-password");
+    if (user != null && !user.isBlank()) {
+      dataSource.setUser(user);
+    }
+    if (password != null) {
+      dataSource.setPassword(password);
+    }
+    JdbcCheckpointStore store = new JdbcCheckpointStore(dataSource);
+    try {
+      store.migrate();
+    } catch (java.sql.SQLException ex) {
+      throw new IllegalStateException("Checkpoint schema migration failed: " + ex.getMessage(), ex);
+    }
+    return store;
+  }
+
   private static int report(Result<?, SemanticError> result, String successMessage) {
     if (result.isOk()) {
       if (successMessage != null) {
@@ -279,7 +309,7 @@ public final class SednaCli {
           sedna encode  --input=<file.sdna> [--output=<file.sdna>]
           sedna validate --input=<file.sdna>
           sedna reverse  --input=<project-dir> [--output=<file.sdna>]
-          sedna run      --input=<file.sdna>
+          sedna run      --input=<file.sdna> [--checkpoint-jdbc-url=<jdbc>]
           sedna train    --projects=<list.txt> [--output=<dir>]
 
         Global flags: --help
@@ -295,7 +325,8 @@ public final class SednaCli {
           case "encode" -> "Re-encode DNA to canonical bytes.";
           case "validate" -> "Validate DNA graph against registry and rules.";
           case "reverse" -> "Reverse-engineer DNA from a project folder.";
-          case "run" -> "Execute DAG runtime and print trace SHA-256.";
+          case "run" ->
+              "Execute DAG runtime and print trace SHA-256 (optional PostgreSQL checkpoints).";
           case "train" -> "Build training dataset manifest from project list.";
           default -> "See `sedna help` for supported commands.";
         };

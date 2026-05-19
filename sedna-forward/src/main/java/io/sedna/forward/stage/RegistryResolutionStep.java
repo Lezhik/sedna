@@ -2,6 +2,7 @@ package io.sedna.forward.stage;
 
 import io.sedna.core.ErrorCode;
 import io.sedna.core.GenomeNode;
+import io.sedna.core.RegistryVersionCompatibility;
 import io.sedna.core.Result;
 import io.sedna.core.SemanticCore;
 import io.sedna.core.SemanticError;
@@ -39,14 +40,12 @@ public final class RegistryResolutionStep {
         }
       }
     }
-    if (!graph.vocabularyVersion().equals(registry.version())) {
+    if (!RegistryVersionCompatibility.isCompatible(graph.vocabularyVersion(), registry.version())) {
       return Result.err(
           SemanticError.global(
               ErrorCode.VALIDATION_FAILED,
-              "Graph vocabularyVersion "
-                  + graph.vocabularyVersion().canonical()
-                  + " does not match registry "
-                  + registry.version().canonical()));
+              RegistryVersionCompatibility.incompatibilityReason(
+                  graph.vocabularyVersion(), registry.version())));
     }
     return Result.ok(graph);
   }

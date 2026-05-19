@@ -26,7 +26,7 @@ public final class ConstraintPropagationStep {
   private static boolean isKnownConstraint(String code) {
     return switch (code) {
       case "STATELESS_ONLY", "TRANSACTIONAL", "READ_ONLY" -> true;
-      default -> false;
+      default -> code.startsWith("SOURCE_PACKAGE:");
     };
   }
 }

@@ -5,17 +5,13 @@ import io.sedna.core.SemanticDefinition;
 import io.sedna.core.SemanticError;
 import java.util.Map;
 
-/** MVP decoder: accepts empty payload only. */
+/** Delegates to {@link TlvRegistryExtensionDecoder}. */
 public final class EmptyRegistryExtensionDecoder implements RegistryExtensionDecoder {
+
+  private final RegistryExtensionDecoder delegate = new TlvRegistryExtensionDecoder();
 
   @Override
   public Result<Map<String, SemanticDefinition>, SemanticError> decode(byte[] extensionPayload) {
-    if (extensionPayload == null || extensionPayload.length == 0) {
-      return Result.ok(Map.of());
-    }
-    return Result.err(
-        io.sedna.core.SemanticError.global(
-            io.sedna.core.ErrorCode.NOT_IMPLEMENTED,
-            "Non-empty registry extensions not supported in MVP"));
+    return delegate.decode(extensionPayload);
   }
 }

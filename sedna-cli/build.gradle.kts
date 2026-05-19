@@ -15,4 +15,6 @@ dependencies {
     implementation(project(":sedna-reverse"))
     implementation(project(":sedna-runtime"))
     implementation(project(":sedna-training"))
+    implementation(project(":sedna-persistence"))
+    implementation("org.postgresql:postgresql:42.7.4")
 }

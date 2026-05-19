@@ -6,6 +6,7 @@ import io.sedna.core.SemanticError;
 import io.sedna.core.SemanticGraph;
 import io.sedna.reverse.cms.CmsSemanticRules;
 import io.sedna.reverse.model.StructuralGraph;
+import io.sedna.reverse.spring.SpringBootSemanticRules;
 
 /** Step 3 — structural graph to semantic graph. */
 public final class SemanticExtractionStep {
@@ -14,8 +15,17 @@ public final class SemanticExtractionStep {
     if (CmsSemanticRules.isCmsReference(structural)) {
       return Result.ok(CmsSemanticRules.toSemanticGraph(structural));
     }
+    if (SpringBootSemanticRules.isSpringBootMonolith(structural)) {
+      try {
+        return Result.ok(SpringBootSemanticRules.toSemanticGraph(structural));
+      } catch (RuntimeException ex) {
+        return Result.err(
+            SemanticError.global(ErrorCode.VALIDATION_FAILED, ex.getMessage()));
+      }
+    }
     return Result.err(
         SemanticError.global(
-            ErrorCode.NOT_IMPLEMENTED, "Semantic extraction supported for cms-reference profile only"));
+            ErrorCode.NOT_IMPLEMENTED,
+            "Semantic extraction supports cms-reference and Spring Boot monolith profiles only"));
   }
 }

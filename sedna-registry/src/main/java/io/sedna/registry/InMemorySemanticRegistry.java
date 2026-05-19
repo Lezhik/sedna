@@ -24,7 +24,7 @@ public final class InMemorySemanticRegistry implements SemanticRegistry {
   }
 
   public static InMemorySemanticRegistry bootstrap() {
-    return new InMemorySemanticRegistry();
+    return RegistryBootstrap.bootstrap();
   }
 
   @Override
