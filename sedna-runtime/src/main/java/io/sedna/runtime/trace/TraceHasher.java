@@ -15,12 +15,17 @@ public final class TraceHasher {
       for (ExecutionTraceEvent event : trace.events()) {
         digest.update(longLe(event.sequenceNumber()));
         digest.update(longLe(event.nodeId()));
+        digest.update(utf8(event.kind().name()));
         digest.update(event.token().tokenHash());
       }
       return HexFormat.of().formatHex(digest.digest());
     } catch (NoSuchAlgorithmException ex) {
       throw new IllegalStateException(ex);
     }
+  }
+
+  private static byte[] utf8(String value) {
+    return value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
   }
 
   private static byte[] longLe(long value) {

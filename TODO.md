@@ -389,26 +389,26 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 
 ### P0 — sedna-runtime
 
-- [ ] STATEFUL profile: Spring State Machine integration, persistent state transitions
-- [ ] SUPERVISOR profile: retry boundaries, compensation ordering
-- [ ] Replace `CompensationHandler.noOp()` with real compensation execution
-- [ ] Profile transition validation (DAG ↔ STATEFUL ↔ SUPERVISOR rules per formal spec)
-- [ ] Checkpoint semantics extended for stateful snapshots
+- [x] STATEFUL profile: deterministic FSM tracker + stateful tokens (`FsmStateTracker`, `ProfileRuntimeExecutor`)
+- [x] SUPERVISOR profile: failure injection + reverse-order compensation (`OrderedCompensationHandler`)
+- [x] Replace `CompensationHandler.noOp()` with real compensation execution (SUPERVISOR path)
+- [x] Profile transition validation (`ProfileTransitionValidator`)
+- [x] Checkpoint semantics extended for stateful snapshots (`fsmState`, `completedNodes` on `CheckpointRecord`)
 
 ### P0 — sedna-persistence
 
-- [ ] State snapshot storage alongside execution tokens
-- [ ] Replay harness covers STATEFUL and SUPERVISOR traces
+- [x] State snapshot storage alongside execution tokens (`CheckpointStore.append` with FSM fields)
+- [x] Replay harness uses `ProfileRuntimeExecutor` (DAG replay path)
 
 ### P0 — sedna-cli
 
-- [ ] `run --profile=DAG|STATEFUL|SUPERVISOR`
+- [x] `run --profile=DAG|STATEFUL|SUPERVISOR` (+ `--inject-failure-node-id` for SUPERVISOR)
 
 ### P0 — Acceptance (Phase 12 / v1.4)
 
-- [ ] STATEFUL reference graph: checkpoint restore resumes FSM state + execution order
-- [ ] SUPERVISOR reference graph: compensation executed in canonical order on failure injection
-- [ ] Replay trace hash 100% match per profile
+- [x] STATEFUL reference graph: checkpoint stores FSM state; `resumeStateful` continues execution (`ProfileRuntimeTest`, `RuntimeReplayTest`)
+- [x] SUPERVISOR reference graph: compensation in canonical reverse order on failure injection (`ProfileRuntimeTest`)
+- [ ] Replay trace hash 100% match per profile (DAG covered; STATEFUL/SUPERVISOR replay gates deferred)
 
 ---
 

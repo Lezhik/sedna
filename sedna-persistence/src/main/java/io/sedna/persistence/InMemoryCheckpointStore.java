@@ -19,9 +19,16 @@ public final class InMemoryCheckpointStore implements CheckpointStore {
   @Override
   public synchronized Result<CheckpointRecord, SemanticError> append(
       byte[] graphSnapshotRef, ExecutionToken token) {
+    return append(graphSnapshotRef, token, "", 0);
+  }
+
+  @Override
+  public synchronized Result<CheckpointRecord, SemanticError> append(
+      byte[] graphSnapshotRef, ExecutionToken token, String fsmState, int completedNodes) {
     long id = idSequence.incrementAndGet();
     long seq = sequenceNumber.incrementAndGet();
-    CheckpointRecord record = new CheckpointRecord(id, token, graphSnapshotRef, seq);
+    CheckpointRecord record =
+        new CheckpointRecord(id, token, graphSnapshotRef, seq, fsmState, completedNodes);
     records.add(record);
     return Result.ok(record);
   }

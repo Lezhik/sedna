@@ -14,6 +14,18 @@ public final class DeterministicTokenFactory {
   private DeterministicTokenFactory() {}
 
   public static ExecutionToken token(GenomeNode node, long sequenceNumber) {
+    return token(node, sequenceNumber, "");
+  }
+
+  public static ExecutionToken statefulToken(GenomeNode node, long sequenceNumber, String stateHash) {
+    return token(node, sequenceNumber, stateHash);
+  }
+
+  public static ExecutionToken compensationToken(GenomeNode node, long sequenceNumber, long failedNodeId) {
+    return token(node, sequenceNumber, "COMPENSATE:" + failedNodeId);
+  }
+
+  private static ExecutionToken token(GenomeNode node, long sequenceNumber, String stateHash) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
       digest.update(longLe(node.nodeId()));
@@ -22,6 +34,7 @@ public final class DeterministicTokenFactory {
       digest.update(utf8(node.core().classRef().canonicalKey()));
       digest.update(utf8(node.core().targetRef().canonicalKey()));
       digest.update(utf8(node.core().operationRef().canonicalKey()));
+      digest.update(utf8(stateHash));
       return new ExecutionToken(digest.digest());
     } catch (NoSuchAlgorithmException ex) {
       throw new IllegalStateException(ex);

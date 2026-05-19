@@ -20,10 +20,10 @@ The project combines:
 | Component           | Status      |
 | ------------------- | ----------- |
 | Specification Suite | v1 Complete |
-| Implementation      | v1.0 foundation (Phases 0–10); Phase 11 SEDNA-FOLD-v1 complete |
-| Runtime Profiles    | DAG Ready   |
-| STATEFUL Runtime    | Phase 12    |
-| SUPERVISOR Runtime  | Phase 12    |
+| Implementation      | v1.0 foundation (Phases 0–11); Phase 12 runtime profiles in progress |
+| Runtime Profiles    | DAG, STATEFUL, SUPERVISOR |
+| STATEFUL Runtime    | FSM checkpoints + resume  |
+| SUPERVISOR Runtime  | Compensation ordering     |
 | Training Pipeline   | HEAD snapshot (per-commit in Phase 13) |
 
 Specification baseline: **2026-Q2**

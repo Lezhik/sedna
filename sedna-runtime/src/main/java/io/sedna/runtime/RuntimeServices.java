@@ -4,8 +4,7 @@ import io.sedna.dna.DnaEncoder;
 import io.sedna.dna.DnaServices;
 import io.sedna.persistence.CheckpointStore;
 import io.sedna.persistence.InMemoryCheckpointStore;
-import io.sedna.runtime.compensation.CompensationHandler;
-import io.sedna.runtime.execution.DagRuntimeExecutor;
+import io.sedna.runtime.execution.ProfileRuntimeExecutor;
 import io.sedna.runtime.replay.ReplayHarness;
 
 public final class RuntimeServices {
@@ -18,7 +17,7 @@ public final class RuntimeServices {
 
   public static RuntimeEngine engine(CheckpointStore checkpointStore) {
     DefaultRuntimeScheduler scheduler = new DefaultRuntimeScheduler();
-    DagRuntimeExecutor executor = new DagRuntimeExecutor(CompensationHandler.noOp());
+    ProfileRuntimeExecutor executor = new ProfileRuntimeExecutor();
     DnaEncoder encoder = DnaServices.encoder();
     return new RuntimeEngine(scheduler, executor, encoder, checkpointStore);
   }
@@ -27,7 +26,7 @@ public final class RuntimeServices {
     return new ReplayHarness(
         DnaServices.decoder(),
         new DefaultRuntimeScheduler(),
-        new DagRuntimeExecutor(CompensationHandler.noOp()),
+        new ProfileRuntimeExecutor(),
         checkpointStore);
   }
 }

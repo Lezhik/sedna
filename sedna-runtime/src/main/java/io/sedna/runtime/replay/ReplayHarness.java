@@ -6,7 +6,8 @@ import io.sedna.dna.DnaDecoder;
 import io.sedna.persistence.CheckpointRecord;
 import io.sedna.persistence.CheckpointStore;
 import io.sedna.runtime.DefaultRuntimeScheduler;
-import io.sedna.runtime.execution.DagRuntimeExecutor;
+import io.sedna.runtime.execution.ProfileRuntimeExecutor;
+import io.sedna.runtime.execution.RuntimeExecutionOptions;
 import io.sedna.runtime.plan.RuntimeExecutionPlan;
 import io.sedna.runtime.trace.ExecutionTrace;
 import io.sedna.runtime.trace.TraceHasher;
@@ -16,13 +17,13 @@ public final class ReplayHarness {
 
   private final DnaDecoder decoder;
   private final DefaultRuntimeScheduler scheduler;
-  private final DagRuntimeExecutor executor;
+  private final ProfileRuntimeExecutor executor;
   private final CheckpointStore checkpointStore;
 
   public ReplayHarness(
       DnaDecoder decoder,
       DefaultRuntimeScheduler scheduler,
-      DagRuntimeExecutor executor,
+      ProfileRuntimeExecutor executor,
       CheckpointStore checkpointStore) {
     this.decoder = decoder;
     this.scheduler = scheduler;
@@ -51,7 +52,7 @@ public final class ReplayHarness {
       return Result.err(plan.error());
     }
 
-    return executor.execute(plan.value());
+    return executor.execute(plan.value(), RuntimeExecutionOptions.DEFAULT);
   }
 
   public Result<Boolean, SemanticError> verifyReplayMatches(ExecutionTrace original) {

@@ -48,7 +48,9 @@ public final class DagRuntimeExecutor {
       return Result.ok(new ExecutionTrace(List.of()));
     }
 
-    compensationHandler.compensate(events.getLast().token());
+    if (!events.isEmpty()) {
+      compensationHandler.compensate(events.getLast().token());
+    }
     return Result.ok(new ExecutionTrace(events));
   }
 }

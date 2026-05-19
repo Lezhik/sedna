@@ -10,6 +10,11 @@ public interface CheckpointStore {
 
   Result<CheckpointRecord, SemanticError> append(byte[] graphSnapshotRef, ExecutionToken token);
 
+  default Result<CheckpointRecord, SemanticError> append(
+      byte[] graphSnapshotRef, ExecutionToken token, String fsmState, int completedNodes) {
+    return append(graphSnapshotRef, token);
+  }
+
   Result<List<CheckpointRecord>, SemanticError> listOrdered();
 
   Result<CheckpointRecord, SemanticError> findBySequence(long sequenceNumber);

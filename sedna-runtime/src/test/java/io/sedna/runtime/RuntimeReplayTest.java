@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.sedna.core.ExecutionProfile;
 import io.sedna.dna.fixture.CmsReferenceFixtureGraph;
 import io.sedna.persistence.InMemoryCheckpointStore;
+import io.sedna.runtime.execution.RuntimeExecutionOptions;
 import io.sedna.runtime.trace.TraceHasher;
 import org.junit.jupiter.api.Test;
 
@@ -40,11 +41,16 @@ class RuntimeReplayTest {
   }
 
   @Test
-  void rejectsNonDagProfile() {
-    var scheduler = new DefaultRuntimeScheduler();
+  void statefulRestoreResumesFromCheckpoint() {
+    InMemoryCheckpointStore store = new InMemoryCheckpointStore();
+    RuntimeEngine engine = RuntimeServices.engine(store);
     var graph = CmsReferenceFixtureGraph.create();
-    var result = scheduler.build(graph, ExecutionProfile.STATEFUL);
-    assertTrue(!result.isOk());
-    assertEquals(io.sedna.core.ErrorCode.UNSUPPORTED_PROFILE, result.error().code());
+
+    var full = engine.run(graph, ExecutionProfile.STATEFUL, RuntimeExecutionOptions.DEFAULT);
+    assertTrue(full.isOk());
+
+    var resumed = engine.resumeStateful(2L);
+    assertTrue(resumed.isOk(), () -> String.valueOf(resumed.error()));
+    assertTrue(resumed.value().events().size() >= full.value().events().size());
   }
 }

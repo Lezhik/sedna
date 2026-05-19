@@ -1,5 +1,6 @@
 package io.sedna.cli;
 
+import io.sedna.core.ExecutionProfile;
 import io.sedna.core.Result;
 import io.sedna.core.SemanticError;
 import io.sedna.core.SemanticGraph;
@@ -13,6 +14,7 @@ import io.sedna.registry.InMemorySemanticRegistry;
 import io.sedna.reverse.ReverseServices;
 import io.sedna.runtime.RuntimeEngine;
 import io.sedna.runtime.RuntimeServices;
+import io.sedna.runtime.execution.RuntimeExecutionOptions;
 import io.sedna.runtime.trace.TraceHasher;
 import io.sedna.training.ProjectListLoader;
 import io.sedna.training.TrainingDatasetWriter;
@@ -144,14 +146,18 @@ public final class SednaCli {
       if (!decoded.isOk()) {
         return report(decoded, null);
       }
+      ExecutionProfile profile = parseProfile(options.getOrDefault("profile", "DAG"));
+      RuntimeExecutionOptions runtimeOptions = parseRuntimeOptions(options);
       RuntimeEngine engine = RuntimeServices.engine(resolveCheckpointStore(options));
-      var trace = engine.run(decoded.value());
+      var trace = engine.run(decoded.value(), profile, runtimeOptions);
       if (!trace.isOk()) {
         return report(trace, null);
       }
       String hash = TraceHasher.sha256(trace.value());
       System.out.println(
-          "Runtime completed: steps="
+          "Runtime completed: profile="
+              + profile.name()
+              + " steps="
               + trace.value().events().size()
               + " traceSha256="
               + hash);
@@ -233,6 +239,18 @@ public final class SednaCli {
     }
   }
 
+  private static ExecutionProfile parseProfile(String value) {
+    return ExecutionProfile.valueOf(value.toUpperCase(Locale.ROOT));
+  }
+
+  private static RuntimeExecutionOptions parseRuntimeOptions(Map<String, String> options) {
+    String failureNode = options.get("inject-failure-node-id");
+    if (failureNode == null || failureNode.isBlank()) {
+      return RuntimeExecutionOptions.DEFAULT;
+    }
+    return RuntimeExecutionOptions.injectFailure(Long.parseLong(failureNode));
+  }
+
   private static CheckpointStore resolveCheckpointStore(Map<String, String> options) {
     String jdbcUrl = options.get("checkpoint-jdbc-url");
     if (jdbcUrl == null || jdbcUrl.isBlank()) {
@@ -309,7 +327,7 @@ public final class SednaCli {
           sedna encode  --input=<file.sdna> [--output=<file.sdna>]
           sedna validate --input=<file.sdna>
           sedna reverse  --input=<project-dir> [--output=<file.sdna>]
-          sedna run      --input=<file.sdna> [--checkpoint-jdbc-url=<jdbc>]
+          sedna run      --input=<file.sdna> [--profile=DAG|STATEFUL|SUPERVISOR] [--checkpoint-jdbc-url=<jdbc>]
           sedna train    --projects=<list.txt> [--output=<dir>]
 
         Global flags: --help
@@ -326,7 +344,7 @@ public final class SednaCli {
           case "validate" -> "Validate DNA graph against registry and rules.";
           case "reverse" -> "Reverse-engineer DNA from a project folder.";
           case "run" ->
-              "Execute DAG runtime and print trace SHA-256 (optional PostgreSQL checkpoints).";
+              "Execute runtime (DAG|STATEFUL|SUPERVISOR) and print trace SHA-256 (optional PostgreSQL checkpoints).";
           case "train" -> "Build training dataset manifest from project list.";
           default -> "See `sedna help` for supported commands.";
         };
