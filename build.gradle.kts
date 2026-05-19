@@ -94,5 +94,9 @@ fun Project.configureSpotbugs() {
     extensions.configure<SpotBugsExtension> {
         effort.set(com.github.spotbugs.snom.Effort.MAX)
         reportLevel.set(com.github.spotbugs.snom.Confidence.LOW)
+        val excludeFile = rootProject.file("config/spotbugs/exclude.xml")
+        if (excludeFile.exists()) {
+            excludeFilter.set(excludeFile)
+        }
     }
 }

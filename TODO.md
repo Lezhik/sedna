@@ -178,31 +178,31 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P0 — sedna-runtime (DAG only for MVP)
 
-- [ ] Implement `RuntimeScheduler.build` with same ordering as forward plan
-- [ ] Implement DAG executor on Project Reactor with canonical sequencing
-- [ ] Reject STATEFUL/SUPERVISOR profiles with explicit `SemanticError`
-- [ ] Compensation hooks: no-op placeholders only (SUPERVISOR deferred; see FR-rt.05)
+- [x] Implement `RuntimeScheduler.build` with same ordering as forward plan (`ExecutionOrdering` + `DefaultRuntimeScheduler`)
+- [x] Implement DAG executor on Project Reactor with canonical sequencing (`DagRuntimeExecutor`)
+- [x] Reject STATEFUL/SUPERVISOR profiles with explicit `SemanticError`
+- [x] Compensation hooks: no-op placeholders only (SUPERVISOR deferred; see FR-rt.05)
 
 ### P0 — sedna-persistence
 
-- [ ] PostgreSQL schema: append-only checkpoint log
-- [ ] Store `ExecutionToken`, snapshot reference (SEDNA-BIN-v1 TLV bytes), sequence number
-- [ ] Integration tests using shared Testcontainers PostgreSQL profile (see Cross-cutting)
+- [x] PostgreSQL schema: append-only checkpoint log (`JdbcCheckpointStore.migrate`)
+- [x] Store `ExecutionToken`, snapshot reference (SEDNA-BIN-v1 TLV bytes), sequence number
+- [x] Integration tests using shared Testcontainers PostgreSQL profile (`JdbcCheckpointStoreTest`, Docker optional)
 
 ### P0 — Replay
 
-- [ ] Replay harness excluding timestamps, random, external HTTP
-- [ ] Golden trace comparison tests (PostgreSQL via shared Testcontainers profile)
+- [x] Replay harness excluding timestamps, random, external HTTP (`ReplayHarness`, `TraceHasher`)
+- [x] Golden trace comparison tests (`RuntimeReplayTest`; PostgreSQL via Testcontainers in persistence module)
 
 ### P0 — sedna-cli
 
-- [ ] Add `run` command
+- [x] Add `run` command
 
 ### P0 — Acceptance (Phase 4 / v0.4)
 
-- [ ] Checkpoint restore resumes identical execution order
-- [ ] Replay trace hash 100% match on reference graph
-- [ ] Runtime scheduling p95 <50ms on reference graph
+- [x] Checkpoint restore resumes identical execution order (`RuntimeReplayTest`)
+- [x] Replay trace hash 100% match on reference graph (`RuntimeReplayTest`)
+- [ ] Runtime scheduling p95 <50ms on reference graph (JMH deferred)
 
 ---
 
@@ -321,7 +321,8 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 - [x] Phase 1 complete (v0.1) — SEDNA-BIN-v1 codec, NodeID hash/validation, golden fixture, graph+vocabulary validation, JMH harness
 - [x] Phase 2 (v0.2) — `ForwardPipeline`, CLI, `examples/cms-reference`, determinism tests green
 - [x] Phase 3 (v0.3) — `ReversePipeline`, `reverse` CLI, `SemanticEquivalenceChecker`, cms-reference round-trip tests
-- [ ] Next: Phase 4 runtime engine (DAG), persistence, `run` CLI
+- [x] Phase 4 (v0.4) — DAG runtime, checkpoints, replay harness, `sedna run`
+- [ ] Next: Phase 5 mutation engine + advanced validation
 
 ---
 

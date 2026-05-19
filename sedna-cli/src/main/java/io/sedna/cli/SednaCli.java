@@ -8,6 +8,8 @@ import io.sedna.dna.DnaServices;
 import io.sedna.forward.ForwardServices;
 import io.sedna.registry.InMemorySemanticRegistry;
 import io.sedna.reverse.ReverseServices;
+import io.sedna.runtime.RuntimeServices;
+import io.sedna.runtime.trace.TraceHasher;
 import io.sedna.validation.CompositeValidationEngine;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,6 +41,7 @@ public final class SednaCli {
       case "encode" -> runEncode(options);
       case "validate" -> runValidate(options);
       case "reverse" -> runReverse(options);
+      case "run" -> runExecute(options);
       default -> {
         System.err.println("Unknown command: " + command);
         printUsage();
@@ -106,6 +109,34 @@ public final class SednaCli {
       byte[] encoded = encoder.encode(decoded.value()).value();
       Files.write(output, encoded);
       System.out.println("Wrote canonical DNA: " + output + " (" + encoded.length + " bytes)");
+      return 0;
+    } catch (IOException ex) {
+      System.err.println("I/O error: " + ex.getMessage());
+      return 1;
+    }
+  }
+
+  private int runExecute(Map<String, String> options) {
+    Path input = requirePath(options, "input");
+    if (input == null) {
+      return 2;
+    }
+    try {
+      byte[] dna = Files.readAllBytes(input);
+      var decoded = DnaServices.decoder().decode(dna);
+      if (!decoded.isOk()) {
+        return report(decoded, null);
+      }
+      var trace = RuntimeServices.engine().run(decoded.value());
+      if (!trace.isOk()) {
+        return report(trace, null);
+      }
+      String hash = TraceHasher.sha256(trace.value());
+      System.out.println(
+          "Runtime completed: steps="
+              + trace.value().events().size()
+              + " traceSha256="
+              + hash);
       return 0;
     } catch (IOException ex) {
       System.err.println("I/O error: " + ex.getMessage());
@@ -200,6 +231,7 @@ public final class SednaCli {
           sedna encode  --input=<file.sdna> [--output=<file.sdna>]
           sedna validate --input=<file.sdna>
           sedna reverse  --input=<project-dir> [--output=<file.sdna>]
+          sedna run      --input=<file.sdna>
         """);
   }
 }
