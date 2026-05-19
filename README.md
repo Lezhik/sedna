@@ -154,7 +154,7 @@ sedna/
 | Binary Encoding            | Custom TLV            |
 | Persistence                | PostgreSQL            |
 | Embeddings                 | Deterministic encoder |
-| LLM Integration            | HTTP API only         |
+| LLM Integration            | OpenRouter (HTTP API) |
 
 ---
 
@@ -334,6 +334,17 @@ MVP sandbox model:
 ```text id="p4x1ba"
 Separate process via HTTP API only.
 No in-process LLM execution.
+Provider: OpenRouter (https://openrouter.ai/api/v1).
+```
+
+Configuration (environment):
+
+```text
+SEDNA_LLM_ENABLED=false          # default; CI uses false
+SEDNA_LLM_BASE_URL=https://openrouter.ai/api/v1
+SEDNA_LLM_MODEL=openai/gpt-4o-mini
+SEDNA_LLM_TIMEOUT_MS=30000       # HTTP read timeout; no retry in MVP
+OPENROUTER_API_KEY=<secret>      # required when LLM enabled
 ```
 
 ---
@@ -427,7 +438,7 @@ Core specifications:
 
 # License
 
-TBD
+Apache License 2.0 — see [LICENSE](LICENSE).
 
 ---
 
