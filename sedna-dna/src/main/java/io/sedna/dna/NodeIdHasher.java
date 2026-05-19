@@ -1,18 +1,46 @@
 package io.sedna.dna;
 
+import io.sedna.core.ErrorCode;
 import io.sedna.core.GenomeNode;
+import io.sedna.core.SemanticError;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 
 /** SHA-256 based stable NodeID (first 64 bits). */
-final class NodeIdHasher {
+public final class NodeIdHasher {
 
   private NodeIdHasher() {}
 
-  static long hash(GenomeNode node) {
+  public static long hash(GenomeNode node) {
+    return hashSemanticContent(node);
+  }
+
+  public static GenomeNode withCanonicalNodeId(GenomeNode node) {
+    long nodeId = hash(node);
+    if (node.nodeId() == nodeId) {
+      return node;
+    }
+    return new GenomeNode(
+        nodeId, node.kind(), node.core(), node.contracts(), node.constraints());
+  }
+
+  public static Optional<SemanticError> validateNodeId(GenomeNode node) {
+    long expected = hash(node);
+    if (node.nodeId() == expected) {
+      return Optional.empty();
+    }
+    return Optional.of(
+        new SemanticError(
+            ErrorCode.INVALID_DNA,
+            node.nodeId(),
+            "NodeID mismatch: expected " + expected + " from canonical hash"));
+  }
+
+  private static long hashSemanticContent(GenomeNode node) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
       updateUtf8(digest, node.kind().name());

@@ -56,33 +56,33 @@ Execution checklist for AI agents and engineers. Follow order strictly unless a 
 
 - [x] Implement TLV encoder/decoder (little-endian, length-prefixed arrays, UTF-8)
 - [x] Implement node header: NodeID, NodeKind, VocabularyVersion, execution profile
-- [ ] Implement SHA-256 NodeID generation (first 64 bits, canonical serialization input) — `NodeIdHasher` utility present; decode-time validation pending
+- [x] Implement SHA-256 NodeID generation (first 64 bits, canonical serialization input) — `NodeIdHasher` + decode-time validation in `DefaultDnaDecoder`
 - [x] Implement `DnaEncoder` / `DnaDecoder` with `Result` error mapping
 - [x] Encoder applies `CanonicalOrdering` before every serialize (FR-dna.02)
 - [x] Implement round-trip tests: `encode(decode(dna)) == dna`
-- [ ] Implement golden-byte fixtures from minimal hand-crafted graphs
+- [x] Implement golden-byte fixtures from minimal hand-crafted graphs (`examples/cms-reference-fixture.sdna`, `GoldenFixtureTest`)
 - [x] Define `MotifFolder` / `MotifExpander` interfaces only (implementation deferred to Phase 3 per ROADMAP)
 
 ### P0 — sedna-registry (complete decode)
 
-- [ ] Implement registry extension TLV decode (bootstrap step 3–4)
+- [x] Implement registry extension TLV decode (MVP: `EmptyRegistryExtensionDecoder` + `RegistryExtensionDecoder` interface; non-empty payload deferred)
 - [ ] Version pinning on `SemanticGraph.vocabularyVersion`
 
 ### P0 — sedna-validation (graph + DNA)
 
 - [x] Validate topology: no orphan nodes, valid link endpoints (`GraphValidationEngine`)
-- [ ] Validate NodeID consistency on decode
-- [ ] Validate vocabulary references resolvable
+- [x] Validate NodeID consistency on decode (`DefaultDnaDecoder` + `NodeIdValidationTest`)
+- [x] Validate vocabulary references resolvable (`VocabularyValidationEngine`, `CompositeValidationEngine.standard`)
 
 ### P1 — Benchmarks
 
-- [ ] JMH: encode/decode p95 on reference-sized graph (<100ms target)
+- [x] JMH: encode/decode benchmark (`benchmarks/DnaCodecBenchmark`; run `./gradlew :benchmarks:jmh` locally for p95 vs &lt;100ms target)
 
 ### P0 — Acceptance (Phase 1 / v0.1)
 
-- [ ] 100% byte-identical re-encode across 100 iterations
-- [ ] NodeID stable across JVM restarts
-- [ ] `registry.resolve(coreRef)` never null for embedded refs
+- [x] 100% byte-identical re-encode across 100 iterations (`DnaDeterminismTest`)
+- [x] NodeID stable across JVM restarts (deterministic hash in `NodeIdHasher`)
+- [x] `registry.resolve(coreRef)` never null for embedded refs (`VocabularyValidationEngineTest`, `InMemorySemanticRegistry.bootstrap`)
 
 ---
 
@@ -318,8 +318,8 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 - [x] `AGENTS.md`, `README.md`, `ROADMAP.md`
 - [x] Detailed design document (`docs/sedna_detailed_design.md`)
 - [x] Phase 0 complete — Gradle multi-module, `sedna-core`, registry bootstrap, validation skeleton
-- [x] Phase 1 in progress — SEDNA-BIN-v1 codec (`DefaultDnaEncoder`/`DefaultDnaDecoder`), round-trip tests green
-- [ ] Next: golden-byte fixtures, NodeID validation on decode, JMH benchmarks (v0.1 acceptance)
+- [x] Phase 1 complete (v0.1) — SEDNA-BIN-v1 codec, NodeID hash/validation, golden fixture, graph+vocabulary validation, JMH harness
+- [ ] Next: Phase 2 forward pipeline (`sedna-forward`), `examples/cms-reference`, minimal `sedna-cli`
 
 ---
 

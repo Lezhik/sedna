@@ -55,6 +55,13 @@ public final class DefaultDnaDecoder implements DnaDecoder {
         return Result.err(new SemanticError(ErrorCode.INVALID_DNA, 0L, "Missing graph header"));
       }
 
+      for (GenomeNode node : nodes) {
+        var nodeIdError = NodeIdHasher.validateNodeId(node);
+        if (nodeIdError.isPresent()) {
+          return Result.err(nodeIdError.get());
+        }
+      }
+
       SemanticGraph graph = new SemanticGraph(nodes, links, registryVersion);
       return Result.ok(CanonicalOrdering.canonicalize(graph));
     } catch (IllegalArgumentException ex) {

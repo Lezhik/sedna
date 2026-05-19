@@ -47,8 +47,7 @@ subprojects {
         configureJavaDefaults()
         configureSpotless()
     } else if (name == "benchmarks") {
-        apply(plugin = "java")
-        configureJavaDefaults()
+        // benchmarks/build.gradle.kts applies java + jmh plugins
     }
 }
 
