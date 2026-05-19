@@ -75,7 +75,6 @@ Specification baseline: **2026-Q2**
        | Semantic Deltas      |               | Determinism Rules    |
        +----------------------+               +----------------------+
                  |                                         |
-                 v                                         v
                  -------------------------------------------
                                   |
                                   v
