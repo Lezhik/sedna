@@ -4,9 +4,9 @@
 
 | Field | Value |
 |-------|-------|
-| **System class** | API-only / Developer platform · Greenfield MVP |
+| **System class** | API-only / Developer platform · Greenfield |
 | **Audience segment** | Internal / Enterprise-tool (AI agents + platform engineers) |
-| **Domain profile** | Developer tooling / semantic platform · General security (no regulated PHI/PCI scope in MVP) |
+| **Domain profile** | Developer tooling / semantic platform · General security (no regulated PHI/PCI scope) |
 | **Scope** | Local deterministic semantic DNA platform: encode/decode, forward/reverse pipelines, DAG runtime, mutation, validation, training dataset generation for Spring Boot monoliths |
 | **Out of scope** | Distributed runtime, Kafka, Kubernetes orchestration, multi-language codegen, IntelliJ plugin, visualization UI, cross-project semantic linking, in-process LLM |
 | **Document version** | 1.1 |
@@ -23,15 +23,15 @@
 
 | ID | Type | Maturity | Source | Role |
 |----|------|----------|--------|------|
-| A1 | T2 | L3 | `README.md` | Product overview, stack, MVP scope, performance targets |
+| A1 | T2 | L3 | `README.md` | Product overview, stack, performance targets |
 | A2 | T2 | L3 | `AGENTS.md` | Agent rules, DTO canon, bootstrap, determinism, module order |
 | A3 | T2 | L3 | `ROADMAP.md` | Phased delivery, acceptance criteria, release plan |
-| A4 | T2 | L3 | `docs/sedna_technical_assignment_v_01.md` | Implementation contract, interfaces, phases, security |
-| A5 | T2 | L4 | `docs/sedna_formal_semantic_specification_v_01.md` | Genome grammar, hypergraph, contracts, mutation semantics |
-| A6 | T2 | L3 | `docs/sedna_forward_pipeline_specification_v_01.md` | Forward pipeline stages and determinism boundary |
-| A7 | T2 | L3 | `docs/sedna_reverse_pipeline_specification_v_01.md` | Reverse pipeline stages, Git trajectories |
-| A8 | T2 | L3 | `docs/sedna_training_pipeline_specification_v_01.md` | Training dataset pipeline |
-| A9 | T2 | L3 | `docs/sedna_execution_semantics_runtime_model_v_01.md` | Runtime profiles, replay, checkpointing |
+| A4 | T2 | L3 | `docs/sedna_technical_assignment.md` (v1.0) | Implementation contract, interfaces, phases, security |
+| A5 | T2 | L4 | `docs/sedna_formal_semantic_specification.md` (v1.0) | Genome grammar, hypergraph, contracts, mutation semantics |
+| A6 | T2 | L3 | `docs/sedna_forward_pipeline_specification.md` (v1.0) | Forward pipeline stages and determinism boundary |
+| A7 | T2 | L3 | `docs/sedna_reverse_pipeline_specification.md` (v1.0) | Reverse pipeline stages, Git trajectories |
+| A8 | T2 | L3 | `docs/sedna_training_pipeline_specification.md` (v1.0) | Training dataset pipeline |
+| A9 | T2 | L3 | `docs/sedna_execution_semantics_runtime_model.md` (v1.0) | Runtime profiles, replay, checkpointing |
 
 ---
 
@@ -43,7 +43,7 @@ The project goal is the development of **SEDNA** (Semantic DNA Runtime & Transfo
 
 The target users are AI development agents and platform engineers who need reproducible semantic graphs, contract-first codegen, and verifiable round-trips (`reverse → forward` preserves semantic equivalence).
 
-Core value: **executable semantics stored separately from source text**, with canonical NodeIDs, stable TLV serialization, and DAG runtime execution in MVP.
+Core value: **executable semantics stored separately from source text**, with canonical NodeIDs, stable TLV serialization, and DAG runtime execution.
 
 Scope in one line: Java 21 multi-module Gradle platform covering DNA, registry, validation, forward/reverse/training pipelines, mutation, persistence, and CLI—reference target `examples/cms-reference`.
 
@@ -60,7 +60,7 @@ Teams using LLM-assisted development lack a machine-verifiable contract between 
 | G1 | Stable DNA round-trip | `encode(decode(dna)) == dna` byte-identical; 100% on reference tests |
 | G2 | Deterministic forward output | Same DNA → identical generated tree hash across 10 consecutive runs |
 | G3 | Semantic-preserving reverse | `reverse(forward(dna))` meets equivalence rules (node set, contracts, constraints, topology) |
-| G4 | MVP performance on reference CMS | DNA decode p95 <100ms; forward <5s; reverse <30s on warmed 4-core/16GB JVM |
+| G4 | Performance on reference CMS | DNA decode p95 <100ms; forward <5s; reverse <30s on warmed 4-core/16GB JVM |
 | G5 | Agent-safe module boundaries | 100% public cross-module APIs return `Result<T, SemanticError>`; zero raw exceptions across boundaries |
 
 ### Anti-goals
@@ -68,10 +68,10 @@ Teams using LLM-assisted development lack a machine-verifiable contract between 
 <span style="color:#C00000">
 
 - The system does **not** provide multi-tenant SaaS, end-user authentication, or billing.
-- The system does **not** run distributed orchestration, Kafka, or Kubernetes deployment in MVP.
+- The system does **not** run distributed orchestration, Kafka, or Kubernetes deployment (Phase 15).
 - The system does **not** allow LLMs to assign NodeIDs, define contracts/constraints, or mutate graph topology.
 - The system does **not** perform cross-project or repository-wide semantic merging.
-- The system does **not** ship a web/mobile UI or IntelliJ plugin in MVP.
+- The system does **not** ship a web/mobile UI or IntelliJ plugin (Phase 14).
 - The system does **not** guarantee identical method bodies across runs when LLM enrichment is enabled (structure remains deterministic).
 
 </span>
@@ -84,7 +84,7 @@ Teams using LLM-assisted development lack a machine-verifiable contract between 
 |-------|-----------|-----------|
 | **Differentiating Core** | Remove → product is generic codegen | Semantic DNA TLV, deterministic NodeID, typed hypergraph + late binding, bidirectional Spring reconstruction, replayable DAG runtime |
 | **Enabling** | Remove → core cannot run | `sedna-core` DTOs, registry bootstrap, validation engine, canonical ordering, `Result` error boundary, Gradle multi-module CI |
-| **Periphery** | Remove → core still works; operators complain | JMH benchmarks, extended training corpus tooling, optional FAISS post-MVP, documentation synthesis via LLM |
+| **Periphery** | Remove → core still works; operators complain | JMH benchmarks, extended training corpus tooling, optional FAISS indexing, documentation synthesis via LLM |
 
 ### 1.3.B Differentiating Core (detail)
 
@@ -106,7 +106,7 @@ Teams using LLM-assisted development lack a machine-verifiable contract between 
 
 **Why it works:** Enables motif folding and contract substitution without rewriting physical dependency graphs.
 
-**Key risk:** Ambiguous providers. Mitigation: STRICT binding default for MVP; validation fails on unresolved capabilities.
+**Key risk:** Ambiguous providers. Mitigation: STRICT binding default; validation fails on unresolved capabilities.
 
 #### Bidirectional Spring Boot reconstruction
 
@@ -126,7 +126,7 @@ Teams using LLM-assisted development lack a machine-verifiable contract between 
 
 **Why it works:** Same ordering algorithm as forward planning—replay matches validation order.
 
-**Key risk:** Premature STATEFUL/SUPERVISOR scope in MVP. Mitigation: ship DAG only; defer other profiles per ROADMAP Phase 4 deferral list.
+**Key risk:** Profile complexity. Mitigation: DAG profile shipped in v1.0 foundation; STATEFUL/SUPERVISOR in Phase 12 per ROADMAP.
 
 ### 1.3.C Enabling (compact)
 
@@ -141,7 +141,7 @@ Teams using LLM-assisted development lack a machine-verifiable contract between 
 
 - JMH benchmark suite and fuzz tests (Phase 7).
 - Training corpus analytics (20–30 min projects, 100–300 recommended).
-- Post-MVP: IntelliJ plugin, graph visualization, FAISS indexing.
+- Phase 14: IntelliJ plugin, graph visualization; Phase 13: FAISS indexing.
 - Apache License 2.0 (`LICENSE`).
 
 ### 1.3.E Comparison (Differentiating Core criteria)
@@ -236,9 +236,9 @@ Single interactive “end user” role is not applicable; RBAC matrix is reduced
 | Availability | Local execution | Platform runs fully offline except optional LLM HTTP |
 | Security | Supply chain | No dynamic bytecode exec; no arbitrary shell from LLM output |
 | Observability | CI artifacts | Determinism diff logs, validation error codes with `nodeId` |
-| Scalability (MVP) | Dataset | 20–30 projects min; 100–300 recommended; 2k–5k nodes min |
+| Scalability | Dataset | 20–30 projects min; 100–300 recommended; 2k–5k nodes min |
 
-Compliance matrix for regulated domains: **not applicable** in MVP (no PHI/PCI processing).
+Compliance matrix for regulated domains: **not applicable** (no PHI/PCI processing).
 
 ## 1.7 Release plan
 
@@ -262,15 +262,15 @@ ROADMAP parallel rule: forward and reverse may proceed in parallel after core+re
 | Module naming drift (`sedna-storage` vs `sedna-dna`) | M | M | Freeze module map in v0.1; single doc canon |
 | LLM pollutes structure | L | H | HTTP sandbox; validation before merge; skeleton fallback |
 | Motif approximate fold false positives | M | M | PARTIAL_MATCH flags; strict validation before commit |
-| Scope creep to STATEFUL/SUPERVISOR in MVP | M | H | Enforce DAG-only in CI profile flags |
+| Profile implementation order drift | M | H | Phase 12 gate; DAG-only CI until STATEFUL/SUPERVISOR ready |
 | PostgreSQL optional for dev | L | M | Embedded/testcontainer profile for replay tests |
 | Agent implements DTO duplicates | M | H | ArchUnit module dependency rules; code review checklist |
 | Performance miss on large repos | M | M | JMH gates; profile Spoon vs JavaParser paths |
 
 ## 1.9 Assumptions
 
-- ✓ [scope: platform] MVP targets Spring Boot 3 monolith Gradle projects only `[A1,A4,A6,A7]`
-- ✓ [scope: runtime] DAG profile only in MVP; STATEFUL/SUPERVISOR deferred `[A2,A3, resolved conflict A4]`
+- ✓ [scope: platform] Primary target: Spring Boot 3 monolith Gradle projects `[A1,A4,A6,A7]`; general profiles in Phase 10
+- ✓ [scope: runtime] DAG profile in v1.0 foundation; STATEFUL/SUPERVISOR in Phase 12 `[A2,A3, resolved conflict A4]`
 - ✓ [scope: module] Canonical DNA module name is **`sedna-dna`** (not `sedna-storage`) `[A2,A1 vs A4]`
 - ✓ [scope: llm] OpenRouter over HTTP; disabled by default in CI — defaults in table below
 - ✓ [scope: license] Apache License 2.0
@@ -282,7 +282,7 @@ ROADMAP parallel rule: forward and reverse may proceed in parallel after core+re
 | `SEDNA_LLM_ENABLED` | `false` | CI must run with default |
 | `SEDNA_LLM_BASE_URL` | `https://openrouter.ai/api/v1` | OpenRouter OpenAI-compatible API |
 | `SEDNA_LLM_MODEL` | `openai/gpt-4o-mini` | Overridable per deployment |
-| `SEDNA_LLM_TIMEOUT_MS` | `30000` | HTTP read timeout; no retry in MVP |
+| `SEDNA_LLM_TIMEOUT_MS` | `30000` | HTTP read timeout |
 | `OPENROUTER_API_KEY` | — | Required when `SEDNA_LLM_ENABLED=true` |
 - ✓ [scope: persistence] PostgreSQL used for checkpoints/replay logs in runtime phase `[A9]`
 - ✓ [scope: training] Git analysis strictly per project subdirectory `[A8]`
@@ -294,11 +294,11 @@ ROADMAP parallel rule: forward and reverse may proceed in parallel after core+re
 |----------|--------|------------|-----------|
 | Module `sedna-storage` vs `sedna-dna` | A4 vs A1,A2 | Use **`sedna-dna`** | README/AGENTS/ROADMAP consistent; TA §4 likely rename oversight |
 | Bootstrap: validation before pipelines (AGENTS) vs comparators early (TA) | A2 vs A4 | **AGENTS order** with TA step 2 comparators merged into core init | Validation engine before pipelines prevents invalid graphs entering codegen |
-| Runtime profiles Phase 1–3 DAG only vs Phase 4 all profiles (TA §10.1) vs MVP DAG only (ROADMAP) | A4 vs A3,A2 | **MVP ships DAG only**; STATEFUL/SUPERVISOR in post-v0.4 milestones | ROADMAP explicitly defers non-DAG; TA phase table superseded for MVP scope |
+| Runtime profiles Phase 1–3 DAG only vs Phase 4 all profiles (TA §10.1) vs phased delivery (ROADMAP) | A4 vs A3,A2 | **v1.0 foundation ships DAG**; STATEFUL/SUPERVISOR in Phase 12 | ROADMAP phases 8–15 extend scope incrementally |
 | Registry lookup <5ms vs <1ms | A2 vs A4 | Target **p95 <5ms** | Stricter TA goal kept as stretch; design target 5ms |
 | Reverse primary parser Spoon+ASM vs TA forward list JavaParser only | A1 vs A4 | **Spoon primary, JavaParser lightweight**, ASM bytecode | README reverse stack; TA lists JavaParser for codegen-side |
 | `sedna-cli` in AGENTS structure vs postponed in ROADMAP Phase 0 | A2 vs A3 | **CLI starts Phase 2** (forward) minimally | ROADMAP defers CLI until pipelines exist |
-| Phase 4 TA lists SUPERVISOR/STATEFUL + compensation ordering vs MVP DAG-only | A4 §13.4 vs A3,A2, FR-rt.04 | **v0.4 ships DAG only**; compensation execution deferred; stub interfaces allowed | Compensation is SUPERVISOR semantics; ROADMAP Phase 4 defers non-DAG profiles |
+| Phase 4 TA lists SUPERVISOR/STATEFUL + compensation ordering vs phased delivery | A4 §13.4 vs A3,A2, FR-rt.04 | **v0.4 ships DAG**; compensation execution in Phase 12; stub interfaces until then | Compensation is SUPERVISOR semantics |
 
 No unresolved conflicts require product owner confirmation.
 
@@ -306,9 +306,7 @@ No unresolved conflicts require product owner confirmation.
 
 | Marker | Meaning | Source |
 |--------|---------|--------|
-| **MVP** | Required for v1.0 stabilization | ROADMAP §2.1, README MVP Scope |
-| **Deferred** | Post-MVP explicitly | ROADMAP §2.2, README Excluded |
-| **Phase N** | Deliverable gating | ROADMAP phases 0–7 |
+| **Phase N** | Deliverable gating | ROADMAP phases 0–15, `TODO.md` |
 | **P0 agent rule** | Violation = critical defect | AGENTS determinism + DTO rules |
 
 ## 1.12 Architectural forks
@@ -319,17 +317,17 @@ No unresolved conflicts require product owner confirmation.
 **Chosen:** `sedna-dna` module — single responsibility for TLV encode/decode.  
 **Alternatives:**  
 — `sedna-storage` — rejected: conflicts with established docs and implies persistence conflation.  
-— Split encode/decode modules — rejected: MVP overhead, circular bootstrap risk.  
+— Split encode/decode modules — rejected: unnecessary overhead, circular bootstrap risk.  
 **Risks:** Import paths in early drafts may reference wrong module; enforce in Gradle settings.
 
-### Fork 2: MVP runtime profile scope
+### Fork 2: Runtime profile delivery order
 
-**Context:** Formal spec defines DAG, STATEFUL, SUPERVISOR; MVP timeline is tight.  
-**Chosen:** Implement **DAG only** through v0.4; design hooks for profiles without enabling in production paths.  
+**Context:** Formal spec defines DAG, STATEFUL, SUPERVISOR.  
+**Chosen:** DAG in v0.4 (v1.0 foundation); STATEFUL/SUPERVISOR in Phase 12 with design hooks from v0.4.  
 **Alternatives:**  
 — All profiles in v0.4 — rejected: expands persistence/FSM/test matrix 3×.  
 — No runtime until v1.0 — rejected: forward plan validation requires execution ordering proof.  
-**Risks:** Early callers might encode non-DAG profiles; validation must reject unsupported profiles in MVP.
+**Risks:** Early callers might encode non-DAG profiles; validation rejects unsupported profiles until Phase 12.
 
 ### Fork 3: LLM integration topology
 
@@ -337,7 +335,7 @@ No unresolved conflicts require product owner confirmation.
 **Chosen:** Separate OS process over HTTP to **OpenRouter** (`https://openrouter.ai/api/v1`); never in-JVM LLM driver.  
 **Alternatives:**  
 — In-process LLM SDK — rejected: forbidden by TA §11.3.  
-— No LLM in MVP — rejected: forward spec Step 10 and UNKNOWN handling require path.  
+— No LLM integration — rejected: forward spec Step 10 and UNKNOWN handling require path.  
 — Full LLM codegen — rejected: violates AGENTS forbidden list.  
 **Risks:** CI without network must disable LLM tests or use stub server.
 
@@ -450,7 +448,7 @@ graph LR
 |-------|------|------|-------|
 | provides | List\<CapabilityRef\> | NOT NULL | e.g. `USER_SERVICE@2.1` |
 | requires | List\<CapabilityRef\> | NOT NULL | Version ranges supported |
-| protocol | enum | NOT NULL | SYNC (MVP primary) |
+| protocol | enum | NOT NULL | SYNC (primary) |
 | ioSchema | SchemaRef | NOT NULL | JSON Schema or Java type signature |
 
 ### Mutation / ExecutionToken
@@ -482,7 +480,7 @@ graph LR
 | NodeID | uint64 | NOT NULL | |
 | NodeKind | uint16 | NOT NULL | |
 | VocabularyVersion | uint16 | NOT NULL | |
-| executionProfile | uint8 | NOT NULL | DAG=0 MVP primary |
+| executionProfile | uint8 | NOT NULL | DAG=0 primary |
 
 ## 2.4 Functional requirements by module
 
@@ -546,15 +544,15 @@ Functional requirement IDs are stable implementation anchors for tests, `TODO.md
 - FR-rt.01 [scope: runtime]: System executes DAG profile with canonical topological order (topology, then NodeID).
 - FR-rt.02 [scope: runtime]: System persists checkpoints append-only to PostgreSQL via `sedna-persistence`.
 - FR-rt.03 [scope: runtime]: System replays execution excluding timestamps, random values, external HTTP payloads.
-- FR-rt.04 [scope: runtime]: System rejects STATEFUL/SUPERVISOR profiles in MVP build profile.
-- FR-rt.05 [scope: runtime]: System does not execute SUPERVISOR compensation in MVP (v0.4); compensation hooks exist as no-op placeholders until post-MVP SUPERVISOR profile ships.
+- FR-rt.04 [scope: runtime]: System rejects STATEFUL/SUPERVISOR profiles until Phase 12 implementation is complete.
+- FR-rt.05 [scope: runtime]: System does not execute SUPERVISOR compensation until Phase 12; compensation hooks exist as no-op placeholders until SUPERVISOR profile ships.
 - FR-rt.06 [scope: runtime]: System stores checkpoint `graphSnapshotRef` as SEDNA-BIN-v1 TLV bytes from `DnaEncoder`; replay decodes via `DnaDecoder`.
 
 ### sedna-mutation
 
 - FR-mut.01 [scope: mutation]: System applies mutations only within subtree scope (parent, recursive children, local links).
 - FR-mut.02 [scope: mutation]: System wraps mutation in transaction: apply → validate → commit or rollback.
-- FR-mut.03 [scope: mutation]: System forbids cross-domain graph rewrites in MVP.
+- FR-mut.03 [scope: mutation]: System forbids cross-domain graph rewrites.
 
 ### sedna-training
 
@@ -569,14 +567,14 @@ Functional requirement IDs are stable implementation anchors for tests, `TODO.md
 
 ## 2.5 State machines
 
-**Execution profile (MVP active: DAG only)**
+**Execution profile (v1.0 foundation: DAG active)**
 
 | From → To | Condition | Actor | Side effects |
 |-----------|-----------|-------|--------------|
 | DAG → DAG | mutation validates | Platform engineer | allowed |
-| DAG → STATEFUL | structural validation passes | — | **Forbidden in MVP** |
-| STATEFUL → DAG | — | — | **Forbidden in MVP** |
-| any → SUPERVISOR | — | — | **Deferred** |
+| DAG → STATEFUL | structural validation passes | — | Phase 12 |
+| STATEFUL → DAG | — | — | Phase 12 |
+| any → SUPERVISOR | — | — | Phase 12 |
 
 **Mutation transaction**
 
@@ -673,7 +671,7 @@ Not applicable (no UI).
 | Codegen | JavaPoet + Mustache | Structure vs templates split |
 | Graph | JGraphT | Topo sort / SCC |
 | Async | Project Reactor | Runtime scheduling with ordering guards |
-| FSM (deferred) | Spring State Machine | STATEFUL profile post-MVP |
+| FSM | Spring State Machine | STATEFUL profile (Phase 12) |
 | Persistence | PostgreSQL + JDBC | Append-only checkpoints |
 | Binary DNA | Custom TLV (SEDNA-BIN-v1) | Canonical spec |
 | Testing | JUnit 5, Testcontainers | CI determinism |
@@ -710,8 +708,8 @@ Not applicable (no UI).
 | RBAC | No | Operator/agent model |
 | Tenant isolation | No | Single-tenant local tool |
 | Migration plan | No | Greenfield |
-| DR/BCP | No | MVP local |
-| Compliance matrix | No | Non-regulated MVP |
+| DR/BCP | No | Local deployment |
+| Compliance matrix | No | Non-regulated platform |
 | Mobile | No | |
 | Event/streaming | No | Request-response + batch training |
 

@@ -1,4 +1,12 @@
-# SEDNA Formal Semantic Specification v1
+# SEDNA Formal Semantic Specification
+
+| Field | Value |
+|-------|-------|
+| **Document version** | 1.0 |
+| **Status** | Active |
+| **Last updated** | 2026-Q2 |
+
+---
 
 ## 1. Scope
 
@@ -6,7 +14,7 @@ SEDNA defines a compact executable semantic genome for software systems.
 
 SEDNA stores semantic intent and executable semantic structure instead of source code.
 
-Target MVP stack:
+Target stack:
 - Java
 - Spring Boot
 - Gradle
@@ -323,7 +331,7 @@ Protocol:
 
 ## 7.3 IO Schema
 
-MVP schema formats:
+Supported schema formats:
 - JSON Schema
 - Java Type Signature
 
@@ -468,7 +476,7 @@ VALIDATED_ENTITY_PIPELINE
 
 ## 11.3 Folding Heuristics
 
-MVP folding uses:
+Folding uses:
 - graph signature matching
 - structural similarity
 - contract compatibility
@@ -484,7 +492,7 @@ Exact NP-hard matching is intentionally avoided.
 
 ## 12.1 Primary Execution Model
 
-MVP execution model:
+Primary execution model:
 - typed DAG execution
 - supervisor boundaries
 - deterministic orchestration
@@ -495,7 +503,7 @@ MVP execution model:
 
 DAG execution guarantees deterministic dependency resolution and bounded execution complexity.
 
-Arbitrary cycles are disallowed in MVP.
+Arbitrary cycles are disallowed in DAG execution.
 
 ---
 

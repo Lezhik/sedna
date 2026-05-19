@@ -210,7 +210,7 @@ parent node
 Cross-domain graph rewrites:
 
 ```text
-FORBIDDEN in MVP
+FORBIDDEN
 ```
 
 ---
@@ -233,18 +233,7 @@ Forbidden:
 
 # 9. Runtime Rules
 
-## 9.1 MVP Runtime Scope
-
-Allowed in MVP:
-- DAG execution profile
-
-Deferred to later phases:
-- STATEFUL profile
-- SUPERVISOR profile
-
----
-
-## 9.2 Runtime Determinism
+## 9.1 Runtime Determinism
 
 Runtime ordering must use:
 1. dependency topology

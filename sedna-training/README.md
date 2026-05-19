@@ -26,4 +26,4 @@ sedna train --projects=projects.txt [--output=out/training]
 
 ## Minimum dataset
 
-Target corpus: **20–30** Spring Boot CMS monoliths (`projects.txt`). MVP reverse profile: `examples/cms-reference` layout.
+Target corpus: **20–30** Spring Boot CMS monoliths (`projects.txt`). Current reverse profile: `examples/cms-reference` layout (general profiles in Phase 10).

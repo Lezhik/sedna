@@ -1,5 +1,12 @@
-# SEDNA Technical Assignment v1
+# SEDNA Technical Assignment
+
 ## AI-Agent-Oriented Development Specification
+
+| Field | Value |
+|-------|-------|
+| **Document version** | 1.0 |
+| **Status** | Active |
+| **Last updated** | 2026-Q2 |
 
 ---
 
@@ -19,19 +26,17 @@ The specification therefore prioritizes:
 
 This document intentionally avoids duplicating semantic rules already defined in:
 
-- SEDNA Formal Semantic Specification
-- SEDNA Forward Pipeline Specification
-- SEDNA Reverse Pipeline Specification
-- SEDNA Training Pipeline Specification
-- SEDNA Execution Semantics & Runtime Model
+- `docs/sedna_formal_semantic_specification.md` (v1.0)
+- `docs/sedna_forward_pipeline_specification.md` (v1.0)
+- `docs/sedna_reverse_pipeline_specification.md` (v1.0)
+- `docs/sedna_training_pipeline_specification.md` (v1.0)
+- `docs/sedna_execution_semantics_runtime_model.md` (v1.0)
 
 ---
 
 # 2. Scope
 
-## 2.1 Included
-
-The MVP implementation includes:
+The platform includes:
 
 - DNA binary storage engine
 - semantic graph model
@@ -44,22 +49,7 @@ The MVP implementation includes:
 - deterministic validation engine
 - persistence layer
 
-## 2.2 Excluded From MVP
-
-The following are explicitly out of scope:
-
-- distributed runtime execution
-- Kafka integration
-- multi-node coordination
-- cloud orchestration
-- IntelliJ plugin
-- visualization dashboards
-- multi-language code generation
-- Kubernetes deployment orchestration
-
-Operational MVP constraints are defined in:
-
-- SEDNA Formal Semantic Specification v1, Section 15
+Operational constraints are defined in the specification suite (formal semantic spec, runtime model, pipeline specs).
 
 ---
 
@@ -342,8 +332,6 @@ LLM usage is forbidden for:
 
 ## 11.3 Sandbox Model
 
-MVP sandbox policy:
-
 ```text
 LLM execution MUST run as separate process via HTTP API.
 In-process LLM execution is forbidden.
@@ -623,20 +611,7 @@ Agents MUST verify dependency compatibility before implementation.
 
 ---
 
-# 18. Post-MVP Components
-
-Explicitly postponed:
-
-- IntelliJ plugin
-- visualization UI
-- distributed runtime
-- cloud orchestration
-- advanced optimization engine
-- autonomous mutation planning
-
----
-
-# 19. Documentation Requirements
+# 18. Documentation Requirements
 
 Every module MUST contain:
 
@@ -648,7 +623,7 @@ Every module MUST contain:
 
 ---
 
-# 20. Final Requirement
+# 19. Final Requirement
 
 Non-deterministic behavior inside canonical DNA generation, graph construction, contract resolution, runtime ordering, and registry updates is forbidden.
 

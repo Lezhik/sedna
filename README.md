@@ -20,11 +20,11 @@ The project combines:
 | Component           | Status      |
 | ------------------- | ----------- |
 | Specification Suite | v1 Complete |
-| Implementation      | MVP v1.0 (Phases 0–7 complete) |
+| Implementation      | v1.0 foundation (Phases 0–7 complete) |
 | Runtime Profiles    | DAG Ready   |
-| STATEFUL Runtime    | Planned     |
-| SUPERVISOR Runtime  | Planned     |
-| Training Pipeline   | Planned     |
+| STATEFUL Runtime    | Phase 12    |
+| SUPERVISOR Runtime  | Phase 12    |
+| Training Pipeline   | HEAD snapshot (per-commit in Phase 13) |
 
 Specification baseline: **2026-Q2**
 
@@ -277,7 +277,7 @@ dependency topology
 
 # Training Dataset Scope
 
-Primary MVP dataset:
+Primary dataset:
 
 ```text id="v1s7xy"
 Spring Boot REST CMS applications
@@ -328,7 +328,7 @@ LLM usage:
 | method body suggestions     | contract mutation         |
 | documentation assistance    | runtime scheduling        |
 
-MVP sandbox model:
+LLM sandbox model:
 
 ```text id="p4x1ba"
 Separate process via HTTP API only.
@@ -342,40 +342,9 @@ Configuration (environment):
 SEDNA_LLM_ENABLED=false          # default; CI uses false
 SEDNA_LLM_BASE_URL=https://openrouter.ai/api/v1
 SEDNA_LLM_MODEL=openai/gpt-4o-mini
-SEDNA_LLM_TIMEOUT_MS=30000       # HTTP read timeout; no retry in MVP
+SEDNA_LLM_TIMEOUT_MS=30000       # HTTP read timeout
 OPENROUTER_API_KEY=<secret>      # required when LLM enabled
 ```
-
----
-
-# MVP Scope
-
-Included:
-
-* DAG runtime profile
-* deterministic DNA serialization
-* Spring Boot REST reconstruction
-* semantic registry
-* reverse pipeline
-* forward pipeline
-* mutation engine
-* replay validation
-
-Excluded:
-
-* distributed orchestration
-* Kafka integration
-* Kubernetes deployment
-* multi-language support
-* cross-service transactions
-* IntelliJ plugin
-* visualization dashboard
-
-Post-MVP tooling:
-
-* IntelliJ plugin
-* semantic graph visualization
-* live runtime monitoring
 
 ---
 
@@ -413,11 +382,13 @@ Targets:
 Core specifications:
 
 ```text id="b7x0er"
-/docs/sedna_formal_semantic_specification_v_01.md
-/docs/sedna_forward_pipeline_specification_v_01.md
-/docs/sedna_reverse_pipeline_specification_v_01.md
-/docs/sedna_training_pipeline_specification_v_01.md
-/docs/sedna_execution_semantics_runtime_model_v_01.md
+/docs/sedna_formal_semantic_specification.md
+/docs/sedna_forward_pipeline_specification.md
+/docs/sedna_reverse_pipeline_specification.md
+/docs/sedna_training_pipeline_specification.md
+/docs/sedna_execution_semantics_runtime_model.md
+/docs/sedna_technical_assignment.md
+/docs/sedna_detailed_design.md
 ```
 
 ---

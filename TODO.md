@@ -61,11 +61,11 @@ Execution checklist for AI agents and engineers. Follow order strictly unless a 
 - [x] Encoder applies `CanonicalOrdering` before every serialize (FR-dna.02)
 - [x] Implement round-trip tests: `encode(decode(dna)) == dna`
 - [x] Implement golden-byte fixtures from minimal hand-crafted graphs (`examples/cms-reference-fixture.sdna`, `GoldenFixtureTest`)
-- [x] Define `MotifFolder` / `MotifExpander` interfaces only (implementation deferred to Phase 3 per ROADMAP)
+- [x] Define `MotifFolder` / `MotifExpander` interfaces only (implementation deferred to Phase 11)
 
 ### P0 — sedna-registry (complete decode)
 
-- [x] Implement registry extension TLV decode (MVP: `EmptyRegistryExtensionDecoder` + `RegistryExtensionDecoder` interface; non-empty payload deferred)
+- [x] Implement registry extension TLV decode (`EmptyRegistryExtensionDecoder` + `RegistryExtensionDecoder` interface; non-empty payload deferred to Phase 9)
 - [ ] Version pinning on `SemanticGraph.vocabularyVersion`
 
 ### P0 — sedna-validation (graph + DNA)
@@ -127,7 +127,7 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 | Encoding | SEDNA-BIN-v1 TLV; `CanonicalOrdering` applied before encode |
 | Registry | Embedded core vocabulary version only |
 
-- [ ] Document fixture node IDs and bytes in `examples/cms-reference-fixture.README.md` (golden hash for CI)
+- [x] Document fixture node IDs and bytes in `examples/cms-reference-fixture.README.md` (golden hash for CI)
 
 ### P0 — Acceptance (Phase 2 / v0.2)
 
@@ -145,19 +145,19 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P0 — sedna-reverse stages
 
-- [x] Step 1: Source parsing (JavaParser for MVP; Spoon/ASM/Gradle API deferred)
+- [x] Step 1: Source parsing (JavaParser; Spoon/ASM/Gradle API deferred to Phase 10)
 - [x] Step 2: Structural graph construction (Tarjan SCC for cycles)
-- [x] Step 3: Semantic extraction (CMS reference profile; UNKNOWN/general projects deferred)
+- [x] Step 3: Semantic extraction (CMS reference profile; general projects deferred to Phase 10)
 - [x] Step 4: Contract reconstruction (CMS rules embedded in semantic extraction)
-- [x] Step 5: Motif detection/folding (`IdentityMotifFolder` MVP; SEDNA-FOLD-v1 deferred)
-- [x] Step 6: Context reconstruction (LOCAL/MODULE map; not stored in DNA MVP)
+- [x] Step 5: Motif detection/folding (`IdentityMotifFolder`; SEDNA-FOLD-v1 deferred to Phase 11)
+- [x] Step 6: Context reconstruction (LOCAL/MODULE map; not stored in DNA)
 - [x] Step 7: Genome serialization via `sedna-dna`
-- [x] Step 8: Git trajectory extraction (JGit commit hashes; atomic deltas deferred)
+- [x] Step 8: Git trajectory extraction (JGit commit hashes; atomic deltas deferred to Phase 13)
 
 ### P0 — sedna-reverse LLM
 
 - [x] Optional enrichment: labels only — deferred (no topology/contracts from LLM)
-- [x] UNKNOWN remains if enrichment fails — N/A until general extraction
+- [x] UNKNOWN remains if enrichment fails — N/A until general extraction (Phase 10)
 
 ### P0 — sedna-cli
 
@@ -176,12 +176,12 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ## Phase 4 — Runtime Engine (Weeks 12–15, overlaps Phase 3 end)
 
-### P0 — sedna-runtime (DAG only for MVP)
+### P0 — sedna-runtime (DAG profile)
 
 - [x] Implement `RuntimeScheduler.build` with same ordering as forward plan (`ExecutionOrdering` + `DefaultRuntimeScheduler`)
 - [x] Implement DAG executor on Project Reactor with canonical sequencing (`DagRuntimeExecutor`)
-- [x] Reject STATEFUL/SUPERVISOR profiles with explicit `SemanticError`
-- [x] Compensation hooks: no-op placeholders only (SUPERVISOR deferred; see FR-rt.05)
+- [x] Reject STATEFUL/SUPERVISOR profiles with explicit `SemanticError` (full profiles in Phase 12)
+- [x] Compensation hooks: no-op placeholders only (real execution in Phase 12; see FR-rt.05)
 
 ### P0 — sedna-persistence
 
@@ -202,7 +202,7 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 - [x] Checkpoint restore resumes identical execution order (`RuntimeReplayTest`)
 - [x] Replay trace hash 100% match on reference graph (`RuntimeReplayTest`)
-- [ ] Runtime scheduling p95 <50ms on reference graph (JMH deferred)
+- [ ] Runtime scheduling p95 <50ms on reference graph (JMH gate in Phase 8)
 
 ---
 
@@ -233,7 +233,7 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 ### P0 — sedna-training
 
 - [x] Project folder ingestion (never whole-repo merge)
-- [x] Reuse reverse stages for per-commit graphs (HEAD snapshot; per-commit checkout deferred)
+- [x] Reuse reverse stages for per-commit graphs (HEAD snapshot; per-commit checkout deferred to Phase 13)
 - [x] Trajectory construction with ordered commits
 - [x] Deterministic embedding generation
 - [x] Mutation dataset generation
@@ -263,12 +263,219 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 - [x] Stabilize CLI UX, `--help`, consistent error printing
 
-### P0 — Acceptance (v1.0)
+### P0 — Acceptance (v1.0 foundation)
 
-- [ ] All phase acceptance criteria pass
+- [ ] All phase acceptance criteria pass (Phases 0–7 open items closed in Phase 8)
 - [ ] Public API frozen post-v0.2 forward (additive-only changes)
 - [ ] No SpotBugs high-priority issues
 - [ ] `docs/sedna_detailed_design.md` traceability updated if APIs drift
+
+---
+
+## Phase 8 — Release Hardening (Weeks 26–28)
+
+Закрытие открытых критериев Phases 1–7 и подготовка к v1.0.
+
+### P0 — CI acceptance gates
+
+- [ ] CI job: `sedna forward` on `examples/cms-reference-fixture.sdna` → `./gradlew build` in `generated/`
+- [ ] CI job: golden SHA-256 from `examples/cms-reference-fixture.README.md` enforced
+- [ ] JMH gate: runtime scheduling p95 <50ms on reference graph (`RuntimeBenchmark`)
+- [ ] SpotBugs: zero high-priority findings across all modules
+
+### P0 — Registry & DNA completeness (partial)
+
+- [ ] Version pinning policy on `SemanticGraph.vocabularyVersion` (compatible minor, strict major per FR-reg.03)
+- [ ] Remove or wire `StubValidationEngine` out of production paths
+
+### P0 — Security & LLM
+
+- [ ] No dynamic bytecode execution audit (ArchUnit + dependency scan)
+- [ ] No shell exec from LLM outputs (response sanitization)
+- [ ] LLM HTTP client: payload size limits, response validation, documented retry policy
+- [ ] Sample `application.yml` / env docs for OpenRouter (`https://openrouter.ai/api/v1`)
+
+### P1 — Developer experience
+
+- [ ] Shared Testcontainers PostgreSQL profile (`tests` or `sedna-persistence`) for **all** modules requiring DB (`sedna-persistence`, `sedna-runtime` replay)
+- [ ] CLI `run`: optional `--checkpoint-jdbc-url` for PostgreSQL checkpoints (default in-memory)
+
+### P0 — Acceptance (Phase 8 / v1.0)
+
+- [ ] All Phase 0–7 acceptance checkboxes closed
+- [ ] `./gradlew build` + full CI determinism suite green
+- [ ] README status table reflects actual module maturity
+
+---
+
+## Phase 9 — Registry Extensions (Weeks 29–31)
+
+### P0 — sedna-registry
+
+- [ ] Implement non-empty registry extension TLV decode (replace `EmptyRegistryExtensionDecoder` rejection path)
+- [ ] Extension version negotiation and deterministic merge into `SemanticRegistry`
+- [ ] Tests: round-trip graphs with custom vocabulary extensions
+
+### P0 — sedna-validation
+
+- [ ] Validate extension references and version compatibility
+- [ ] Pinning rules integrated with `RegistryResolutionStep` (forward) and decode path
+
+### P0 — Acceptance (Phase 9 / v1.1)
+
+- [ ] Custom extension payload encodes/decodes deterministically
+- [ ] Graphs with extensions pass `CompositeValidationEngine.standard`
+- [ ] Forward/reverse on extension-augmented fixture graph
+
+---
+
+## Phase 10 — General Reverse & Forward (Weeks 32–38)
+
+Расширение за пределы CMS reference profile (`io.sedna.cms.*`).
+
+### P0 — sedna-reverse
+
+- [ ] Add Spoon as primary AST parser; ASM for bytecode-level edges
+- [ ] General `SemanticExtractionStep` (remove CMS-only gate)
+- [ ] UNKNOWN node classification with optional LLM label enrichment (topology unchanged)
+- [ ] Profile detection: Spring Boot REST monolith (Gradle), multi-module deferred
+- [ ] Atomic semantic deltas per Git commit (Step 8 completion)
+
+### P0 — sedna-forward
+
+- [ ] Profile-driven code generators (beyond `CmsCodeGenerator`)
+- [ ] Support additional `NodeKind` values used by general extraction
+- [ ] Generated project compiles for at least 3 non-CMS reference fixtures
+
+### P1 — sedna-validation
+
+- [ ] Equivalence suite parameterized by project profile
+
+### P0 — Acceptance (Phase 10 / v1.2)
+
+- [ ] `reverse` succeeds on ≥3 distinct Spring Boot projects (not cms-reference)
+- [ ] `reverse(forward(dna))` equivalence passes for each fixture
+- [ ] Forward output compiles via Gradle for each fixture
+
+---
+
+## Phase 11 — Motif Folding (SEDNA-FOLD-v1) (Weeks 39–42)
+
+### P0 — sedna-dna
+
+- [ ] Implement `MotifFolder` / `MotifExpander` with SEDNA-FOLD-v1 TLV payloads
+- [ ] Replace `PassThroughMotifCodec` identity codec
+- [ ] Golden-byte tests for fold → expand → fold stability
+
+### P0 — sedna-reverse
+
+- [ ] Replace `IdentityMotifFolder` with graph signature matching + structural similarity heuristics
+- [ ] PARTIAL_MATCH flags surfaced in validation report
+
+### P0 — sedna-mutation
+
+- [ ] Real motif fold/unfold mutations (not identity)
+
+### P0 — Acceptance (Phase 11 / v1.3)
+
+- [ ] Motif fold reduces node count on reference corpus graphs
+- [ ] `expand(fold(graph))` semantically equivalent to original (equivalence checker)
+- [ ] Byte-identical re-encode after canonical fold/expand cycle
+
+---
+
+## Phase 12 — Runtime Profiles STATEFUL & SUPERVISOR (Weeks 43–48)
+
+### P0 — sedna-runtime
+
+- [ ] STATEFUL profile: Spring State Machine integration, persistent state transitions
+- [ ] SUPERVISOR profile: retry boundaries, compensation ordering
+- [ ] Replace `CompensationHandler.noOp()` with real compensation execution
+- [ ] Profile transition validation (DAG ↔ STATEFUL ↔ SUPERVISOR rules per formal spec)
+- [ ] Checkpoint semantics extended for stateful snapshots
+
+### P0 — sedna-persistence
+
+- [ ] State snapshot storage alongside execution tokens
+- [ ] Replay harness covers STATEFUL and SUPERVISOR traces
+
+### P0 — sedna-cli
+
+- [ ] `run --profile=DAG|STATEFUL|SUPERVISOR`
+
+### P0 — Acceptance (Phase 12 / v1.4)
+
+- [ ] STATEFUL reference graph: checkpoint restore resumes FSM state + execution order
+- [ ] SUPERVISOR reference graph: compensation executed in canonical order on failure injection
+- [ ] Replay trace hash 100% match per profile
+
+---
+
+## Phase 13 — Training Depth & Corpus (Weeks 49–52)
+
+### P0 — sedna-training
+
+- [ ] Per-commit JGit checkout → multi-snapshot trajectories per project
+- [ ] `SemanticDeltaExtractor` active on full commit history
+- [ ] Corpus ingestion from `examples/cms-list.csv` / expanded project list
+- [ ] Registry update proposals validated against conflict resolution rules at scale
+
+### P1 — sedna-training
+
+- [ ] Optional FAISS or Pure Java approximate NN for embedding retrieval
+- [ ] Dataset manifest checksums and reproducibility report
+
+### P0 — Acceptance (Phase 13 / v1.5)
+
+- [ ] Identical Git history → identical multi-snapshot trajectories (≥10 commits per project)
+- [ ] Training corpus ≥20 projects processed end-to-end
+- [ ] Mutation dataset size ≥500 trajectories from real history
+
+---
+
+## Phase 14 — Platform & Tooling (Weeks 53–58)
+
+### P1 — sedna-cli & DX
+
+- [ ] `sedna diff` — semantic graph diff between two `.sdna` files
+- [ ] `sedna replay` — standalone replay from checkpoint ID
+- [ ] Structured JSON output mode for CI (`--format=json`)
+
+### P2 — Tooling
+
+- [ ] IntelliJ plugin: DNA view, forward/reverse actions
+- [ ] Semantic graph visualization (local web UI or Graphviz export)
+- [ ] Live runtime monitoring endpoint
+
+### P2 — sedna-runtime
+
+- [ ] Distributed runtime prototype (multi-node DAG)
+- [ ] Kafka event bus for execution traces
+
+### P0 — Acceptance (Phase 14 / v1.6)
+
+- [ ] At least one DX tool (plugin or visualization) usable on cms-reference round-trip
+- [ ] Documented operator guide for local + CI workflows
+
+---
+
+## Phase 15 — Multi-Language & Cloud (Weeks 59+)
+
+### P2 — Pipelines
+
+- [ ] Multi-language reverse profiles (Kotlin, TypeScript baseline)
+- [ ] Multi-language forward codegen templates
+
+### P2 — Platform
+
+- [ ] Kubernetes deployment manifests
+- [ ] Cloud-native orchestration integration
+- [ ] Cross-service transaction semantics (formal spec alignment)
+
+### P0 — Acceptance (Phase 15 / v2.0)
+
+- [ ] Second language round-trip passes equivalence suite
+- [ ] Deployed runtime executes reference DAG on Kubernetes with deterministic replay
 
 ---
 
@@ -297,41 +504,52 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 - [x] `CONTRIBUTING.md` with bootstrap order and module graph
 - [x] Docker Compose for PostgreSQL (runtime dev)
-- [ ] Shared Testcontainers PostgreSQL profile (`tests` or `sedna-persistence`) for **all** modules requiring DB (`sedna-persistence`, `sedna-runtime` replay, Phase 4+)
-- [ ] Sample `application.yml` / env docs for OpenRouter (`https://openrouter.ai/api/v1`)
-
-### P2 — Post-MVP backlog (do not implement before v1.0)
-
-- [ ] STATEFUL runtime profile
-- [ ] SUPERVISOR runtime profile
-- [ ] IntelliJ plugin
-- [ ] Graph visualization UI
-- [ ] Distributed runtime / Kafka
-- [ ] FAISS vector index (optional post-MVP)
-- [ ] Multi-language pipelines
+- [ ] Shared Testcontainers PostgreSQL profile for all DB-dependent modules
+- [ ] Sample env docs for OpenRouter
 
 ---
 
 ## Current repository status (2026-05-19)
 
-- [x] Specification suite v1 (docs/)
-- [x] `AGENTS.md`, `README.md`, `ROADMAP.md`
-- [x] Detailed design document (`docs/sedna_detailed_design.md`)
-- [x] Phase 0 complete — Gradle multi-module, `sedna-core`, registry bootstrap, validation skeleton
-- [x] Phase 1 complete (v0.1) — SEDNA-BIN-v1 codec, NodeID hash/validation, golden fixture, graph+vocabulary validation, JMH harness
-- [x] Phase 2 (v0.2) — `ForwardPipeline`, CLI, `examples/cms-reference`, determinism tests green
-- [x] Phase 3 (v0.3) — `ReversePipeline`, `reverse` CLI, `SemanticEquivalenceChecker`, cms-reference round-trip tests
-- [x] Phase 4 (v0.4) — DAG runtime, checkpoints, replay harness, `sedna run`
-- [x] Phase 5 (v0.5) — mutation engine, mutation safety, DNA round-trip codegen probe
-- [x] Phase 6 (v0.6) — training pipeline, `sedna train`, deterministic embeddings/trajectories
-- [x] Phase 7 (v1.0 stabilization) — JMH suite, fuzz/stress tests, ArchUnit, CLI help, CONTRIBUTING
-- [ ] Post-MVP: STATEFUL/SUPERVISOR runtime, LLM hardening, extended corpus
+### Реализовано (фундамент v1.0, Phases 0–7)
+
+| Область | Состояние |
+|---------|-----------|
+| **sedna-core** | Полный набор канонических DTO, `Result`, `CanonicalOrdering` |
+| **sedna-dna** | SEDNA-BIN-v1 codec, NodeID SHA-256, golden fixture, детерминизм |
+| **sedna-registry** | Embedded vocabulary, bootstrap; расширения — только пустой payload |
+| **sedna-validation** | Топология, vocabulary, equivalence, mutation safety, DNA probe |
+| **sedna-forward** | 7 стадий, CMS codegen (ENTITY/SERVICE/CONTROLLER), LLM optional |
+| **sedna-reverse** | 8 стадий, JavaParser, **только** `examples/cms-reference` profile |
+| **sedna-runtime** | DAG executor, replay; STATEFUL/SUPERVISOR → `UNSUPPORTED_PROFILE` |
+| **sedna-mutation** | Subtree mutations, transaction rollback |
+| **sedna-training** | HEAD snapshot, trajectories, embeddings, manifest |
+| **sedna-persistence** | PostgreSQL checkpoints (Testcontainers) |
+| **sedna-cli** | `forward`, `reverse`, `decode`, `encode`, `validate`, `run`, `train` |
+| **Качество** | JMH, fuzz, ArchUnit, CI determinism |
+
+### Не реализовано для полноценного приложения
+
+| Пробел | Фаза |
+|--------|------|
+| CI: компиляция сгенерированного проекта после `forward` | 8 |
+| Version pinning vocabulary | 8–9 |
+| Непустые registry extensions | 9 |
+| Reverse/forward вне CMS profile | 10 |
+| Spoon/ASM, общая семантическая экстракция | 10 |
+| SEDNA-FOLD-v1 (реальное свёртывание мотивов) | 11 |
+| STATEFUL / SUPERVISOR runtime + compensation | 12 |
+| Per-commit training trajectories | 13 |
+| Расширенный корпус (20–300 проектов) | 13 |
+| IntelliJ plugin, visualization, distributed runtime | 14–15 |
+| Multi-language pipelines, Kubernetes | 15 |
 
 ---
 
 ## Agent execution notes
 
-1. Implement modules in dependency order: `sedna-core` → `sedna-dna` → `sedna-registry` → `sedna-validation` → `sedna-forward` (Weeks 7–11) → `sedna-reverse` (from Week 9, not Week 7) ∥ `sedna-runtime` (from Week 12) → `sedna-mutation` → `sedna-training` → `sedna-cli`.
+1. Phases 0–7 complete — start Phase 8 unless user directs otherwise.
 2. Never duplicate DTOs outside `sedna-core`.
 3. Every public method returns `Result<T, SemanticError>` at module boundaries.
 4. Mark tasks `[x]` only when tests and CI gates for that task pass.
+5. Implement modules in dependency order; Phases 10–12 may partially parallelize after Phase 9.

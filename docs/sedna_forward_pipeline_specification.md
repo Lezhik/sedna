@@ -1,4 +1,12 @@
-# SEDNA Forward Pipeline Specification v1
+# SEDNA Forward Pipeline Specification
+
+| Field | Value |
+|-------|-------|
+| **Document version** | 1.0 |
+| **Status** | Active |
+| **Last updated** | 2026-Q2 |
+
+---
 
 ## 1. Purpose
 This document defines the **Forward Execution Pipeline** for SEDNA DNA. It specifies how compact semantic genome representations are transformed into executable Java Spring Boot systems via deterministic and semi-deterministic stages.
@@ -217,17 +225,7 @@ Failure at any stage triggers rollback
 
 ---
 
-## 14. MVP Constraints
-
-- Single module Spring Boot application only
-- No distributed execution
-- No runtime graph mutation in production
-- No partial loading or lazy expansion
-- No external orchestration systems
-
----
-
-## 15. Execution Principle
+## 14. Execution Principle
 
 The Forward Pipeline is deterministic until the LLM boundary.
 Everything structural is reproducible from DNA.
@@ -235,7 +233,7 @@ Only method bodies are probabilistic and replaceable.
 
 ---
 
-## 16. Final Statement
+## 15. Final Statement
 
 This specification defines a reproducible transformation system from semantic genome to executable software.
 It prioritizes structural determinism, capability-based linking, and controlled non-deterministic synthesis.

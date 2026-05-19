@@ -1,4 +1,12 @@
-# SEDNA Reverse Pipeline Specification v1
+# SEDNA Reverse Pipeline Specification
+
+| Field | Value |
+|-------|-------|
+| **Document version** | 1.0 |
+| **Status** | Active |
+| **Last updated** | 2026-Q2 |
+
+---
 
 ## 1. Purpose
 
@@ -470,16 +478,4 @@ Constraints may invalidate reconstructed contracts and trigger rollback/re-resol
 ## Rollback Rule
 
 Validation failure triggers rollback using SEDNA v1 mutation transaction semantics.
-
----
-
-# 14. MVP Constraints
-
-- Spring Boot monolith only
-- Single Gradle project
-- No distributed tracing reconstruction
-- No runtime behavior inference
-- No production telemetry analysis
-
----
 

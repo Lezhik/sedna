@@ -1,4 +1,12 @@
-# SEDNA Execution Semantics & Runtime Model v1
+# SEDNA Execution Semantics & Runtime Model
+
+| Field | Value |
+|-------|-------|
+| **Document version** | 1.0 |
+| **Status** | Active |
+| **Last updated** | 2026-Q2 |
+
+---
 
 ## 1. Purpose
 
@@ -6,10 +14,10 @@ This document defines the runtime execution semantics of SEDNA DNA.
 
 The goal of the runtime model is deterministic semantic execution of compact DNA structures while preserving consistency with:
 
-- SEDNA DNA Specification v1
-- SEDNA Forward Pipeline v1
-- SEDNA Reverse Pipeline v1
-- SEDNA Training Pipeline v1
+- `docs/sedna_formal_semantic_specification.md` (v1.0)
+- `docs/sedna_forward_pipeline_specification.md` (v1.0)
+- `docs/sedna_reverse_pipeline_specification.md` (v1.0)
+- `docs/sedna_training_pipeline_specification.md` (v1.0)
 
 This specification defines:
 
@@ -564,30 +572,7 @@ Non-deterministic scheduler ordering is forbidden inside canonical semantic exec
 
 ---
 
-# 15. Runtime Scope Constraints
-
-## 15.1 MVP Runtime Scope
-
-Supported in MVP:
-
-- Spring Boot
-- REST workflows
-- DAG execution
-- STATEFUL workflows
-- supervisor retries
-- deterministic replay
-
-Not supported in MVP:
-
-- distributed transactions
-- Kafka orchestration
-- multi-runtime consensus
-- actor clustering
-- cross-runtime replay synchronization
-
----
-
-# 16. Runtime Principle
+# 15. Runtime Principle
 
 SEDNA runtime executes semantic intent through deterministic semantic scheduling.
 

@@ -1,4 +1,12 @@
-# SEDNA Training Pipeline Specification v1
+# SEDNA Training Pipeline Specification
+
+| Field | Value |
+|-------|-------|
+| **Document version** | 1.0 |
+| **Status** | Active |
+| **Last updated** | 2026-Q2 |
+
+---
 
 ## 1. Purpose
 
@@ -37,7 +45,6 @@ The output is compact semantic DNA and registry updates.
 - reactive pipelines
 
 Scope defines supported technology domains.
-Operational MVP limits are defined separately in Section 21.
 
 ---
 
@@ -65,7 +72,6 @@ Operational MVP limits are defined separately in Section 21.
 | 18 | Coverage Goals |
 | 19 | External Technologies |
 | 20 | Determinism Rules |
-| 21 | MVP Constraints |
 
 ---
 
@@ -543,22 +549,7 @@ Non-deterministic outputs are forbidden inside final DNA.
 
 ---
 
-# 21. MVP Constraints
-
-These constraints define implementation-phase limits for the first operational release.
-
-MVP limitations:
-
-- monolith-only
-- single JVM process
-- no distributed workflows
-- no runtime semantic adaptation
-- no autonomous registry evolution
-- no production self-mutation
-
----
-
-# 22. Final Principle
+# 21. Final Principle
 
 The SEDNA Training Pipeline exists to learn deterministic semantic evolution patterns from real projects and convert them into compact reusable DNA suitable for forward generation, reverse reconstruction, and mutation-safe evolution.
 

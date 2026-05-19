@@ -21,43 +21,7 @@ Every phase must produce a stable and testable system state.
 
 ---
 
-# 2. MVP Scope
-
-## 2.1 Included in MVP
-
-- Canonical DNA binary format
-- Semantic graph model
-- Registry system
-- Forward pipeline
-- Reverse pipeline
-- DAG runtime profile
-- Mutation engine
-- Validation engine
-- Local execution
-- Deterministic replay
-- Spring Boot project support
-
----
-
-## 2.2 Excluded from MVP
-
-The following capabilities are explicitly postponed:
-
-- Distributed execution
-- Kubernetes integration
-- Kafka orchestration
-- Cloud-native deployment
-- Multi-language runtime
-- Self-modifying runtime execution
-- Autonomous semantic evolution
-- Cross-project semantic linking
-- UI dashboards
-- IntelliJ plugin
-- Remote graph databases
-
----
-
-# 3. Estimated Timeline
+# 2. Estimated Timeline
 
 | Phase | Name | Duration |
 |---|---|---|
@@ -69,20 +33,27 @@ The following capabilities are explicitly postponed:
 | Phase 5 | Mutation + Advanced Validation | 4 weeks |
 | Phase 6 | Training Pipeline | 4 weeks |
 | Phase 7 | Stabilization | 2 weeks |
+| Phase 8 | Release Hardening | 3 weeks |
+| Phase 9 | Registry Extensions | 3 weeks |
+| Phase 10 | General Reverse & Forward | 7 weeks |
+| Phase 11 | Motif Folding (SEDNA-FOLD-v1) | 4 weeks |
+| Phase 12 | Runtime Profiles STATEFUL & SUPERVISOR | 6 weeks |
+| Phase 13 | Training Depth & Corpus | 4 weeks |
+| Phase 14 | Platform & Tooling | 6 weeks |
+| Phase 15 | Multi-Language & Cloud | ongoing |
 
-Total sequential estimate:
-30 weeks
+Total sequential estimate (Phases 0–7): 30 weeks  
+Total to v2.0 (Phases 0–15): ~63 weeks
 
-Parallel AI-agent execution estimate:
-24-26 weeks
+Parallel AI-agent execution estimate (Phases 0–7): 24–26 weeks
 
 ---
 
-# 4. Global Engineering Constraints
+# 3. Global Engineering Constraints
 
 The following constraints apply to all phases.
 
-## 4.1 Determinism
+## 3.1 Determinism
 
 The system must produce identical outputs for identical inputs.
 
@@ -103,7 +74,7 @@ Allowed:
 
 ---
 
-## 4.2 Local Execution
+## 3.2 Local Execution
 
 The full platform must execute locally.
 
@@ -116,7 +87,7 @@ Forbidden:
 
 ---
 
-## 4.3 Interface Stability
+## 3.3 Interface Stability
 
 Public interfaces stabilize after Phase 2.
 
@@ -134,7 +105,7 @@ Forbidden after stabilization:
 
 ---
 
-# 5. Phase 0 — Foundation
+# 4. Phase 0 — Foundation
 
 Duration: 2 weeks
 
@@ -190,7 +161,7 @@ Note:
 
 ---
 
-# 6. Phase 1 — DNA Core
+# 5. Phase 1 — DNA Core
 
 Duration: 4 weeks
 
@@ -233,7 +204,7 @@ Implement canonical DNA encoding and decoding.
 
 ---
 
-# 7. Phase 2 — Forward Pipeline
+# 6. Phase 2 — Forward Pipeline
 
 Duration: 5 weeks
 
@@ -275,7 +246,7 @@ Generate deterministic Spring Boot projects from DNA.
 
 ---
 
-# 8. Phase 3 — Reverse Pipeline
+# 7. Phase 3 — Reverse Pipeline
 
 Duration: 5 weeks
 
@@ -331,26 +302,13 @@ Full forward pipeline completion is NOT required.
 
 ---
 
-# 9. Phase 4 — Runtime Engine
+# 8. Phase 4 — Runtime Engine
 
 Duration: 4 weeks
 
 ## Goals
 
 Execute semantic graphs deterministically.
-
----
-
-## MVP Runtime Scope
-
-Included:
-
-- DAG profile
-
-Deferred:
-
-- STATEFUL profile
-- SUPERVISOR profile
 
 ---
 
@@ -385,7 +343,7 @@ Deferred:
 
 ---
 
-# 10. Phase 5 — Mutation Engine + Advanced Validation
+# 9. Phase 5 — Mutation Engine + Advanced Validation
 
 Duration: 4 weeks
 
@@ -439,7 +397,7 @@ Implement controlled semantic mutation and advanced validation.
 
 ---
 
-# 11. Phase 6 — Training Pipeline
+# 10. Phase 6 — Training Pipeline
 
 Duration: 4 weeks
 
@@ -465,7 +423,7 @@ Train semantic registries and mutation datasets.
 |---|---|
 | Git traversal | JGit |
 | Embeddings | deterministic semantic encoder |
-| Vector indexing | Pure Java approximate NN (post-MVP: FAISS optional) |
+| Vector indexing | Pure Java approximate NN (FAISS optional in Phase 13) |
 | Batch processing | Custom deterministic pipeline runner |
 
 ---
@@ -480,7 +438,7 @@ Train semantic registries and mutation datasets.
 
 ---
 
-# 12. Phase 7 — Stabilization
+# 11. Phase 7 — Stabilization
 
 Duration: 2 weeks
 
@@ -511,7 +469,7 @@ Harden the platform for production readiness.
 
 ---
 
-# 13. Release Plan
+# 12. Release Plan
 
 | Version | Scope | Validation Target |
 |---|---|---|
@@ -521,11 +479,18 @@ Harden the platform for production readiness.
 | v0.4 | Runtime DAG | Phase 4 acceptance criteria |
 | v0.5 | Mutation engine | Phase 5 acceptance criteria |
 | v0.6 | Training pipeline | Phase 6 acceptance criteria |
-| v1.0 | Stabilized MVP | Phase 7 acceptance criteria |
+| v1.0 | Platform foundation | Phase 8 acceptance criteria |
+| v1.1 | Registry extensions | Phase 9 acceptance criteria |
+| v1.2 | General reverse/forward | Phase 10 acceptance criteria |
+| v1.3 | Motif folding | Phase 11 acceptance criteria |
+| v1.4 | STATEFUL & SUPERVISOR runtime | Phase 12 acceptance criteria |
+| v1.5 | Training corpus depth | Phase 13 acceptance criteria |
+| v1.6 | Platform tooling | Phase 14 acceptance criteria |
+| v2.0 | Multi-language & cloud | Phase 15 acceptance criteria |
 
 ---
 
-# 14. Success Metrics
+# 13. Success Metrics
 
 ## Functional Metrics
 
@@ -559,23 +524,7 @@ Harden the platform for production readiness.
 
 ---
 
-# 15. Post-MVP Expansion
-
-Deferred capabilities:
-
-- distributed runtime
-- semantic clustering at scale
-- Kubernetes deployment
-- cloud-native orchestration
-- multi-language pipelines
-- autonomous semantic optimization
-- visual semantic graph editor
-- IntelliJ plugin
-- advanced LLM orchestration
-
----
-
-# 16. Final Roadmap Principle
+# 14. Final Roadmap Principle
 
 Every roadmap phase must preserve:
 
