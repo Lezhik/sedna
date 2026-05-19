@@ -210,21 +210,21 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P0 — sedna-mutation
 
-- [ ] Implement subtree-scoped mutations: insert, delete, replace, motif fold/unfold, contract upgrade
-- [ ] Transaction: apply → validate → commit/rollback
-- [ ] Forbid cross-domain rewrites
+- [x] Implement subtree-scoped mutations: insert, delete, replace, motif fold/unfold, contract upgrade
+- [x] Transaction: apply → validate → commit/rollback
+- [x] Forbid cross-domain rewrites
 
 ### P0 — sedna-validation (advanced)
 
-- [ ] Semantic equivalence checker
-- [ ] Mutation safety rules
-- [ ] Codegen probe hook (compile generated stub)
+- [x] Semantic equivalence checker
+- [x] Mutation safety rules
+- [x] Codegen probe hook (DNA encode/decode round-trip)
 
 ### P0 — Acceptance (Phase 5 / v0.5)
 
-- [ ] Invalid mutation always rolls back to prior valid graph
-- [ ] Deterministic mutation ordering
-- [ ] Equivalence verified after valid mutation
+- [x] Invalid mutation always rolls back to prior valid graph
+- [x] Deterministic mutation ordering
+- [x] Equivalence verified after valid mutation (`DefaultMutationEngine.verifyEquivalenceAfterMutation`)
 
 ---
 
@@ -322,7 +322,8 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 - [x] Phase 2 (v0.2) — `ForwardPipeline`, CLI, `examples/cms-reference`, determinism tests green
 - [x] Phase 3 (v0.3) — `ReversePipeline`, `reverse` CLI, `SemanticEquivalenceChecker`, cms-reference round-trip tests
 - [x] Phase 4 (v0.4) — DAG runtime, checkpoints, replay harness, `sedna run`
-- [ ] Next: Phase 5 mutation engine + advanced validation
+- [x] Phase 5 (v0.5) — mutation engine, mutation safety, DNA round-trip codegen probe
+- [ ] Next: Phase 6 training pipeline
 
 ---
 
