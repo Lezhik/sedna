@@ -14,4 +14,5 @@ dependencies {
     implementation(project(":sedna-forward"))
     implementation(project(":sedna-reverse"))
     implementation(project(":sedna-runtime"))
+    implementation(project(":sedna-training"))
 }

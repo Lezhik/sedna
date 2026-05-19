@@ -20,7 +20,7 @@ The project combines:
 | Component           | Status      |
 | ------------------- | ----------- |
 | Specification Suite | v1 Complete |
-| Implementation      | MVP Phase 5 (mutation + advanced validation) |
+| Implementation      | MVP Phase 6 (training pipeline + CLI) |
 | Runtime Profiles    | DAG Ready   |
 | STATEFUL Runtime    | Planned     |
 | SUPERVISOR Runtime  | Planned     |

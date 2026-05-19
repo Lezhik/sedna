@@ -232,21 +232,21 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P0 — sedna-training
 
-- [ ] Project folder ingestion (never whole-repo merge)
-- [ ] Reuse reverse stages for per-commit graphs
-- [ ] Trajectory construction with ordered commits
-- [ ] Deterministic embedding generation
-- [ ] Mutation dataset generation
-- [ ] Registry update proposal flow (deterministic conflict resolution)
+- [x] Project folder ingestion (never whole-repo merge)
+- [x] Reuse reverse stages for per-commit graphs (HEAD snapshot; per-commit checkout deferred)
+- [x] Trajectory construction with ordered commits
+- [x] Deterministic embedding generation
+- [x] Mutation dataset generation
+- [x] Registry update proposal flow (deterministic conflict resolution)
 
 ### P0 — sedna-cli
 
-- [ ] Add `train --projects=list.txt`
+- [x] Add `train --projects=list.txt`
 
 ### P0 — Acceptance (Phase 6 / v0.6)
 
-- [ ] Identical Git history → identical trajectories and embeddings
-- [ ] Minimum dataset path documented (20–30 projects)
+- [x] Identical Git history → identical trajectories and embeddings (`TrainingPipelineTest`)
+- [x] Minimum dataset path documented (20–30 projects) — `examples/training-projects.txt`, `sedna-training/README.md`
 
 ---
 
@@ -323,7 +323,8 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 - [x] Phase 3 (v0.3) — `ReversePipeline`, `reverse` CLI, `SemanticEquivalenceChecker`, cms-reference round-trip tests
 - [x] Phase 4 (v0.4) — DAG runtime, checkpoints, replay harness, `sedna run`
 - [x] Phase 5 (v0.5) — mutation engine, mutation safety, DNA round-trip codegen probe
-- [ ] Next: Phase 6 training pipeline
+- [x] Phase 6 (v0.6) — training pipeline, `sedna train`, deterministic embeddings/trajectories
+- [ ] Next: Phase 7 stabilization
 
 ---
 

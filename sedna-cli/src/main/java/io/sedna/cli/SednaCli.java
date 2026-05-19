@@ -10,6 +10,9 @@ import io.sedna.registry.InMemorySemanticRegistry;
 import io.sedna.reverse.ReverseServices;
 import io.sedna.runtime.RuntimeServices;
 import io.sedna.runtime.trace.TraceHasher;
+import io.sedna.training.ProjectListLoader;
+import io.sedna.training.TrainingDatasetWriter;
+import io.sedna.training.TrainingServices;
 import io.sedna.validation.CompositeValidationEngine;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,6 +45,7 @@ public final class SednaCli {
       case "validate" -> runValidate(options);
       case "reverse" -> runReverse(options);
       case "run" -> runExecute(options);
+      case "train" -> runTrain(options);
       default -> {
         System.err.println("Unknown command: " + command);
         printUsage();
@@ -158,6 +162,34 @@ public final class SednaCli {
     return report(result, "Reverse completed: " + output);
   }
 
+  private int runTrain(Map<String, String> options) {
+    Path projects = requirePath(options, "projects");
+    if (projects == null) {
+      return 2;
+    }
+    Path output = Path.of(options.getOrDefault("output", "training-out"));
+    var loaded = new ProjectListLoader().load(projects);
+    if (!loaded.isOk()) {
+      return report(loaded, null);
+    }
+    var trained = TrainingServices.pipeline().train(loaded.value());
+    if (!trained.isOk()) {
+      return report(trained, null);
+    }
+    var written = new TrainingDatasetWriter().write(trained.value(), output.toAbsolutePath().normalize());
+    if (!written.isOk()) {
+      return report(written, null);
+    }
+    System.out.println(
+        "Training completed: projects="
+            + trained.value().projects().size()
+            + " fingerprint="
+            + trained.value().datasetFingerprint()
+            + " manifest="
+            + written.value());
+    return 0;
+  }
+
   private int runValidate(Map<String, String> options) {
     Path input = requirePath(options, "input");
     if (input == null) {
@@ -232,6 +264,7 @@ public final class SednaCli {
           sedna validate --input=<file.sdna>
           sedna reverse  --input=<project-dir> [--output=<file.sdna>]
           sedna run      --input=<file.sdna>
+          sedna train    --projects=<list.txt> [--output=<dir>]
         """);
   }
 }

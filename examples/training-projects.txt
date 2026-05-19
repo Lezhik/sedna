@@ -1,0 +1,2 @@
+# Minimum training corpus entry (add 20-30 Spring Boot CMS projects for production datasets)
+examples/cms-reference

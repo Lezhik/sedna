@@ -31,8 +31,9 @@ public final class GitTrajectoryStep {
       for (RevCommit commit : log) {
         commits.add(commit.getId().getName());
       }
-      commits = commits.stream().sorted().distinct().toList();
-      return Result.ok(new GitTrajectory(commits));
+      // JGit log is newest-first; trajectories require oldest-first commit order.
+      java.util.Collections.reverse(commits);
+      return Result.ok(new GitTrajectory(List.copyOf(commits)));
     } catch (NoHeadException ex) {
       return Result.ok(new GitTrajectory(List.of()));
     } catch (GitAPIException | java.io.IOException ex) {
