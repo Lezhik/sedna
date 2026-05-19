@@ -23,6 +23,12 @@ class SednaCliTest {
   }
 
   @Test
+  void helpExitsZero() {
+    assertEquals(0, new SednaCli().run(new String[] {"--help"}));
+    assertEquals(0, new SednaCli().run(new String[] {"help"}));
+  }
+
+  @Test
   void forwardWritesOutput() throws java.io.IOException {
     Path sdna = tempDir.resolve("fixture.sdna");
     Path output = tempDir.resolve("generated");

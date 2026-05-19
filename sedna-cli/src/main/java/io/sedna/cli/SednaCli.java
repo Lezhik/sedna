@@ -32,13 +32,21 @@ public final class SednaCli {
   }
 
   int run(String[] args) {
-    if (args.length == 0) {
-      printUsage();
-      return 2;
+    if (args.length == 0 || isHelp(args[0])) {
+      printUsage(System.out);
+      return args.length == 0 ? 2 : 0;
     }
     Map<String, String> options = parseOptions(args);
+    if (options.containsKey("help") || options.containsKey("h")) {
+      printCommandHelp(args[0].toLowerCase(Locale.ROOT), System.out);
+      return 0;
+    }
     String command = args[0].toLowerCase(Locale.ROOT);
     return switch (command) {
+      case "help" -> {
+        printUsage(System.out);
+        yield 0;
+      }
       case "forward" -> runForward(options);
       case "decode" -> runDecode(options);
       case "encode" -> runEncode(options);
@@ -47,8 +55,8 @@ public final class SednaCli {
       case "run" -> runExecute(options);
       case "train" -> runTrain(options);
       default -> {
-        System.err.println("Unknown command: " + command);
-        printUsage();
+        System.err.println("Unknown command: " + command + " (try: sedna help)");
+        printUsage(System.err);
         yield 2;
       }
     };
@@ -254,10 +262,18 @@ public final class SednaCli {
     return options;
   }
 
-  private static void printUsage() {
-    System.err.println(
+  private static boolean isHelp(String arg) {
+    String normalized = arg.toLowerCase(Locale.ROOT);
+    return normalized.equals("--help") || normalized.equals("-h") || normalized.equals("help");
+  }
+
+  private static void printUsage(java.io.PrintStream out) {
+    out.println(
         """
+        SEDNA CLI — semantic DNA toolkit
+
         Usage:
+          sedna help
           sedna forward --input=<file.sdna> [--output=<dir>]
           sedna decode  --input=<file.sdna>
           sedna encode  --input=<file.sdna> [--output=<file.sdna>]
@@ -265,6 +281,24 @@ public final class SednaCli {
           sedna reverse  --input=<project-dir> [--output=<file.sdna>]
           sedna run      --input=<file.sdna>
           sedna train    --projects=<list.txt> [--output=<dir>]
+
+        Global flags: --help
+        Errors print: <ErrorCode> [nodeId=…]: message
         """);
+  }
+
+  private static void printCommandHelp(String command, java.io.PrintStream out) {
+    String detail =
+        switch (command) {
+          case "forward" -> "Generate Spring Boot project tree from DNA (LLM may fill method bodies).";
+          case "decode" -> "Decode DNA and print graph summary.";
+          case "encode" -> "Re-encode DNA to canonical bytes.";
+          case "validate" -> "Validate DNA graph against registry and rules.";
+          case "reverse" -> "Reverse-engineer DNA from a project folder.";
+          case "run" -> "Execute DAG runtime and print trace SHA-256.";
+          case "train" -> "Build training dataset manifest from project list.";
+          default -> "See `sedna help` for supported commands.";
+        };
+    out.println(command + ": " + detail);
   }
 }

@@ -51,6 +51,12 @@ subprojects {
     }
 }
 
+tasks.register("jmh") {
+    group = "verification"
+    description = "Run JMH benchmarks (see benchmarks/)"
+    dependsOn(":benchmarks:jmh")
+}
+
 fun Project.configureJavaDefaults() {
     extensions.configure<JavaPluginExtension> {
         toolchain.languageVersion.set(JavaLanguageVersion.of(21))

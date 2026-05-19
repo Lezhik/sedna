@@ -6,6 +6,10 @@ plugins {
 dependencies {
     jmh(project(":sedna-core"))
     jmh(project(":sedna-dna"))
+    jmh(project(":sedna-registry"))
+    jmh(project(":sedna-forward"))
+    jmh(project(":sedna-reverse"))
+    jmh(project(":sedna-runtime"))
     testImplementation(platform("org.junit:junit-bom:5.11.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

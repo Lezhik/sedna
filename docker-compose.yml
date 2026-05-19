@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: sedna
+      POSTGRES_USER: sedna
+      POSTGRES_PASSWORD: sedna
+    ports:
+      - "5432:5432"
+    volumes:
+      - sedna-pg:/var/lib/postgresql/data
+
+volumes:
+  sedna-pg:

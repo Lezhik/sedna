@@ -38,6 +38,40 @@ class ModuleArchitectureTest {
   }
 
   @Test
+  void pipelineModulesDoNotUseHashMapInDeterministicLayers() {
+    String[] deterministicPackages = {
+      "io.sedna.dna..", "io.sedna.forward..", "io.sedna.runtime.."
+    };
+    for (String pkg : deterministicPackages) {
+      noClasses()
+          .that()
+          .resideInAPackage(pkg)
+          .should()
+          .dependOnClassesThat()
+          .haveFullyQualifiedName("java.util.HashMap")
+          .check(classes);
+      noClasses()
+          .that()
+          .resideInAPackage(pkg)
+          .should()
+          .dependOnClassesThat()
+          .haveFullyQualifiedName("java.util.HashSet")
+          .check(classes);
+    }
+  }
+
+  @Test
+  void mutationAndTrainingDoNotDependOnForward() {
+    noClasses()
+        .that()
+        .resideInAnyPackage("io.sedna.mutation..", "io.sedna.training..")
+        .should()
+        .dependOnClassesThat()
+        .resideInAPackage("io.sedna.forward..")
+        .check(classes);
+  }
+
+  @Test
   void canonicalGraphDtosDefinedOnlyInCore() {
     ArchRule rule =
         classes()

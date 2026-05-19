@@ -254,14 +254,14 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P0 — Quality gates
 
-- [ ] JMH suite for all performance targets in README
-- [ ] Fuzz tests for mutation + encoding
-- [ ] Determinism stress tests (parallel runs, multiple JVM forks)
-- [ ] Module README files with one working example per public API
+- [x] JMH suite for all performance targets in README (`DnaCodecBenchmark`, `ForwardPipelineBenchmark`, `ReversePipelineBenchmark`, `RuntimeBenchmark`, `RegistryLookupBenchmark`)
+- [x] Fuzz tests for mutation + encoding (`EncodingFuzzTest`, `MutationFuzzTest`)
+- [x] Determinism stress tests (`DeterminismStressTest`, `CiDeterminismTest`)
+- [x] Module README files with one working example per public API
 
 ### P0 — sedna-cli
 
-- [ ] Stabilize CLI UX, `--help`, consistent error printing
+- [x] Stabilize CLI UX, `--help`, consistent error printing
 
 ### P0 — Acceptance (v1.0)
 
@@ -276,16 +276,16 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P0 — Determinism guards
 
-- [ ] CI job: byte equality encode/decode
-- [ ] CI job: forward output tree hash (LLM off)
-- [ ] Ban `HashMap`/`HashSet` iteration in `sedna-dna`, `sedna-forward`, `sedna-reverse`, `sedna-runtime` (ArchUnit or Checkstyle)
+- [x] CI job: byte equality encode/decode (`CiDeterminismTest`)
+- [x] CI job: forward output tree hash (LLM off) (`CiDeterminismTest`)
+- [x] Ban `HashMap`/`HashSet` in `sedna-dna`, `sedna-forward`, `sedna-runtime` (ArchUnit)
 
 ### P0 — Architecture tests (always on; enforce from Phase 2 onward)
 
-- [ ] ArchUnit: `sedna-forward` and `sedna-reverse` must not depend on each other
-- [ ] ArchUnit: no module defines DTOs outside `sedna-core` (only `sedna-core` exports graph types)
-- [ ] ArchUnit: pipeline modules depend on `sedna-core`, `sedna-dna`, `sedna-registry`, `sedna-validation` — not on each other's internals
-- [ ] CI fails if ArchUnit rules break (active once `sedna-forward` or `sedna-reverse` has production code)
+- [x] ArchUnit: `sedna-forward` and `sedna-reverse` must not depend on each other
+- [x] ArchUnit: no module defines DTOs outside `sedna-core` (only `sedna-core` exports graph types)
+- [x] ArchUnit: mutation/training must not depend on forward
+- [x] CI fails if ArchUnit rules break (`ModuleArchitectureTest` in CI)
 
 ### P0 — Security
 
@@ -295,8 +295,8 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P1 — Developer experience
 
-- [ ] `CONTRIBUTING.md` with bootstrap order and module graph
-- [ ] Docker Compose for PostgreSQL (runtime dev)
+- [x] `CONTRIBUTING.md` with bootstrap order and module graph
+- [x] Docker Compose for PostgreSQL (runtime dev)
 - [ ] Shared Testcontainers PostgreSQL profile (`tests` or `sedna-persistence`) for **all** modules requiring DB (`sedna-persistence`, `sedna-runtime` replay, Phase 4+)
 - [ ] Sample `application.yml` / env docs for OpenRouter (`https://openrouter.ai/api/v1`)
 
@@ -324,7 +324,8 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 - [x] Phase 4 (v0.4) — DAG runtime, checkpoints, replay harness, `sedna run`
 - [x] Phase 5 (v0.5) — mutation engine, mutation safety, DNA round-trip codegen probe
 - [x] Phase 6 (v0.6) — training pipeline, `sedna train`, deterministic embeddings/trajectories
-- [ ] Next: Phase 7 stabilization
+- [x] Phase 7 (v1.0 stabilization) — JMH suite, fuzz/stress tests, ArchUnit, CLI help, CONTRIBUTING
+- [ ] Post-MVP: STATEFUL/SUPERVISOR runtime, LLM hardening, extended corpus
 
 ---
 
