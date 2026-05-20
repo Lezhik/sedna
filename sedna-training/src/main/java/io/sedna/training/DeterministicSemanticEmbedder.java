@@ -17,6 +17,15 @@ import java.util.List;
 /** SEDNA-EMBED-v1: deterministic SHA-256 over vocabulary path + contract signature. */
 public final class DeterministicSemanticEmbedder {
 
+  /** Creates an embedder using SEDNA-EMBED-v1 rules. */
+  public DeterministicSemanticEmbedder() {}
+
+  /**
+   * Builds deterministic embeddings for all nodes in a graph.
+   *
+   * @param graph semantic graph to embed
+   * @return embeddings sorted by {@code nodeId}
+   */
   public List<SemanticEmbedding> embed(SemanticGraph graph) {
     SemanticGraph canonical = CanonicalOrdering.canonicalize(graph);
     List<SemanticEmbedding> embeddings = new ArrayList<>();

@@ -12,6 +12,12 @@ public final class SemanticTrajectoryHasher {
 
   private SemanticTrajectoryHasher() {}
 
+  /**
+   * Computes a canonical SHA-256 fingerprint of a semantic trajectory.
+   *
+   * @param trajectory semantic trajectory to fingerprint
+   * @return lowercase SHA-256 hex digest
+   */
   public static String fingerprint(SemanticTrajectory trajectory) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");

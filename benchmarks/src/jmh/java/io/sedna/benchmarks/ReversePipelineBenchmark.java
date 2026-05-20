@@ -16,7 +16,9 @@ import org.openjdk.jmh.annotations.State;
 public class ReversePipelineBenchmark {
 
   private static final Path CMS_REFERENCE =
-      Path.of("..", "examples", "cms-reference").toAbsolutePath().normalize();
+      io.sedna.core.examples.ExamplesLayout.findProjectRoot(
+              Path.of("..").toAbsolutePath().normalize(), "cms-reference")
+          .orElseThrow();
 
   @Benchmark
   public byte[] reverseCmsReference() {

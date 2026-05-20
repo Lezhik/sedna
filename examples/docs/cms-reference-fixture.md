@@ -4,7 +4,7 @@ Canonical minimum graph for forward/reverse equivalence tests (Phase 2–3).
 
 | Field | Value |
 |-------|-------|
-| File | `cms-reference-fixture.sdna` |
+| File | `examples/sedna-e2e-tests/cms-reference-fixture.sdna` |
 | Format | SEDNA-BIN-v1 TLV |
 | Nodes | 1× ENTITY, 1× SERVICE, 1× CONTROLLER |
 | Links | 1× DEPENDENCY (CONTROLLER → SERVICE) |

@@ -6,13 +6,14 @@ import io.sedna.forward.ForwardServices;
 import io.sedna.forward.llm.DisabledLlmClient;
 import io.sedna.registry.InMemorySemanticRegistry;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 
 class ReverseSpringDemoTest {
 
   private static final Path SPRING_DEMO =
-      Paths.get("..", "examples", "spring-demo").normalize().toAbsolutePath();
+      io.sedna.core.examples.ExamplesLayout.findProjectRoot(
+              Path.of("..").toAbsolutePath().normalize(), "spring-demo")
+          .orElseThrow();
 
   @Test
   void reverseSpringDemoProducesValidGraph() {

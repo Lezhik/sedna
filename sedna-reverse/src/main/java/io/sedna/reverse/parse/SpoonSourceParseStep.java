@@ -24,6 +24,9 @@ import spoon.reflect.reference.CtTypeReference;
 /** Step 1 — Spoon AST parser (primary). */
 public final class SpoonSourceParseStep implements SourceParseStep {
 
+  /** Creates a Spoon-based parse step. */
+  public SpoonSourceParseStep() {}
+
   @Override
   public Result<ParsedProject, SemanticError> parse(Path projectRoot) {
     Path sourceRoot = projectRoot.resolve("src/main/java");

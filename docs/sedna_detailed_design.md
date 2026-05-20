@@ -8,7 +8,7 @@
 | **Audience segment** | Internal / Enterprise-tool (AI agents + platform engineers) |
 | **Domain profile** | Developer tooling / semantic platform · General security (no regulated PHI/PCI scope) |
 | **Scope** | Local deterministic semantic DNA platform: encode/decode, forward/reverse pipelines, DAG runtime, mutation, validation, training dataset generation for Spring Boot monoliths |
-| **Out of scope** | Distributed runtime, Kafka, Kubernetes orchestration, multi-language codegen, IntelliJ plugin, visualization UI, cross-project semantic linking, in-process LLM |
+| **Out of scope (current version)** | Distributed runtime, Kafka, Kubernetes orchestration, multi-language codegen — deferred until core functionality is complete; IntelliJ plugin (full IDE), cross-project semantic linking, in-process LLM |
 | **Document version** | 1.1 |
 | **Status** | Production-ready (implementation contract) |
 
@@ -45,7 +45,7 @@ The target users are AI development agents and platform engineers who need repro
 
 Core value: **executable semantics stored separately from source text**, with canonical NodeIDs, stable TLV serialization, and DAG runtime execution.
 
-Scope in one line: Java 21 multi-module Gradle platform covering DNA, registry, validation, forward/reverse/training pipelines, mutation, persistence, and CLI—reference target `examples/cms-reference`.
+Scope in one line: Java 21 multi-module Gradle platform covering DNA, registry, validation, forward/reverse/training pipelines, mutation, persistence, and CLI—reference target `examples/sedna-cms/cms-reference`.
 
 ## 1.2 Context and goals
 
@@ -68,10 +68,10 @@ Teams using LLM-assisted development lack a machine-verifiable contract between 
 <span style="color:#C00000">
 
 - The system does **not** provide multi-tenant SaaS, end-user authentication, or billing.
-- The system does **not** run distributed orchestration, Kafka, or Kubernetes deployment (Phase 15).
+- The system does **not** run distributed orchestration, Kafka, or Kubernetes deployment in the current release; these are post-core limitations, not v1.x deliverables.
 - The system does **not** allow LLMs to assign NodeIDs, define contracts/constraints, or mutate graph topology.
 - The system does **not** perform cross-project or repository-wide semantic merging.
-- The system does **not** ship a web/mobile UI or IntelliJ plugin (Phase 14).
+- The system does **not** ship a full IntelliJ plugin or web/mobile UI in the current release (CLI visualization via Graphviz is supported).
 - The system does **not** guarantee identical method bodies across runs when LLM enrichment is enabled (structure remains deterministic).
 
 </span>
@@ -173,7 +173,7 @@ Single interactive “end user” role is not applicable; RBAC matrix is reduced
 
 > **Scenario 1: Reverse existing CMS to DNA**  
 > **Actor:** Pipeline operator · **Trigger:** New reference project available  
-> 1. Operator points CLI at `examples/cms-reference` Gradle root.  
+> 1. Operator points CLI at `examples/sedna-cms/cms-reference` Gradle root.  
 > 2. Reverse pipeline parses sources (Spoon), builds structural then semantic graph.  
 > 3. Contracts and constraints reconstructed; motifs folded.  
 > 4. Graph validated; canonical ordering applied.  
@@ -227,7 +227,7 @@ Single interactive “end user” role is not applicable; RBAC matrix is reduced
 |----------|-------------|--------|
 | Performance | DNA decode | p95 <100ms on reference graph, warmed JVM |
 | Performance | DNA encode | p95 <100ms |
-| Performance | Forward reconstruction | p95 <5s for `examples/cms-reference` |
+| Performance | Forward reconstruction | p95 <5s for `examples/sedna-cms/cms-reference` |
 | Performance | Reverse analysis | p95 <30s for same reference |
 | Performance | Registry lookup | p95 <5ms (design target); stretch p95 <1ms (TA, non-blocking) |
 | Performance | Runtime scheduling | p95 <50ms plan build |
@@ -363,7 +363,7 @@ No unresolved conflicts require product owner confirmation.
 
 ## 2.1 System context
 
-The development target is the creation of SEDNA: a Java 21 Gradle multi-module platform that stores executable software semantics as binary DNA and reconstructs Spring Boot applications deterministically. Consumers are AI agents and engineers operating CLI/API modules locally. Key technical properties: canonical DTOs in `sedna-core`, TLV DNA in `sedna-dna`, versioned semantic registry, validation-gated forward and reverse pipelines, DAG runtime with PostgreSQL checkpoints, HTTP-sandboxed LLM for method bodies only. Stack: Java 21, Gradle, Spoon/JavaParser/ASM, JGraphT, JavaPoet, Mustache, Project Reactor, Spring State Machine (deferred profiles), PostgreSQL, JUnit 5, JMH. Out of scope: distributed execution, Kafka, K8s, UI, multi-language. System class: internal API-only platform; domain: developer tooling.
+The development target is the creation of SEDNA: a Java 21 Gradle multi-module platform that stores executable software semantics as binary DNA and reconstructs Spring Boot applications deterministically. Consumers are AI agents and engineers operating CLI/API modules locally. Key technical properties: canonical DTOs in `sedna-core`, TLV DNA in `sedna-dna`, versioned semantic registry, validation-gated forward and reverse pipelines, DAG runtime with PostgreSQL checkpoints, HTTP-sandboxed LLM for method bodies only. Stack: Java 21, Gradle, Spoon/JavaParser/ASM, JGraphT, JavaPoet, Mustache, Project Reactor, Spring State Machine (deferred profiles), PostgreSQL, JUnit 5, JMH. Out of scope (current version): distributed execution, Kafka, K8s, multi-language — deferred until core Java/Spring functionality is complete; full IDE UI deferred. System class: internal API-only platform; domain: developer tooling.
 
 ## 2.1.1 System architecture (C4 Container)
 
@@ -382,7 +382,7 @@ The development target is the creation of SEDNA: a Java 21 Gradle multi-module p
 | sedna-persistence | Library | Java 21 JDBC | ← sedna-runtime | → PostgreSQL (SQL) |
 | PostgreSQL | Database | PostgreSQL 15+ | ← sedna-persistence | — |
 | OpenRouter | External | HTTPS OpenAI-compatible API | ← forward/reverse enrichment | — |
-| examples/cms-reference | Reference input | Spring Boot | ← sedna-reverse | — |
+| examples/sedna-cms/cms-reference | Reference input | Spring Boot | ← sedna-reverse | — |
 | generated/ output | File artifact | Spring Boot project | ← sedna-forward | — |
 
 ```mermaid
@@ -406,7 +406,7 @@ graph LR
   PER --> PG[(PostgreSQL)]
   FWD --> OR[OpenRouter]
   REV --> OR
-  REV --> CMS[examples/cms-reference]
+  REV --> CMS[examples/sedna-cms/cms-reference]
   FWD --> GEN[generated project]
 ```
 
@@ -637,7 +637,7 @@ Not applicable (no UI).
 
 | # | Actor | Action | API | System |
 |---|-------|--------|-----|--------|
-| 1 | Operator | Start reverse | `sedna reverse --input=examples/cms-reference` | Produces `cms-reference.sdna` |
+| 1 | Operator | Start reverse | `sedna reverse --input=examples/sedna-cms/cms-reference` | Produces `cms-reference.sdna` |
 | 2 | CI | Validate DNA | `sedna validate --input=cms-reference.sdna` | Emits report or error codes |
 | 3 | Operator | Forward | `sedna forward --input=cms-reference.sdna --output=generated` | Gradle tree created |
 | 4 | CI | Compile | `./gradlew -p generated build` | Must succeed |

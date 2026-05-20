@@ -11,11 +11,22 @@ public final class PrimarySourceParseStep implements SourceParseStep {
   private final SourceParseStep primary;
   private final SourceParseStep fallback;
 
+  /**
+   * Creates a primary/fallback parse step chain.
+   *
+   * @param primary first parser attempt (typically Spoon)
+   * @param fallback parser used when primary fails
+   */
   public PrimarySourceParseStep(SourceParseStep primary, SourceParseStep fallback) {
     this.primary = primary;
     this.fallback = fallback;
   }
 
+  /**
+   * Returns Spoon primary with JavaParser fallback.
+   *
+   * @return configured primary parse step
+   */
   public static PrimarySourceParseStep spoonWithJavaParserFallback() {
     return new PrimarySourceParseStep(new SpoonSourceParseStep(), new JavaSourceParseStep());
   }

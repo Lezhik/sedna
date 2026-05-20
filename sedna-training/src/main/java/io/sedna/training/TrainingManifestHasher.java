@@ -10,6 +10,12 @@ public final class TrainingManifestHasher {
 
   private TrainingManifestHasher() {}
 
+  /**
+   * Computes the SHA-256 hex digest of UTF-8 text.
+   *
+   * @param content UTF-8 text to hash
+   * @return lowercase SHA-256 hex digest
+   */
   public static String sha256(String content) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");

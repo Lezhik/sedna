@@ -9,6 +9,16 @@ Execution checklist for AI agents and engineers. Follow order strictly unless a 
 
 **Legend:** `[ ]` pending · `[x]` done · `P0` blocks release · `P1` required for phase · `P2` nice-to-have
 
+## Current version limitations (post-core only)
+
+The following are **not in scope for v1.x**. They are deferred until core functionality is complete (Java/Spring DNA, forward/reverse, runtime profiles, mutation, validation, training):
+
+- Multi-language pipelines (Kotlin, TypeScript, etc.)
+- Distributed runtime, Kafka, cloud orchestration (Kubernetes)
+- Cross-service production deployment semantics
+
+Do not schedule or document these as current-phase deliverables.
+
 ---
 
 ## Phase 0 — Foundation (Weeks 1–2)
@@ -60,7 +70,7 @@ Execution checklist for AI agents and engineers. Follow order strictly unless a 
 - [x] Implement `DnaEncoder` / `DnaDecoder` with `Result` error mapping
 - [x] Encoder applies `CanonicalOrdering` before every serialize (FR-dna.02)
 - [x] Implement round-trip tests: `encode(decode(dna)) == dna`
-- [x] Implement golden-byte fixtures from minimal hand-crafted graphs (`examples/cms-reference-fixture.sdna`, `GoldenFixtureTest`)
+- [x] Implement golden-byte fixtures from minimal hand-crafted graphs (`examples/sedna-e2e-tests/cms-reference-fixture.sdna`, `GoldenFixtureTest`)
 - [x] Define `MotifFolder` / `MotifExpander` interfaces only (implementation deferred to Phase 11)
 
 ### P0 — sedna-registry (complete decode)
@@ -111,10 +121,10 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 - [x] Commands: `forward`, `decode`, `encode`, `validate`
 - [x] Non-zero exit on `SemanticError`
 
-### P0 — examples/cms-reference
+### P0 — examples/sedna-cms/cms-reference
 
-- [x] Add reference Spring Boot CMS project under `examples/cms-reference`
-- [x] Hand-author minimal DNA fixture at `examples/cms-reference-fixture.sdna` for forward tests until reverse exists
+- [x] Add reference Spring Boot CMS project under `examples/sedna-cms/cms-reference`
+- [x] Hand-author minimal DNA fixture at `examples/sedna-e2e-tests/cms-reference-fixture.sdna` for forward tests until reverse exists
 
 **Minimum fixture specification (canonical, shared by Phase 2 and Phase 3 equivalence tests):**
 
@@ -127,11 +137,11 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 | Encoding | SEDNA-BIN-v1 TLV; `CanonicalOrdering` applied before encode |
 | Registry | Embedded core vocabulary version only |
 
-- [x] Document fixture node IDs and bytes in `examples/cms-reference-fixture.README.md` (golden hash for CI)
+- [x] Document fixture node IDs and bytes in `examples/docs/cms-reference-fixture.md` (golden hash for CI)
 
 ### P0 — Acceptance (Phase 2 / v0.2)
 
-- [x] `sedna forward --input=examples/cms-reference-fixture.sdna --output=generated` compiles (manual/CI Gradle on generated tree; `ForwardCompileIntegrationTest`)
+- [x] `sedna forward --input=examples/sedna-e2e-tests/cms-reference-fixture.sdna --output=generated` compiles (manual/CI Gradle on generated tree; `ForwardCompileIntegrationTest`)
 - [x] Identical generated file tree hash (LLM disabled) across 10 runs
 - [x] Validation runs before any file write
 
@@ -139,7 +149,7 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ## Phase 3 — Reverse Pipeline (Weeks 9–13, parallel with Phase 4)
 
-**Start window:** Week **9** earliest (not Week 7). Prerequisites: Phase 1 complete; `SemanticGraph` DTO frozen; contract resolution operational in `sedna-validation` (Phase 2 forward codegen **not** required). Fixture: `examples/cms-reference-fixture.sdna` must exist (produced in Phase 2).
+**Start window:** Week **9** earliest (not Week 7). Prerequisites: Phase 1 complete; `SemanticGraph` DTO frozen; contract resolution operational in `sedna-validation` (Phase 2 forward codegen **not** required). Fixture: `examples/sedna-e2e-tests/cms-reference-fixture.sdna` must exist (produced in Phase 2).
 
 **Parallel rule:** May overlap Phase 4 (Weeks 12–13) after reverse extraction stabilizes; do not block runtime on full reverse completion.
 
@@ -165,8 +175,8 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 
 ### P0 — Acceptance (Phase 3 / v0.3)
 
-- [x] `reverse(examples/cms-reference)` produces deterministic DNA bytes
-- [x] `reverse(forward(examples/cms-reference-fixture.sdna))` passes semantic equivalence suite:
+- [x] `reverse(examples/sedna-cms/cms-reference)` produces deterministic DNA bytes
+- [x] `reverse(forward(examples/sedna-e2e-tests/cms-reference-fixture.sdna))` passes semantic equivalence suite:
   - identical node count and NodeID set
   - identical contract and constraint sets
   - equivalent motif expansion
@@ -246,7 +256,7 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 ### P0 — Acceptance (Phase 6 / v0.6)
 
 - [x] Identical Git history → identical trajectories and embeddings (`TrainingPipelineTest`)
-- [x] Minimum dataset path documented (20–30 projects) — `examples/training-projects.txt`, `sedna-training/README.md`
+- [x] Minimum dataset path documented (20–30 projects) — `examples/docs/training-projects.txt`, `sedna-training/README.md`
 
 ---
 
@@ -278,8 +288,8 @@ Close open Phases 1–7 acceptance criteria and prepare for v1.0.
 
 ### P0 — CI acceptance gates
 
-- [x] CI job: `sedna forward` on `examples/cms-reference-fixture.sdna` → `./gradlew build` in `generated/` (`ForwardCompileIntegrationTest`)
-- [x] CI job: golden SHA-256 from `examples/cms-reference-fixture.README.md` enforced (`GoldenFixtureReadmeShaTest`)
+- [x] CI job: `sedna forward` on `examples/sedna-e2e-tests/cms-reference-fixture.sdna` → `./gradlew build` in `generated/` (`ForwardCompileIntegrationTest`)
+- [x] CI job: golden SHA-256 from `examples/docs/cms-reference-fixture.md` enforced (`GoldenFixtureReadmeShaTest`)
 - [x] Runtime scheduling latency smoke gate (`RuntimeSchedulingLatencyTest`)
 - [ ] SpotBugs: zero high-priority findings across all modules
 
@@ -339,7 +349,7 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 - [x] Add Spoon as primary AST parser; ASM for bytecode-level edges (`SpoonSourceParseStep`, `BytecodeDependencyAugmenter`, `PrimarySourceParseStep`)
 - [x] General `SemanticExtractionStep` (Spring Boot monolith via `SpringBootSemanticRules`)
 - [x] UNKNOWN node classification — heuristic `UnknownNodeEnrichmentStep` + `DisabledUnknownLabelProvider` (LLM label enrichment deferred)
-- [x] Profile detection: Spring Boot REST monolith (Gradle), multi-module deferred — `examples/spring-demo`
+- [x] Profile detection: Spring Boot REST monolith (Gradle), multi-module deferred — `examples/sedna-demo/spring-demo`
 - [x] Git per-commit snapshots (`GitCommitSnapshotExtractor`) + atomic deltas (`SemanticDeltaExtractor`, contract schema in delta key)
 
 ### P0 — sedna-forward
@@ -418,7 +428,7 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 
 - [x] Per-commit JGit checkout → multi-snapshot trajectories per project (`GitCommitSnapshotExtractor`, `PerCommitTrajectoryTest`)
 - [x] `SemanticDeltaExtractor` on consecutive commit snapshots (contract `ioSchema` included in delta comparison)
-- [x] Corpus ingestion from `examples/cms-list.csv` / expanded project list (`CorpusProjectListLoader`, `examples/training-corpus.list`)
+- [x] Corpus ingestion from `examples/docs/cms-list.csv` / expanded project list (`CorpusProjectListLoader`, `examples/docs/training-corpus.list`)
 - [x] Registry update proposals validated against conflict resolution rules at scale (`RegistryProposalCorpusValidator`, `TrainingPipeline.train`)
 
 ### P1 — sedna-training
@@ -448,35 +458,10 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 - [x] Live runtime monitoring endpoint (`RuntimeMonitoringServer`, `sedna monitor`, `run --monitor-port`)
 - [ ] IntelliJ plugin: DNA view, forward/reverse actions (deferred; Graphviz CLI satisfies acceptance)
 
-### P2 — sedna-runtime
-
-- [x] Distributed runtime prototype (`DistributedRuntimeCoordinator`, `LocalDistributedRuntimeCoordinator`)
-- [x] Kafka event bus for execution traces (`TraceEventBus`, `InMemoryTraceEventBus`, `KafkaTraceEventBus` stub)
-
 ### P0 — Acceptance (Phase 14 / v1.6)
 
 - [x] At least one DX tool (plugin or visualization) usable on cms-reference round-trip (`Phase14AcceptanceTest`, `sedna visualize`)
 - [x] Documented operator guide for local + CI workflows (`docs/operator-guide.md`)
-
----
-
-## Phase 15 — Multi-Language & Cloud (Weeks 59+)
-
-### P2 — Pipelines
-
-- [ ] Multi-language reverse profiles (Kotlin, TypeScript baseline)
-- [ ] Multi-language forward codegen templates
-
-### P2 — Platform
-
-- [ ] Kubernetes deployment manifests
-- [ ] Cloud-native orchestration integration
-- [ ] Cross-service transaction semantics (formal spec alignment)
-
-### P0 — Acceptance (Phase 15 / v2.0)
-
-- [ ] Second language round-trip passes equivalence suite
-- [ ] Deployed runtime executes reference DAG on Kubernetes with deterministic replay
 
 ---
 
@@ -541,8 +526,8 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 | External FAISS integration (optional) | 13 — Pure Java index shipped |
 | Corpus scale (20–300 real repos) | 13 — synthetic gates + local examples |
 | Expanded corpus (20–300 projects) | 13 |
-| IntelliJ plugin, visualization, distributed runtime | 14–15 |
-| Multi-language pipelines, Kubernetes | 15 |
+| IntelliJ plugin (full IDE integration) | post–14 |
+| Multi-language, distributed runtime, Kafka, Kubernetes | post-core (see limitations above) |
 
 ---
 

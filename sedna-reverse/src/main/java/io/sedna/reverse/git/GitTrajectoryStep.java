@@ -14,12 +14,28 @@ import org.eclipse.jgit.revwalk.RevCommit;
 /** Step 8 — optional git trajectory extraction (MVP: commit hashes only). */
 public final class GitTrajectoryStep {
 
+  /**
+   * Ordered Git commit hashes for a project (oldest first).
+   *
+   * @param commitHashes full commit hashes in chronological order
+   */
   public record GitTrajectory(List<String> commitHashes) {
+
+    /** Defensive copy of commit hash list. */
     public GitTrajectory {
       commitHashes = List.copyOf(commitHashes);
     }
   }
 
+  /** Creates a Git trajectory extractor. */
+  public GitTrajectoryStep() {}
+
+  /**
+   * Reads commit hashes from the project repository.
+   *
+   * @param projectRoot Gradle project root
+   * @return trajectory or empty list when Git is unavailable
+   */
   public Result<GitTrajectory, SemanticError> extract(Path projectRoot) {
     Path gitDir = projectRoot.resolve(".git");
     if (!Files.exists(gitDir)) {

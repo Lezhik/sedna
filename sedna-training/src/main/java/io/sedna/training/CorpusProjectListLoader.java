@@ -3,6 +3,7 @@ package io.sedna.training;
 import io.sedna.core.ErrorCode;
 import io.sedna.core.Result;
 import io.sedna.core.SemanticError;
+import io.sedna.core.examples.ExamplesLayout;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,23 +13,34 @@ import java.util.Locale;
 import java.util.TreeSet;
 
 /**
- * Loads training projects from {@code examples/cms-list.csv} metadata plus local example folders.
+ * Loads training projects from {@code examples/docs/cms-list.csv} metadata plus local projects
+ * under {@code examples/sedna-* /}.
  */
 public final class CorpusProjectListLoader {
 
   private final ProjectListLoader projectListLoader = new ProjectListLoader();
 
+  /** Creates a corpus loader with default project list parsing. */
+  public CorpusProjectListLoader() {}
+
+  /**
+   * Discovers local trainable projects and writes {@code training-corpus.list}.
+   *
+   * @param repositoryRoot SEDNA repository root
+   * @return ordered project paths or structured error
+   */
   public Result<List<Path>, SemanticError> loadFromRepository(Path repositoryRoot) {
-    Path examples = repositoryRoot.resolve("examples").toAbsolutePath().normalize();
+    Path examples = ExamplesLayout.examplesRoot(repositoryRoot);
     if (!Files.isDirectory(examples)) {
       return Result.err(
           SemanticError.global(ErrorCode.VALIDATION_FAILED, "Missing examples directory"));
     }
 
-    Path catalog = examples.resolve("cms-list.csv");
+    Path catalog = repositoryRoot.resolve(ExamplesLayout.CMS_LIST_CATALOG).toAbsolutePath().normalize();
     if (!Files.isRegularFile(catalog)) {
       return Result.err(
-          SemanticError.global(ErrorCode.VALIDATION_FAILED, "Missing cms-list.csv catalog"));
+          SemanticError.global(
+              ErrorCode.VALIDATION_FAILED, "Missing catalog: " + ExamplesLayout.CMS_LIST_CATALOG));
     }
 
     try {
@@ -38,21 +50,16 @@ public final class CorpusProjectListLoader {
             SemanticError.global(ErrorCode.VALIDATION_FAILED, "No Java entries in cms-list.csv"));
       }
 
-      TreeSet<Path> localProjects = new TreeSet<>();
-      try (var dirs = Files.list(examples)) {
-        dirs.filter(Files::isDirectory)
-            .filter(dir -> Files.isDirectory(dir.resolve("src/main/java")))
-            .map(path -> path.toAbsolutePath().normalize())
-            .forEach(localProjects::add);
-      }
-
+      List<Path> localProjects = ExamplesLayout.listTrainableProjects(repositoryRoot);
       if (localProjects.isEmpty()) {
         return Result.err(
             SemanticError.global(
-                ErrorCode.VALIDATION_FAILED, "No trainable example projects under examples/"));
+                ErrorCode.VALIDATION_FAILED,
+                "No trainable example projects under examples/sedna-*"));
       }
 
-      Path manifest = examples.resolve("training-corpus.list");
+      Path manifest =
+          repositoryRoot.resolve(ExamplesLayout.TRAINING_CORPUS_MANIFEST).toAbsolutePath().normalize();
       List<String> manifestLines = new ArrayList<>();
       manifestLines.add("# SEDNA training corpus (deterministic)");
       manifestLines.add("# catalog_java_entries=" + javaCatalogNames.size());

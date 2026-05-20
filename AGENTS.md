@@ -60,7 +60,7 @@ sedna-mutation/       Mutation engine
 sedna-validation/     Validation engine
 sedna-persistence/    Persistence layer
 sedna-cli/            CLI tooling
-examples/             Reference projects
+examples/             Training/test projects (sedna-*/); catalogs in examples/docs/
 tests/                Shared integration tests
 docs/                 Specifications
 ```
@@ -347,7 +347,7 @@ Targets:
 Reference project:
 
 ```text
-examples/cms-reference
+examples/sedna-cms/cms-reference
 ```
 
 ---

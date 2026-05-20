@@ -16,6 +16,15 @@ import java.util.TreeMap;
 /** Step 2 — build structural dependency graph and detect cycles. */
 public final class StructuralGraphStep {
 
+  /** Creates a structural graph builder. */
+  public StructuralGraphStep() {}
+
+  /**
+   * Builds a directed class dependency graph and rejects cyclic components.
+   *
+   * @param project parsed project model
+   * @return structural graph or validation error when a cycle is detected
+   */
   public Result<StructuralGraph, SemanticError> build(ParsedProject project) {
     List<StructuralEdge> edges = new ArrayList<>();
     Map<String, List<String>> adjacency = new TreeMap<>();

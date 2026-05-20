@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.sedna.core.examples.ExamplesLayout;
 import io.sedna.dna.DnaServices;
 import io.sedna.dna.fixture.CmsReferenceFixtureGraph;
 import io.sedna.forward.ForwardPipeline;
@@ -35,9 +36,10 @@ class CiDeterminismTest {
 
   @Test
   void goldenFixtureFileMatchesCanonicalEncoding() throws Exception {
-    Path fixture = Path.of("examples", "cms-reference-fixture.sdna").toAbsolutePath().normalize();
+    Path cwd = Path.of("").toAbsolutePath();
+    Path fixture = ExamplesLayout.goldenCmsFixture(cwd);
     if (!Files.isRegularFile(fixture)) {
-      fixture = Path.of("..", "examples", "cms-reference-fixture.sdna").toAbsolutePath().normalize();
+      fixture = ExamplesLayout.goldenCmsFixture(cwd.resolve("..").normalize());
     }
     assertTrue(Files.isRegularFile(fixture), "Missing golden fixture: " + fixture);
     byte[] onDisk = Files.readAllBytes(fixture);

@@ -20,7 +20,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-/** Deterministic semantic mapping for {@code examples/cms-reference}. */
+/** Deterministic semantic mapping for {@code examples/sedna-cms/cms-reference}. */
 public final class CmsSemanticRules {
 
   private static final VocabRef ENTITY = new VocabRef("core", "DOMAIN.ENTITY.AGGREGATE", "v1");
@@ -29,11 +29,23 @@ public final class CmsSemanticRules {
 
   private CmsSemanticRules() {}
 
+  /**
+   * Returns {@code true} when the project matches the CMS reference profile.
+   *
+   * @param structural class-level dependency graph
+   * @return {@code true} for CMS reference projects
+   */
   public static boolean isCmsReference(StructuralGraph structural) {
     return structural.project().classes().stream()
         .anyMatch(cls -> cls.qualifiedName().startsWith("io.sedna.cms."));
   }
 
+  /**
+   * Maps a parsed class to a semantic node kind, if recognized.
+   *
+   * @param parsed parsed Java class
+   * @return node kind when the class maps to ENTITY, SERVICE, or CONTROLLER
+   */
   public static Optional<NodeKind> classify(ParsedClass parsed) {
     if (parsed.annotationSimpleNames().contains("SpringBootApplication")) {
       return Optional.empty();
@@ -51,6 +63,12 @@ public final class CmsSemanticRules {
     return Optional.empty();
   }
 
+  /**
+   * Builds the CMS reference semantic graph from a structural graph.
+   *
+   * @param structural CMS structural graph
+   * @return canonical CMS semantic graph
+   */
   public static SemanticGraph toSemanticGraph(StructuralGraph structural) {
     List<GenomeNode> nodes = new ArrayList<>();
     List<SemanticLink> links = new ArrayList<>();

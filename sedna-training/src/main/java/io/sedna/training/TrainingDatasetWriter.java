@@ -13,6 +13,16 @@ import java.nio.file.Path;
 /** Writes manifest, checksum, and reproducibility report for a training dataset. */
 public final class TrainingDatasetWriter {
 
+  /** Creates a dataset writer. */
+  public TrainingDatasetWriter() {}
+
+  /**
+   * Writes manifest, checksum, and reproducibility report files.
+   *
+   * @param dataset training dataset
+   * @param outputDirectory output directory (created if missing)
+   * @return artifact paths or structured error
+   */
   public Result<TrainingDatasetArtifacts, SemanticError> write(
       TrainingDataset dataset, Path outputDirectory) {
     try {

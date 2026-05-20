@@ -25,7 +25,9 @@ import java.util.Optional;
 /** Deterministic semantic mapping for Spring Boot REST monoliths (general profile). */
 public final class SpringBootSemanticRules {
 
+  /** Constraint key storing the originating Java package. */
   public static final String SOURCE_PACKAGE_CONSTRAINT = "SOURCE_PACKAGE";
+  /** Constraint key storing the originating Java class name. */
   public static final String SOURCE_CLASS_CONSTRAINT = "SOURCE_CLASS";
 
   private static final VocabRef ENTITY = new VocabRef("core", "DOMAIN.ENTITY.AGGREGATE", "v1");
@@ -34,11 +36,23 @@ public final class SpringBootSemanticRules {
 
   private SpringBootSemanticRules() {}
 
+  /**
+   * Returns {@code true} when the project is a Spring Boot monolith.
+   *
+   * @param structural class-level dependency graph
+   * @return {@code true} when a {@code SpringBootApplication} class is present
+   */
   public static boolean isSpringBootMonolith(StructuralGraph structural) {
     return structural.project().classes().stream()
         .anyMatch(cls -> cls.annotationSimpleNames().contains("SpringBootApplication"));
   }
 
+  /**
+   * Maps a parsed class to a semantic node kind, if recognized.
+   *
+   * @param parsed parsed Java class
+   * @return node kind when the class maps to ENTITY, SERVICE, or CONTROLLER
+   */
   public static Optional<NodeKind> classify(ParsedClass parsed) {
     if (parsed.annotationSimpleNames().contains("SpringBootApplication")) {
       return Optional.empty();
@@ -56,6 +70,12 @@ public final class SpringBootSemanticRules {
     return Optional.empty();
   }
 
+  /**
+   * Builds a Spring Boot monolith semantic graph from a structural graph.
+   *
+   * @param structural Spring Boot structural graph
+   * @return canonical semantic graph for the monolith profile
+   */
   public static SemanticGraph toSemanticGraph(StructuralGraph structural) {
     String basePackage = detectBasePackage(structural);
     List<GenomeNode> nodes = new ArrayList<>();

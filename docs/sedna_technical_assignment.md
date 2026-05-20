@@ -87,7 +87,7 @@ sedna/
  ├── sedna-mutation/
  ├── sedna-validation/
  ├── sedna-persistence/
- ├── examples/
+ ├── examples/              # sedna-cms, sedna-demo, sedna-e2e-tests, docs/
  └── benchmarks/
 ```
 
@@ -517,7 +517,7 @@ JVM: warmed
 Reference project:
 
 ```text
-examples/cms-reference
+examples/sedna-cms/cms-reference
 ```
 
 Performance targets:

@@ -9,6 +9,7 @@ import io.sedna.dna.PassThroughMotifCodec;
 /** No-op motif folder for MVP reverse pipeline. */
 public final class IdentityMotifFolder implements MotifFolder {
 
+  /** Singleton pass-through motif folder. */
   public static final IdentityMotifFolder INSTANCE = new IdentityMotifFolder();
 
   private final MotifFolder delegate = PassThroughMotifCodec.INSTANCE;

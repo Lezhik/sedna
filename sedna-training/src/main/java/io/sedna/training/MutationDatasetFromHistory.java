@@ -11,6 +11,15 @@ public final class MutationDatasetFromHistory {
 
   private final MutationDatasetGenerator generator = new MutationDatasetGenerator();
 
+  /** Creates a history-based mutation dataset builder. */
+  public MutationDatasetFromHistory() {}
+
+  /**
+   * Generates mutation rows from per-commit snapshots.
+   *
+   * @param snapshots ordered semantic snapshots
+   * @return mutation entries labeled with commit hash prefix
+   */
   public List<MutationDatasetEntry> generate(List<SemanticSnapshot> snapshots) {
     List<MutationDatasetEntry> entries = new ArrayList<>();
     for (SemanticSnapshot snapshot : snapshots) {

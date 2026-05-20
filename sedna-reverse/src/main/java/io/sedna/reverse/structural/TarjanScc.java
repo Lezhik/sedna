@@ -12,6 +12,13 @@ public final class TarjanScc {
 
   private TarjanScc() {}
 
+  /**
+   * Computes strongly connected components for cycle detection.
+   *
+   * @param nodes vertex names in deterministic order
+   * @param adjacency adjacency list keyed by source vertex
+   * @return SCC lists in discovery order
+   */
   public static List<List<String>> stronglyConnectedComponents(
       List<String> nodes, Map<String, List<String>> adjacency) {
     Map<String, Integer> index = new HashMap<>();

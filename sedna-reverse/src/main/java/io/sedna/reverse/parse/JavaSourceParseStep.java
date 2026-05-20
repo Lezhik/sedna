@@ -23,6 +23,9 @@ import java.util.stream.Stream;
 /** Step 1 — JavaParser fallback when Spoon cannot parse the project. */
 public final class JavaSourceParseStep implements SourceParseStep {
 
+  /** Creates a JavaParser-based parse step. */
+  public JavaSourceParseStep() {}
+
   @Override
   public Result<ParsedProject, SemanticError> parse(Path projectRoot) {
     Path sourceRoot = projectRoot.resolve("src/main/java");

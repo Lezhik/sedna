@@ -21,6 +21,12 @@ public final class SemanticEmbeddingIndex {
     this.rows = List.copyOf(rows);
   }
 
+  /**
+   * Builds an index from all embeddings in a training dataset.
+   *
+   * @param dataset multi-project training dataset
+   * @return embedding index for nearest-neighbor search
+   */
   public static SemanticEmbeddingIndex fromDataset(TrainingDataset dataset) {
     List<IndexedRow> rows = new ArrayList<>();
     for (TrainingProjectResult project : dataset.projects()) {
@@ -40,11 +46,24 @@ public final class SemanticEmbeddingIndex {
     return new SemanticEmbeddingIndex(rows);
   }
 
+  /**
+   * Returns the number of indexed embedding rows.
+   *
+   * @return number of indexed embedding rows
+   */
   public int size() {
     return rows.size();
   }
 
-  /** Top-k neighbors by cosine similarity (excludes exact same project+node when query matches). */
+  /**
+   * Top-k neighbors by cosine similarity (excludes exact same project+node when query matches).
+   *
+   * @param projectPath query project path (excluded from self-match)
+   * @param nodeId query node id (excluded from self-match)
+   * @param embeddingHex query embedding hex
+   * @param k maximum neighbors to return
+   * @return ranked neighbors
+   */
   public List<EmbeddingNeighbor> nearestNeighbors(
       String projectPath, long nodeId, String embeddingHex, int k) {
     if (k <= 0 || rows.isEmpty()) {
@@ -74,6 +93,11 @@ public final class SemanticEmbeddingIndex {
     return List.copyOf(neighbors);
   }
 
+  /**
+   * Returns a SHA-256 fingerprint of all indexed rows for reproducibility gates.
+   *
+   * @return SHA-256 fingerprint of all indexed rows (reproducibility gate)
+   */
   public String fingerprint() {
     StringBuilder builder = new StringBuilder();
     for (IndexedRow row : rows) {

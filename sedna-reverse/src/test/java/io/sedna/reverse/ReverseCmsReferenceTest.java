@@ -8,13 +8,14 @@ import io.sedna.dna.SednaFoldMotifCodec;
 import io.sedna.dna.fixture.CmsReferenceFixtureGraph;
 import io.sedna.validation.SemanticEquivalenceChecker;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 
 class ReverseCmsReferenceTest {
 
   private static final Path CMS_REFERENCE =
-      Paths.get("..", "examples", "cms-reference").normalize().toAbsolutePath();
+      io.sedna.core.examples.ExamplesLayout.findProjectRoot(
+              Path.of("..").toAbsolutePath().normalize(), "cms-reference")
+          .orElseThrow();
 
   @Test
   void reverseCmsReferenceMatchesFixtureGraph() {

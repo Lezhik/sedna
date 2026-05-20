@@ -6,7 +6,7 @@ Deterministic training dataset pipeline (Phase 6 / Phase 13).
 
 ```java
 var loader = new ProjectListLoader();
-var projects = loader.load(Path.of("projects.txt")).value();
+var projects = loader.load(Path.of("examples/docs/training-projects.txt")).value();
 var dataset = TrainingServices.pipeline().train(projects).value();
 
 var index = SemanticEmbeddingIndex.fromDataset(dataset);
@@ -20,7 +20,7 @@ var artifacts = new TrainingDatasetWriter().write(dataset, Path.of("out/training
 // dataset.manifest, dataset.manifest.sha256, reproducibility.report
 ```
 
-Corpus mode (all `examples/*` with `src/main/java` + `cms-list.csv` catalog metadata):
+Corpus mode (all Gradle projects under `examples/sedna-* /` plus `examples/docs/cms-list.csv` catalog metadata):
 
 ```java
 TrainingServices.pipeline().trainCorpus(Path.of(".").toAbsolutePath().normalize());
@@ -29,9 +29,11 @@ TrainingServices.pipeline().trainCorpus(Path.of(".").toAbsolutePath().normalize(
 CLI:
 
 ```text
-sedna train --projects=examples/training-projects.txt [--output=out/training]
+sedna train --projects=examples/docs/training-projects.txt [--output=out/training]
 sedna train --corpus=. [--output=out/training]
 ```
+
+See [examples/README.md](../examples/README.md) for the full examples tree layout.
 
 ## Artifacts
 

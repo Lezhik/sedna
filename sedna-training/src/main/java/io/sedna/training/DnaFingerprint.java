@@ -13,6 +13,13 @@ public final class DnaFingerprint {
 
   private DnaFingerprint() {}
 
+  /**
+   * Computes the SHA-256 fingerprint of encoded DNA for a graph.
+   *
+   * @param graph semantic graph to encode
+   * @param encoder DNA encoder
+   * @return hex fingerprint or structured error
+   */
   public static Result<String, SemanticError> of(SemanticGraph graph, DnaEncoder encoder) {
     var encoded = encoder.encode(graph);
     if (!encoded.isOk()) {
@@ -21,6 +28,12 @@ public final class DnaFingerprint {
     return Result.ok(sha256(encoded.value()));
   }
 
+  /**
+   * Computes SHA-256 hex digest of raw bytes.
+   *
+   * @param bytes input bytes
+   * @return lowercase hex digest
+   */
   public static String sha256(byte[] bytes) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");

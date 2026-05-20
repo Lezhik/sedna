@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.sedna.core.SemanticGraph;
+import io.sedna.core.examples.ExamplesLayout;
 import io.sedna.dna.fixture.CmsReferenceFixtureGraph;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,8 +16,9 @@ import org.junit.jupiter.api.Test;
 /** Golden-byte fixture for Phase 2 forward and Phase 3 equivalence tests. */
 class GoldenFixtureTest {
 
-  private static final Path FIXTURE_PATH =
-      Path.of("..", "examples", "cms-reference-fixture.sdna").normalize();
+  private static final Path REPO_ROOT = Path.of("..").toAbsolutePath().normalize();
+  private static final Path FIXTURE_PATH = ExamplesLayout.goldenCmsFixture(REPO_ROOT);
+  private static final Path FIXTURE_DOC_PATH = ExamplesLayout.goldenCmsFixtureDoc(REPO_ROOT);
 
   private final DnaEncoder encoder = DnaServices.encoder();
   private final DnaDecoder decoder = DnaServices.decoder();
@@ -35,7 +37,10 @@ class GoldenFixtureTest {
     }
 
     byte[] golden = Files.readAllBytes(FIXTURE_PATH);
-    assertArrayEquals(golden, encoded, "Regenerate examples/cms-reference-fixture.sdna if intentional");
+    assertArrayEquals(
+        golden,
+        encoded,
+        "Regenerate " + ExamplesLayout.GOLDEN_CMS_FIXTURE + " if intentional");
 
     SemanticGraph decoded = decoder.decode(golden).value();
     byte[] reencoded = encoder.encode(decoded).value();
@@ -49,12 +54,11 @@ class GoldenFixtureTest {
     }
     byte[] golden = Files.readAllBytes(FIXTURE_PATH);
     String sha256 = sha256Hex(golden);
-    Path readme = FIXTURE_PATH.resolveSibling("cms-reference-fixture.README.md");
-    assertTrue(Files.exists(readme), "Missing fixture README at " + readme);
-    String content = Files.readString(readme);
+    assertTrue(Files.exists(FIXTURE_DOC_PATH), "Missing fixture doc at " + FIXTURE_DOC_PATH);
+    String content = Files.readString(FIXTURE_DOC_PATH);
     assertTrue(
         content.contains(sha256),
-        "Update cms-reference-fixture.README.md SHA-256 to: " + sha256);
+        "Update " + ExamplesLayout.GOLDEN_CMS_FIXTURE_DOC + " SHA-256 to: " + sha256);
   }
 
   private static String sha256Hex(byte[] data) {

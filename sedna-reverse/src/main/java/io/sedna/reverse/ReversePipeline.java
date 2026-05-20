@@ -41,16 +41,36 @@ public final class ReversePipeline {
   private final UnknownNodeEnrichmentStep unknownNodeEnrichmentStep = new UnknownNodeEnrichmentStep();
   private final ValidationEngine validationEngine;
 
+  /**
+   * Creates a reverse pipeline with validation and motif folding.
+   *
+   * @param encoder DNA encoder for final serialization
+   * @param registry semantic registry for validation
+   * @param motifFolder motif folding strategy
+   */
   public ReversePipeline(DnaEncoder encoder, SemanticRegistry registry, MotifFolder motifFolder) {
     this.motifFoldingStep = new MotifFoldingStep(motifFolder);
     this.genomeSerializationStep = new GenomeSerializationStep(encoder);
     this.validationEngine = CompositeValidationEngine.standard(registry);
   }
 
+  /**
+   * Returns a pipeline with graph-signature motif folding.
+   *
+   * @param encoder DNA encoder for final serialization
+   * @param registry semantic registry for validation
+   * @return configured reverse pipeline
+   */
   public static ReversePipeline standard(DnaEncoder encoder, SemanticRegistry registry) {
     return new ReversePipeline(encoder, registry, GraphSignatureMotifFolder.INSTANCE);
   }
 
+  /**
+   * Runs the full reverse pipeline and returns the semantic graph.
+   *
+   * @param projectRoot Gradle project root
+   * @return validated semantic graph or structured error
+   */
   public Result<SemanticGraph, SemanticError> reverseGraph(Path projectRoot) {
     var parsed = sourceParseStep.parse(projectRoot);
     if (!parsed.isOk()) {
@@ -111,7 +131,12 @@ public final class ReversePipeline {
     return Result.ok(graph);
   }
 
-  /** Exposes structural graph for Git trajectory builders and profile detection. */
+  /**
+   * Builds the structural graph without semantic extraction (profile detection, trajectories).
+   *
+   * @param projectRoot Gradle project root
+   * @return structural graph or structured error
+   */
   public Result<StructuralGraph, SemanticError> buildStructuralGraph(Path projectRoot) {
     var parsed = sourceParseStep.parse(projectRoot);
     if (!parsed.isOk()) {
@@ -124,6 +149,12 @@ public final class ReversePipeline {
     return structuralGraphStep.build(augmented.value());
   }
 
+  /**
+   * Runs the reverse pipeline and returns encoded DNA bytes.
+   *
+   * @param projectRoot Gradle project root
+   * @return SEDNA-BIN-v1 bytes or structured error
+   */
   public Result<byte[], SemanticError> reverse(Path projectRoot) {
     var graph = reverseGraph(projectRoot);
     if (!graph.isOk()) {
@@ -132,6 +163,13 @@ public final class ReversePipeline {
     return genomeSerializationStep.serialize(graph.value());
   }
 
+  /**
+   * Runs the reverse pipeline and writes DNA to a file.
+   *
+   * @param projectRoot Gradle project root
+   * @param outputDnaFile destination {@code .sdna} path
+   * @return written file path or structured error
+   */
   public Result<Path, SemanticError> reverseToFile(Path projectRoot, Path outputDnaFile) {
     var dna = reverse(projectRoot);
     if (!dna.isOk()) {

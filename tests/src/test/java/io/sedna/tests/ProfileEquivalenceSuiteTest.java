@@ -38,8 +38,7 @@ class ProfileEquivalenceSuiteTest {
   @MethodSource("fixtures")
   void reverseForwardEquivalenceMatchesProfile(
       ProjectProfile expectedProfile, String fixtureName, @TempDir Path outputDir) {
-    Path project =
-        RepoPaths.locateRoot().resolve("examples").resolve(fixtureName).toAbsolutePath().normalize();
+    Path project = RepoPaths.exampleProject(fixtureName);
 
     var reverse = ReverseServices.pipeline();
     var structural = reverse.buildStructuralGraph(project);

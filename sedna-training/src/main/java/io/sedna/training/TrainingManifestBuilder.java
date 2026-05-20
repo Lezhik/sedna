@@ -7,6 +7,12 @@ public final class TrainingManifestBuilder {
 
   private TrainingManifestBuilder() {}
 
+  /**
+   * Builds canonical manifest text for checksum and reproducibility reporting.
+   *
+   * @param dataset training dataset
+   * @return canonical manifest text (checksum input)
+   */
   public static String build(TrainingDataset dataset) {
     StringBuilder builder = new StringBuilder();
     builder.append("sedna-training-dataset-v1").append('\n');

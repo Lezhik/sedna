@@ -21,12 +21,25 @@ import java.util.Set;
 /** Adds UNKNOWN-classified nodes for unmapped types (topology of core graph unchanged). */
 public final class UnknownNodeEnrichmentStep {
 
+  /** Prefix for heuristic unknown labels stored as constraints. */
   public static final String UNKNOWN_LABEL_PREFIX = "UNKNOWN_LABEL:";
+  /** Prefix for LLM-generated labels stored as constraints. */
   public static final String LLM_LABEL_PREFIX = "LLM_LABEL:";
 
   private static final VocabRef UNKNOWN =
       new VocabRef("core", "SEMANTIC.UNKNOWN", "v1");
 
+  /** Creates an unknown-node enrichment step. */
+  public UnknownNodeEnrichmentStep() {}
+
+  /**
+   * Adds INTEGRATION nodes for classes not mapped by known reverse profiles.
+   *
+   * @param structural structural dependency graph
+   * @param graph semantic graph from profile extraction
+   * @param labelProvider label source for unknown classes
+   * @return enriched graph or structured error
+   */
   public Result<SemanticGraph, SemanticError> enrich(
       StructuralGraph structural, SemanticGraph graph, UnknownLabelProvider labelProvider) {
     Set<String> mapped = mappedQualifiedNames(structural, graph);
@@ -96,12 +109,30 @@ public final class UnknownNodeEnrichmentStep {
 
   /** Optional LLM or heuristic label provider. */
   public interface UnknownLabelProvider {
+
+    /**
+     * Returns a human-readable label for an unmapped parsed class.
+     *
+     * @param parsed unmapped class
+     * @return label text (stored as a constraint prefix)
+     */
     String labelFor(ParsedClass parsed);
 
+    /**
+     * Returns a provider that uses the simple class name.
+     *
+     * @return heuristic label provider
+     */
     static UnknownLabelProvider heuristic() {
       return parsed -> parsed.simpleName();
     }
 
+    /**
+     * Wraps a delegate provider (LLM fallback hook; MVP returns delegate unchanged).
+     *
+     * @param delegate primary label provider
+     * @return wrapped provider
+     */
     static UnknownLabelProvider withLlmFallback(UnknownLabelProvider delegate) {
       return delegate;
     }

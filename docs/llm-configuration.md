@@ -26,5 +26,5 @@ SEDNA uses an **out-of-process** HTTP client for optional method-body synthesis 
 ```bash
 export SEDNA_LLM_ENABLED=true
 export OPENROUTER_API_KEY=sk-or-...
-./gradlew :sedna-cli:run --args="forward --input=examples/cms-reference-fixture.sdna --output=generated"
+./gradlew :sedna-cli:run --args="forward --input=examples/sedna-e2e-tests/cms-reference-fixture.sdna --output=generated"
 ```

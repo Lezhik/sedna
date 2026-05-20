@@ -30,6 +30,18 @@ Specification baseline: **2026-Q2**
 
 ---
 
+# Current Version Limitations
+
+The following are **not supported in v1.x** and will be considered **only after** core functionality is complete (Java/Spring DNA, forward/reverse, runtime, mutation, validation, training):
+
+- Multi-language pipelines (Kotlin, TypeScript, etc.)
+- Distributed runtime, Kafka, Kubernetes / cloud deployment
+- Cross-service production orchestration semantics
+
+See [ROADMAP.md](ROADMAP.md) §13 and [TODO.md](TODO.md) for details.
+
+---
+
 # Core Principles
 
 * Deterministic execution is mandatory
@@ -130,7 +142,7 @@ sedna/
 ├── sedna-mutation/
 ├── sedna-validation/
 ├── sedna-persistence/
-├── examples/
+├── examples/              # sedna-cms, sedna-demo, sedna-e2e-tests, docs/
 ├── benchmarks/
 ├── tests/
 └── docs/
@@ -223,13 +235,13 @@ Existing Spring Boot project → semantic DNA
 
 ```bash id="u5j1yr"
 ./gradlew :sedna-reverse:run \
-  --args="--input=examples/cms-reference"
+  --args="--input=examples/sedna-cms/cms-reference"
 ```
 
 Expected output:
 
 ```text id="d0v8qe"
-examples/cms-reference.sdna
+examples/sedna-cms/cms-reference.sdna
 ```
 
 ---
@@ -240,7 +252,7 @@ Semantic DNA → generated Spring Boot project
 
 ```bash id="w8m1zn"
 ./gradlew :sedna-forward:run \
-  --args="--input=examples/cms-reference.sdna --output=./generated"
+  --args="--input=examples/sedna-e2e-tests/cms-reference-fixture.sdna --output=./generated"
 ```
 
 Expected output:
@@ -364,7 +376,7 @@ Warm JVM
 Reference project:
 
 ```text id="y1n4op"
-examples/cms-reference
+examples/sedna-cms/cms-reference
 ```
 
 Targets:

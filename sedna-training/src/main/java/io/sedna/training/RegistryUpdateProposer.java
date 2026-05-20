@@ -19,16 +19,30 @@ import java.util.TreeSet;
 /** Proposes registry updates with deterministic conflict resolution. */
 public final class RegistryUpdateProposer {
 
+  /** Skip proposal when vocabulary already resolves exactly. */
   public static final String SKIP_EXACT = "SKIP_EXACT_MATCH";
+  /** Append a new version when only version mismatch is detected. */
   public static final String APPEND_VERSION = "APPEND_NEW_VERSION";
+  /** Flag proposal for manual review (unknown or conflicting vocabulary). */
   public static final String MANUAL_REVIEW = "MANUAL_REVIEW";
 
   private final SemanticRegistry registry;
 
+  /**
+   * Creates a proposer bound to the given registry.
+   *
+   * @param registry semantic registry used for resolution checks
+   */
   public RegistryUpdateProposer(SemanticRegistry registry) {
     this.registry = registry;
   }
 
+  /**
+   * Proposes registry updates for all vocabulary references in a graph.
+   *
+   * @param graph semantic graph
+   * @return sorted proposals with deterministic resolution
+   */
   public List<RegistryUpdateProposal> propose(SemanticGraph graph) {
     SemanticGraph canonical = CanonicalOrdering.canonicalize(graph);
     Set<String> seen = new TreeSet<>();

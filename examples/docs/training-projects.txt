@@ -1,0 +1,5 @@
+# SEDNA training project list (one repo-relative path per line)
+examples/sedna-cms/cms-reference
+examples/sedna-demo/spring-demo
+examples/sedna-demo/inventory-demo
+examples/sedna-demo/order-demo

@@ -26,7 +26,7 @@ class SpringBootMultiFixtureIntegrationTest {
   @ParameterizedTest
   @ValueSource(strings = {"spring-demo", "inventory-demo", "order-demo"})
   void reverseProducesDna(String fixtureName) {
-    Path project = RepoPaths.locateRoot().resolve("examples").resolve(fixtureName);
+    Path project = RepoPaths.exampleProject(fixtureName);
     var graph = ReverseServices.pipeline().reverseGraph(project);
     assertTrue(graph.isOk(), () -> fixtureName + ": " + graph.error());
     boolean hasMotif =
@@ -47,7 +47,7 @@ class SpringBootMultiFixtureIntegrationTest {
   @ValueSource(strings = {"spring-demo", "inventory-demo", "order-demo"})
   void forwardGeneratedProjectCompiles(String fixtureName, @TempDir Path outputDir) throws Exception {
     Path repoRoot = RepoPaths.locateRoot();
-    Path project = repoRoot.resolve("examples").resolve(fixtureName);
+    Path project = RepoPaths.exampleProject(fixtureName);
     Path gradlew = RepoPaths.gradlew(repoRoot);
 
     var reverse = ReverseServices.pipeline();

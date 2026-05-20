@@ -21,6 +21,15 @@ public final class RegistryProposalCorpusValidator {
       Comparator.comparing((RegistryUpdateProposal p) -> p.proposed().canonicalKey())
           .thenComparing(RegistryUpdateProposal::resolution);
 
+  /** Creates a corpus-level registry proposal validator. */
+  public RegistryProposalCorpusValidator() {}
+
+  /**
+   * Ensures registry proposals resolve consistently across all projects.
+   *
+   * @param projects training results for each project
+   * @return {@code true} when valid or structured error on conflict
+   */
   public Result<Boolean, SemanticError> validateCorpus(List<TrainingProjectResult> projects) {
     List<RegistryUpdateProposal> flat = new ArrayList<>();
     for (TrainingProjectResult project : projects) {

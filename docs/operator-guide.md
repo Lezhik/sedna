@@ -1,6 +1,6 @@
 # SEDNA Operator Guide (Phase 14)
 
-Local and CI workflows for semantic DNA pipelines.
+Local and CI workflows for semantic DNA pipelines. Example project layout: [examples/README.md](../examples/README.md).
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@ Local and CI workflows for semantic DNA pipelines.
 
 ```bash
 # 1. Reverse project → DNA
-./gradlew :sedna-cli:run --args="reverse --input=examples/cms-reference --output=/tmp/cms.sdna"
+./gradlew :sedna-cli:run --args="reverse --input=examples/sedna-cms/cms-reference --output=/tmp/cms.sdna"
 
 # 2. Validate DNA
 ./gradlew :sedna-cli:run --args="validate --input=/tmp/cms.sdna"
@@ -39,7 +39,7 @@ Installable distribution: `./gradlew :sedna-cli:installDist` → `sedna-cli/buil
 All commands support `--format=json` for machine-readable status:
 
 ```bash
-sedna validate --input=examples/cms-reference-fixture.sdna --format=json
+sedna validate --input=examples/sedna-e2e-tests/cms-reference-fixture.sdna --format=json
 sedna diff --left=baseline.sdna --right=candidate.sdna --format=json
 sedna run --input=fixture.sdna --checkpoint-dir=checkpoints --format=json
 sedna replay --checkpoint-dir=checkpoints --format=json
@@ -72,18 +72,22 @@ sedna train --corpus=. --output=training-out --format=json
 ## Monitoring endpoint
 
 ```bash
-sedna monitor --input=examples/cms-reference-fixture.sdna --port=8080
+sedna monitor --input=examples/sedna-e2e-tests/cms-reference-fixture.sdna --port=8080
 curl http://127.0.0.1:8080/health
 curl http://127.0.0.1:8080/trace
 ```
 
 Or combine with run: `sedna run --input=... --monitor-port=8080`.
 
-## Distributed runtime & Kafka (prototype)
+## Current version limitations
 
-- `LocalDistributedRuntimeCoordinator` — single-node deterministic fallback
-- `InMemoryTraceEventBus` — local trace fan-out
-- `KafkaTraceEventBus` — set `SEDNA_KAFKA_BOOTSTRAP_SERVERS` (producer deferred; returns `NOT_IMPLEMENTED`)
+The operator guide covers **local and CI** workflows only. The following are **not supported in the current release** and will be addressed only after core functionality (Java/Spring DNA pipelines, runtime, mutation, training) is complete:
+
+- Multi-language projects (Kotlin, TypeScript, etc.)
+- Distributed runtime, Kafka, Kubernetes / cloud deployment
+- Cluster-wide orchestration or cross-service production semantics
+
+Use local execution, file or JDBC checkpoints, and the monitoring endpoint on a single node.
 
 ## IntelliJ / IDE
 

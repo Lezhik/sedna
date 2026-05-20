@@ -35,16 +35,18 @@ The output is compact semantic DNA and registry updates.
 - Validation layers
 - Transaction boundaries
 
-## Out of Scope
+## Out of Scope (Current Version)
 
-- distributed systems
-- Kafka
-- microservices
-- Kubernetes
+The training pipeline currently targets **Spring Boot monoliths** only. The following domains are **not supported in the current release** and are deferred until core Java/Spring functionality is complete:
+
+- distributed systems architectures
+- Kafka / message-bus-centric designs
+- microservices decomposition
+- Kubernetes / cloud-native deployment patterns
 - distributed sagas
 - reactive pipelines
 
-Scope defines supported technology domains.
+These may be added in a future release after the primary pipeline is stabilized; they are not current-version deliverables.
 
 ---
 

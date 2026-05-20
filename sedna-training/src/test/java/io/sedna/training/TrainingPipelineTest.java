@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -14,7 +13,9 @@ import org.junit.jupiter.api.io.TempDir;
 class TrainingPipelineTest {
 
   private static final Path CMS_REFERENCE =
-      Paths.get("..", "examples", "cms-reference").toAbsolutePath().normalize();
+      io.sedna.core.examples.ExamplesLayout.findProjectRoot(
+              Path.of("..").toAbsolutePath().normalize(), "cms-reference")
+          .orElseThrow();
 
   private final TrainingPipeline pipeline = TrainingServices.pipeline();
 

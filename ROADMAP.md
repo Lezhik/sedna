@@ -13,7 +13,7 @@ The SEDNA roadmap follows five core engineering principles:
 1. Determinism before performance
 2. Canonical semantic structures before optimization
 3. Validation before execution
-4. Local-only execution before distributed scaling
+4. Local-only execution (distributed/cloud scaling is post-core; see §13)
 5. Stable interfaces before feature expansion
 
 The roadmap is intentionally incremental.
@@ -40,10 +40,9 @@ Every phase must produce a stable and testable system state.
 | Phase 12 | Runtime Profiles STATEFUL & SUPERVISOR | 6 weeks |
 | Phase 13 | Training Depth & Corpus | 4 weeks |
 | Phase 14 | Platform & Tooling | 6 weeks |
-| Phase 15 | Multi-Language & Cloud | ongoing |
 
 Total sequential estimate (Phases 0–7): 30 weeks  
-Total to v2.0 (Phases 0–15): ~63 weeks
+Total to v1.6 (Phases 0–14): ~58 weeks
 
 Parallel AI-agent execution estimate (Phases 0–7): 24–26 weeks
 
@@ -486,11 +485,24 @@ Harden the platform for production readiness.
 | v1.4 | STATEFUL & SUPERVISOR runtime | Phase 12 acceptance criteria |
 | v1.5 | Training corpus depth | Phase 13 acceptance criteria |
 | v1.6 | Platform tooling | Phase 14 acceptance criteria |
-| v2.0 | Multi-language & cloud | Phase 15 acceptance criteria |
 
 ---
 
-# 13. Success Metrics
+# 13. Current Version Limitations (Post-Core)
+
+The following capabilities are **not supported in the current release** and will be considered **only after** core functionality is complete and stabilized (Phases 0–14 / v1.x):
+
+- Multi-language reverse and forward pipelines (Kotlin, TypeScript, etc.)
+- Distributed runtime scaling beyond local deterministic execution
+- Kafka or other external message buses for execution traces
+- Cloud-native deployment (Kubernetes manifests, cluster orchestration)
+- Production cross-service distributed transaction semantics
+
+These items are intentionally excluded from the v1.x roadmap. They may be revisited in a future major release after acceptance criteria for Phases 0–14 are met.
+
+---
+
+# 14. Success Metrics
 
 ## Functional Metrics
 
@@ -524,7 +536,7 @@ Harden the platform for production readiness.
 
 ---
 
-# 14. Final Roadmap Principle
+# 15. Final Roadmap Principle
 
 Every roadmap phase must preserve:
 

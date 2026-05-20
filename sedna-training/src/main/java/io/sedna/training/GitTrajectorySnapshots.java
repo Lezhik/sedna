@@ -17,6 +17,17 @@ public final class GitTrajectorySnapshots {
 
   private final GitCommitSnapshotExtractor extractor = new GitCommitSnapshotExtractor();
 
+  /** Creates a snapshot capturer with default Git settings. */
+  public GitTrajectorySnapshots() {}
+
+  /**
+   * Checks out each commit and builds semantic snapshots with DNA fingerprints.
+   *
+   * @param projectRoot Gradle project root
+   * @param reversePipeline reverse pipeline for graph extraction
+   * @param encoder DNA encoder for fingerprints
+   * @return ordered snapshots or structured error
+   */
   public Result<List<SemanticSnapshot>, SemanticError> capture(
       Path projectRoot, ReversePipeline reversePipeline, DnaEncoder encoder) {
     var snapshots =

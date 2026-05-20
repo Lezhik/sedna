@@ -19,7 +19,7 @@ class Phase14AcceptanceTest {
 
   @Test
   void cmsRoundTripGraphvizExport(@TempDir Path temp) throws Exception {
-    Path project = RepoPaths.locateRoot().resolve("examples").resolve("cms-reference").normalize();
+    Path project = RepoPaths.exampleProject("cms-reference");
     var reverse = ReverseServices.pipeline();
     var original = reverse.reverseGraph(project);
     assertTrue(original.isOk());

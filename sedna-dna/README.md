@@ -12,4 +12,4 @@ byte[] dna = DnaServices.encoder().encode(CmsReferenceFixtureGraph.create()).val
 var graph = DnaServices.decoder().decode(dna).value();
 ```
 
-Golden fixture: `examples/cms-reference-fixture.sdna`.
+Golden fixture: `examples/sedna-e2e-tests/cms-reference-fixture.sdna` (see `examples/docs/cms-reference-fixture.md`).

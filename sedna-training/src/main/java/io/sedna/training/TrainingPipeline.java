@@ -29,13 +29,25 @@ public final class TrainingPipeline {
   private final RegistryProposalCorpusValidator registryProposalCorpusValidator =
       new RegistryProposalCorpusValidator();
 
+  /**
+   * Creates a training pipeline with reverse, DNA, and registry dependencies.
+   *
+   * @param reversePipeline reverse pipeline for graph extraction
+   * @param encoder DNA encoder for fingerprints
+   * @param registry semantic registry for proposal resolution
+   */
   public TrainingPipeline(ReversePipeline reversePipeline, DnaEncoder encoder, SemanticRegistry registry) {
     this.reversePipeline = reversePipeline;
     this.encoder = encoder;
     this.registryUpdateProposer = new RegistryUpdateProposer(registry);
   }
 
-  /** Trains all local example projects under {@code repositoryRoot/examples}. */
+  /**
+   * Trains all local Gradle projects under {@code repositoryRoot/examples/sedna-* /}.
+   *
+   * @param repositoryRoot SEDNA repository root
+   * @return training dataset with canonical fingerprint or structured error
+   */
   public Result<TrainingDataset, SemanticError> trainCorpus(Path repositoryRoot) {
     var projects = new CorpusProjectListLoader().loadFromRepository(repositoryRoot);
     if (!projects.isOk()) {
@@ -44,6 +56,12 @@ public final class TrainingPipeline {
     return train(projects.value());
   }
 
+  /**
+   * Trains multiple projects in deterministic path order (never merges graphs).
+   *
+   * @param projectPaths Gradle project roots
+   * @return training dataset with canonical fingerprint or structured error
+   */
   public Result<TrainingDataset, SemanticError> train(List<Path> projectPaths) {
     List<Path> ordered =
         projectPaths.stream()
@@ -70,6 +88,12 @@ public final class TrainingPipeline {
         new TrainingDataset(pending.projects(), TrainingDatasetHasher.fingerprint(pending)));
   }
 
+  /**
+   * Trains a single project folder.
+   *
+   * @param projectRoot Gradle project root
+   * @return per-project training result or structured error
+   */
   public Result<TrainingProjectResult, SemanticError> trainProject(Path projectRoot) {
     var graph = reversePipeline.reverseGraph(projectRoot);
     if (!graph.isOk()) {

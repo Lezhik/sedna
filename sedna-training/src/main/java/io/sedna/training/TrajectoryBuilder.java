@@ -15,6 +15,17 @@ public final class TrajectoryBuilder {
 
   private final SemanticDeltaExtractor deltaExtractor = new SemanticDeltaExtractor();
 
+  /** Creates a trajectory builder. */
+  public TrajectoryBuilder() {}
+
+  /**
+   * Builds a semantic trajectory from commit order and snapshots.
+   *
+   * @param projectPath project root path
+   * @param commitOrder Git commit hashes oldest-first
+   * @param snapshots semantic snapshots per commit
+   * @return semantic trajectory with topology-ordered deltas
+   */
   public SemanticTrajectory build(
       Path projectPath, List<String> commitOrder, List<SemanticSnapshot> snapshots) {
     List<SemanticDelta> deltas = new ArrayList<>();

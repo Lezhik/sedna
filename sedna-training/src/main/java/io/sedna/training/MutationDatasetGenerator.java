@@ -12,6 +12,15 @@ import java.util.List;
 /** Generates deterministic mutation training candidates (not applied). */
 public final class MutationDatasetGenerator {
 
+  /** Creates a mutation dataset generator. */
+  public MutationDatasetGenerator() {}
+
+  /**
+   * Generates deterministic mutation candidates for a graph.
+   *
+   * @param graph semantic graph
+   * @return sorted mutation entries (not applied)
+   */
   public List<MutationDatasetEntry> generate(SemanticGraph graph) {
     SemanticGraph canonical = CanonicalOrdering.canonicalize(graph);
     List<MutationDatasetEntry> entries = new ArrayList<>();

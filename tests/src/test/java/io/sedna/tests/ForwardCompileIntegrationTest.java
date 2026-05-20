@@ -18,7 +18,7 @@ class ForwardCompileIntegrationTest {
   void forwardFixtureCompilesWithGradle(@TempDir Path outputDir) throws Exception {
     Path repoRoot = RepoPaths.locateRoot();
     Path gradlew = RepoPaths.gradlew(repoRoot);
-    Path fixture = repoRoot.resolve("examples/cms-reference-fixture.sdna");
+    Path fixture = io.sedna.core.examples.ExamplesLayout.goldenCmsFixture(repoRoot);
     Path generated = outputDir.resolve("generated");
 
     byte[] dna = Files.readAllBytes(fixture);

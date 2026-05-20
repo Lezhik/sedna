@@ -4,13 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 
 class SourceParseParityTest {
 
   private static final Path SPRING_DEMO =
-      Paths.get("..", "examples", "spring-demo").toAbsolutePath().normalize();
+      io.sedna.core.examples.ExamplesLayout.findProjectRoot(
+              Path.of("..").toAbsolutePath().normalize(), "spring-demo")
+          .orElseThrow();
 
   @Test
   void spoonAndJavaParserProduceIdenticalParsedProject() {

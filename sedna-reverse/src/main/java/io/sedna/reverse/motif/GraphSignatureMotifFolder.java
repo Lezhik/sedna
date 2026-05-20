@@ -9,6 +9,7 @@ import io.sedna.dna.SednaFoldMotifCodec;
 /** Graph-signature motif folding via SEDNA-FOLD-v1 (CRUD_STACK detection). */
 public final class GraphSignatureMotifFolder implements MotifFolder {
 
+  /** Singleton graph-signature motif folder. */
   public static final GraphSignatureMotifFolder INSTANCE = new GraphSignatureMotifFolder();
 
   private final MotifFolder delegate = SednaFoldMotifCodec.INSTANCE;

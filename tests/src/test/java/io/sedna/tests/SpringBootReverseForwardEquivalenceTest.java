@@ -20,8 +20,7 @@ class SpringBootReverseForwardEquivalenceTest {
   @ParameterizedTest
   @ValueSource(strings = {"spring-demo", "inventory-demo", "order-demo"})
   void reverseForwardRoundTripPreservesSemantics(String fixtureName, @TempDir Path outputDir) {
-    Path project =
-        RepoPaths.locateRoot().resolve("examples").resolve(fixtureName).toAbsolutePath().normalize();
+    Path project = RepoPaths.exampleProject(fixtureName);
 
     var reverse = ReverseServices.pipeline();
     var original = reverse.reverseGraph(project);

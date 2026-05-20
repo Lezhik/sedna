@@ -17,10 +17,21 @@ import org.eclipse.jgit.lib.Repository;
 /** Checks out each commit (oldest-first) and extracts semantic graphs deterministically. */
 public final class GitCommitSnapshotExtractor {
 
+  /** Maximum number of commits processed per project trajectory. */
   public static final int MAX_COMMITS = 32;
 
   private final GitTrajectoryStep trajectoryStep = new GitTrajectoryStep();
 
+  /** Creates a snapshot extractor with default trajectory settings. */
+  public GitCommitSnapshotExtractor() {}
+
+  /**
+   * Checks out each commit and extracts a semantic graph snapshot.
+   *
+   * @param projectRoot Gradle project root with a {@code .git} directory
+   * @param graphAtCommit callback that builds a graph at the checked-out commit
+   * @return ordered commit snapshots or structured error
+   */
   public Result<List<CommitGraphSnapshot>, SemanticError> extract(
       Path projectRoot, BiFunction<Path, String, Result<SemanticGraph, SemanticError>> graphAtCommit) {
     Path gitDir = projectRoot.resolve(".git");

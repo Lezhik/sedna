@@ -13,6 +13,15 @@ import java.util.TreeSet;
 /** Loads project folder paths from a list file (one path per line; no repo-wide merge). */
 public final class ProjectListLoader {
 
+  /** Creates a project list loader. */
+  public ProjectListLoader() {}
+
+  /**
+   * Loads project paths from a manifest file (one path per line).
+   *
+   * @param projectsListFile manifest file path
+   * @return ordered absolute project paths or structured error
+   */
   public Result<List<Path>, SemanticError> load(Path projectsListFile) {
     if (!Files.isRegularFile(projectsListFile)) {
       return Result.err(

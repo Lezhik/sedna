@@ -12,6 +12,12 @@ public final class TrainingDatasetHasher {
 
   private TrainingDatasetHasher() {}
 
+  /**
+   * Computes a canonical SHA-256 fingerprint of a multi-project training dataset.
+   *
+   * @param dataset training dataset to fingerprint
+   * @return lowercase SHA-256 hex digest
+   */
   public static String fingerprint(TrainingDataset dataset) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");

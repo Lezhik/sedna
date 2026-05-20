@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 
-/** Enforces golden SHA-256 documented in examples/cms-reference-fixture.README.md. */
+/** Enforces golden SHA-256 documented in examples/docs/cms-reference-fixture.md. */
 class GoldenFixtureReadmeShaTest {
 
   private static final Pattern SHA_LINE =
@@ -20,8 +20,8 @@ class GoldenFixtureReadmeShaTest {
   @Test
   void fixtureBytesMatchReadmeSha256() throws Exception {
     Path repoRoot = RepoPaths.locateRoot();
-    Path fixture = repoRoot.resolve("examples/cms-reference-fixture.sdna");
-    Path readme = repoRoot.resolve("examples/cms-reference-fixture.README.md");
+    Path fixture = io.sedna.core.examples.ExamplesLayout.goldenCmsFixture(repoRoot);
+    Path readme = io.sedna.core.examples.ExamplesLayout.goldenCmsFixtureDoc(repoRoot);
     assertTrue(Files.isRegularFile(fixture), "Missing " + fixture);
     assertTrue(Files.isRegularFile(readme), "Missing " + readme);
 

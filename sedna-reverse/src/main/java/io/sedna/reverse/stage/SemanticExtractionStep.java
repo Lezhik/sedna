@@ -11,6 +11,15 @@ import io.sedna.reverse.spring.SpringBootSemanticRules;
 /** Step 3 — structural graph to semantic graph. */
 public final class SemanticExtractionStep {
 
+  /** Creates a semantic extraction step. */
+  public SemanticExtractionStep() {}
+
+  /**
+   * Selects a reverse profile and builds the semantic graph.
+   *
+   * @param structural class-level dependency graph
+   * @return semantic graph or structured error
+   */
   public Result<SemanticGraph, SemanticError> extract(StructuralGraph structural) {
     if (CmsSemanticRules.isCmsReference(structural)) {
       return Result.ok(CmsSemanticRules.toSemanticGraph(structural));

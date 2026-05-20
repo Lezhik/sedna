@@ -16,6 +16,17 @@ import java.util.TreeSet;
 /** Extracts atomic semantic deltas between consecutive graph snapshots. */
 public final class SemanticDeltaExtractor {
 
+  /** Creates a semantic delta extractor. */
+  public SemanticDeltaExtractor() {}
+
+  /**
+   * Extracts atomic deltas between two graph snapshots.
+   *
+   * @param commitHash Git commit hash for the transition
+   * @param before previous snapshot graph
+   * @param after current snapshot graph
+   * @return sorted semantic deltas
+   */
   public List<SemanticDelta> extract(String commitHash, SemanticGraph before, SemanticGraph after) {
     SemanticGraph left = CanonicalOrdering.canonicalize(before);
     SemanticGraph right = CanonicalOrdering.canonicalize(after);

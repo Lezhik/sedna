@@ -40,6 +40,11 @@ public final class SednaCli {
 
   SednaCli() {}
 
+  /**
+   * CLI entry point.
+   *
+   * @param args command-line arguments
+   */
   public static void main(String[] args) {
     int exit = new SednaCli().run(args);
     System.exit(exit);

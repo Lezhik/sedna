@@ -7,6 +7,14 @@ public final class TrainingReproducibilityReport {
 
   private TrainingReproducibilityReport() {}
 
+  /**
+   * Builds a reproducibility report with dataset and index fingerprints.
+   *
+   * @param dataset training dataset
+   * @param manifestBody manifest text
+   * @param index embedding index built from the dataset
+   * @return reproducibility report text
+   */
   public static String build(TrainingDataset dataset, String manifestBody, SemanticEmbeddingIndex index) {
     StringBuilder builder = new StringBuilder();
     builder.append("sedna-reproducibility-v1").append('\n');

@@ -30,6 +30,15 @@ public final class BytecodeDependencyAugmenter {
           "build/classes/kotlin/main",
           "target/classes");
 
+  /** Creates an augmenter with default classpath roots. */
+  public BytecodeDependencyAugmenter() {}
+
+  /**
+   * Merges ASM-discovered type references into parsed class dependencies.
+   *
+   * @param project source-parsed project
+   * @return augmented project or structured error
+   */
   public Result<ParsedProject, SemanticError> augment(ParsedProject project) {
     Path projectRoot = project.projectRoot();
     Set<String> projectTypes = new TreeSet<>(project.classesByName().keySet());
