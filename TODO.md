@@ -152,7 +152,7 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 - [x] Step 5: Motif detection/folding (`IdentityMotifFolder`; SEDNA-FOLD-v1 deferred to Phase 11)
 - [x] Step 6: Context reconstruction (LOCAL/MODULE map; not stored in DNA)
 - [x] Step 7: Genome serialization via `sedna-dna`
-- [x] Step 8: Git trajectory extraction (JGit commit hashes; atomic deltas deferred to Phase 13)
+- [x] Step 8: Git trajectory extraction (JGit commit hashes + per-commit checkout in training; deltas via `SemanticDeltaExtractor`)
 
 ### P0 — sedna-reverse LLM
 
@@ -233,7 +233,7 @@ Phase 2 runs alone in this window. **Do not start Phase 3 at Week 7** — revers
 ### P0 — sedna-training
 
 - [x] Project folder ingestion (never whole-repo merge)
-- [x] Reuse reverse stages for per-commit graphs (HEAD snapshot; per-commit checkout deferred to Phase 13)
+- [x] Reuse reverse stages for per-commit graphs (JGit checkout per commit when history ≥2 commits)
 - [x] Trajectory construction with ordered commits
 - [x] Deterministic embedding generation
 - [x] Mutation dataset generation
@@ -336,21 +336,21 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 
 ### P0 — sedna-reverse
 
-- [ ] Add Spoon as primary AST parser; ASM for bytecode-level edges
+- [x] Add Spoon as primary AST parser; ASM for bytecode-level edges (`SpoonSourceParseStep`, `BytecodeDependencyAugmenter`, `PrimarySourceParseStep`)
 - [x] General `SemanticExtractionStep` (Spring Boot monolith via `SpringBootSemanticRules`)
-- [ ] UNKNOWN node classification with optional LLM label enrichment (topology unchanged)
+- [x] UNKNOWN node classification — heuristic `UnknownNodeEnrichmentStep` + `DisabledUnknownLabelProvider` (LLM label enrichment deferred)
 - [x] Profile detection: Spring Boot REST monolith (Gradle), multi-module deferred — `examples/spring-demo`
-- [ ] Atomic semantic deltas per Git commit (Step 8 completion)
+- [x] Git per-commit snapshots (`GitCommitSnapshotExtractor`) + atomic deltas (`SemanticDeltaExtractor`, contract schema in delta key)
 
 ### P0 — sedna-forward
 
 - [x] Profile-driven code generators (`SpringBootCodeGenerator` + `CodeGenerationStep` router)
-- [ ] Support additional `NodeKind` values used by general extraction
+- [x] Support additional `NodeKind` values used by general extraction (`INTEGRATION` codegen in `SpringBootCodeGenerator`)
 - [x] Generated project compiles for at least 3 non-CMS reference fixtures (`SpringBootMultiFixtureIntegrationTest`)
 
 ### P1 — sedna-validation
 
-- [ ] Equivalence suite parameterized by project profile
+- [x] Equivalence suite parameterized by project profile (`ProfileEquivalenceSuiteTest`)
 
 ### P0 — Acceptance (Phase 10 / v1.2)
 
@@ -408,7 +408,7 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 
 - [x] STATEFUL reference graph: checkpoint stores FSM state; `resumeStateful` continues execution (`ProfileRuntimeTest`, `RuntimeReplayTest`)
 - [x] SUPERVISOR reference graph: compensation in canonical reverse order on failure injection (`ProfileRuntimeTest`)
-- [ ] Replay trace hash 100% match per profile (DAG covered; STATEFUL/SUPERVISOR replay gates deferred)
+- [x] Replay trace hash 100% match per profile (DAG, STATEFUL, SUPERVISOR — `RuntimeReplayTest`, `injectFailureNodeId` in checkpoints)
 
 ---
 
@@ -416,9 +416,9 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 
 ### P0 — sedna-training
 
-- [ ] Per-commit JGit checkout → multi-snapshot trajectories per project
-- [ ] `SemanticDeltaExtractor` active on full commit history
-- [ ] Corpus ingestion from `examples/cms-list.csv` / expanded project list
+- [x] Per-commit JGit checkout → multi-snapshot trajectories per project (`GitCommitSnapshotExtractor`, `PerCommitTrajectoryTest`)
+- [x] `SemanticDeltaExtractor` on consecutive commit snapshots (contract `ioSchema` included in delta comparison)
+- [x] Corpus ingestion from `examples/cms-list.csv` / expanded project list (`CorpusProjectListLoader`, `examples/training-corpus.list`)
 - [ ] Registry update proposals validated against conflict resolution rules at scale
 
 ### P1 — sedna-training
@@ -533,12 +533,12 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 
 | Gap | Phase |
 |-----|-------|
-| Spoon/ASM parser stack | 10 |
-| UNKNOWN node classification + LLM label enrichment | 10 |
+| LLM label enrichment for UNKNOWN nodes | 10 |
+| Registry update proposals at scale | 13 |
 | ≥3 non-CMS fixtures with compile acceptance | 10 — done |
-| SEDNA-FOLD-v1 (real motif folding) | 11 |
-| STATEFUL / SUPERVISOR runtime + compensation | 12 |
-| Per-commit training trajectories | 13 |
+| SEDNA-FOLD-v1 (real motif folding) | 11 — done |
+| STATEFUL / SUPERVISOR replay hash gates | 12 |
+| Corpus scale (20–300 projects) | 13 |
 | Expanded corpus (20–300 projects) | 13 |
 | IntelliJ plugin, visualization, distributed runtime | 14–15 |
 | Multi-language pipelines, Kubernetes | 15 |

@@ -21,6 +21,7 @@ public final class TrainingPipeline {
   private final ReversePipeline reversePipeline;
   private final DnaEncoder encoder;
   private final GitTrajectoryStep gitTrajectoryStep = new GitTrajectoryStep();
+  private final GitTrajectorySnapshots gitTrajectorySnapshots = new GitTrajectorySnapshots();
   private final TrajectoryBuilder trajectoryBuilder = new TrajectoryBuilder();
   private final DeterministicSemanticEmbedder embedder = new DeterministicSemanticEmbedder();
   private final MutationDatasetGenerator mutationDatasetGenerator = new MutationDatasetGenerator();
@@ -70,9 +71,18 @@ public final class TrainingPipeline {
     }
 
     List<String> commitOrder = git.value().commitHashes();
-    String snapshotCommit = commitOrder.isEmpty() ? "WORKTREE" : commitOrder.getLast();
-    List<SemanticSnapshot> snapshots =
-        List.of(new SemanticSnapshot(snapshotCommit, graph.value(), fingerprint.value()));
+    List<SemanticSnapshot> snapshots = new ArrayList<>();
+    if (commitOrder.size() >= 2) {
+      var perCommit = gitTrajectorySnapshots.capture(projectRoot, reversePipeline, encoder);
+      if (!perCommit.isOk()) {
+        return Result.err(perCommit.error());
+      }
+      snapshots = perCommit.value();
+    }
+    if (snapshots.isEmpty()) {
+      String snapshotCommit = commitOrder.isEmpty() ? "WORKTREE" : commitOrder.getLast();
+      snapshots = List.of(new SemanticSnapshot(snapshotCommit, graph.value(), fingerprint.value()));
+    }
 
     SemanticTrajectory trajectory = trajectoryBuilder.build(projectRoot, commitOrder, snapshots);
 

@@ -52,7 +52,7 @@ public final class RuntimeEngine {
       return trace;
     }
 
-    return persistCheckpoints(canonical, plan.value(), trace.value());
+    return persistCheckpoints(canonical, plan.value(), trace.value(), options);
   }
 
   public Result<ExecutionTrace, SemanticError> restoreAndContinue(long fromSequence) {
@@ -125,7 +125,10 @@ public final class RuntimeEngine {
   }
 
   private Result<ExecutionTrace, SemanticError> persistCheckpoints(
-      SemanticGraph canonical, RuntimeExecutionPlan plan, ExecutionTrace trace) {
+      SemanticGraph canonical,
+      RuntimeExecutionPlan plan,
+      ExecutionTrace trace,
+      RuntimeExecutionOptions options) {
     byte[] snapshot = encoder.encode(canonical).value();
     int completedNodes = 0;
     String fsmState = executor.fsmStateAfter(trace, plan);
@@ -135,7 +138,13 @@ public final class RuntimeEngine {
         completedNodes++;
       }
       Result<?, SemanticError> stored =
-          checkpointStore.append(snapshot, event.token(), fsmState, completedNodes);
+          checkpointStore.append(
+              snapshot,
+              event.token(),
+              fsmState,
+              completedNodes,
+              plan.profile().name(),
+              options.injectFailureAfterNodeId());
       if (!stored.isOk()) {
         return Result.err(stored.error());
       }

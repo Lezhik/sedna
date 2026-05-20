@@ -8,10 +8,10 @@ import io.sedna.core.SemanticLink;
 import io.sedna.training.model.SemanticDelta;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /** Extracts atomic semantic deltas between consecutive graph snapshots. */
 public final class SemanticDeltaExtractor {
@@ -91,7 +91,7 @@ public final class SemanticDeltaExtractor {
   }
 
   private static Set<String> contractSet(GenomeNode node) {
-    Set<String> keys = new HashSet<>();
+    Set<String> keys = new TreeSet<>();
     for (Contract contract : node.contracts()) {
       keys.add(contractKey(contract));
     }
@@ -105,6 +105,11 @@ public final class SemanticDeltaExtractor {
   private static String contractKey(Contract contract) {
     StringBuilder builder = new StringBuilder();
     builder.append(contract.protocol().name()).append('|');
+    builder
+        .append(contract.ioSchema().format())
+        .append(':')
+        .append(contract.ioSchema().payload())
+        .append('|');
     contract
         .provides()
         .forEach(cap -> builder.append(cap.name()).append('@').append(cap.versionConstraint()).append(','));
@@ -115,7 +120,7 @@ public final class SemanticDeltaExtractor {
   }
 
   private static Set<String> constraintSet(GenomeNode node) {
-    Set<String> codes = new HashSet<>();
+    Set<String> codes = new TreeSet<>();
     node.constraints().forEach(constraint -> codes.add(constraint.code()));
     return codes;
   }
@@ -125,7 +130,7 @@ public final class SemanticDeltaExtractor {
   }
 
   private static Set<String> linkKeys(SemanticGraph graph) {
-    Set<String> keys = new HashSet<>();
+    Set<String> keys = new TreeSet<>();
     for (SemanticLink link : graph.links()) {
       keys.add(link.sourceNodeId() + ">" + link.targetNodeId() + ">" + link.type().name());
     }

@@ -1,5 +1,6 @@
 package io.sedna.runtime.replay;
 
+import io.sedna.core.ExecutionProfile;
 import io.sedna.core.Result;
 import io.sedna.core.SemanticError;
 import io.sedna.dna.DnaDecoder;
@@ -41,18 +42,20 @@ public final class ReplayHarness {
           SemanticError.global(io.sedna.core.ErrorCode.VALIDATION_FAILED, "No checkpoints"));
     }
 
-    CheckpointRecord last = checkpoints.value().getLast();
-    var decoded = decoder.decode(last.graphSnapshotRef());
+    CheckpointRecord lastCheckpoint = checkpoints.value().getLast();
+    var decoded = decoder.decode(lastCheckpoint.graphSnapshotRef());
     if (!decoded.isOk()) {
       return Result.err(decoded.error());
     }
 
-    Result<RuntimeExecutionPlan, SemanticError> plan = scheduler.build(decoded.value());
+    ExecutionProfile profile = profileFromCheckpoint(lastCheckpoint);
+    RuntimeExecutionOptions options = optionsFromCheckpoint(lastCheckpoint);
+    Result<RuntimeExecutionPlan, SemanticError> plan = scheduler.build(decoded.value(), profile);
     if (!plan.isOk()) {
       return Result.err(plan.error());
     }
 
-    return executor.execute(plan.value(), RuntimeExecutionOptions.DEFAULT);
+    return executor.execute(plan.value(), options);
   }
 
   public Result<Boolean, SemanticError> verifyReplayMatches(ExecutionTrace original) {
@@ -69,5 +72,20 @@ public final class ReplayHarness {
               "Replay trace hash mismatch: expected " + originalHash + " got " + replayHash));
     }
     return Result.ok(Boolean.TRUE);
+  }
+
+  private static ExecutionProfile profileFromCheckpoint(CheckpointRecord checkpoint) {
+    try {
+      return ExecutionProfile.valueOf(checkpoint.executionProfile());
+    } catch (IllegalArgumentException ex) {
+      return ExecutionProfile.DAG;
+    }
+  }
+
+  private static RuntimeExecutionOptions optionsFromCheckpoint(CheckpointRecord checkpoint) {
+    if (checkpoint.injectFailureNodeId() != 0L) {
+      return RuntimeExecutionOptions.injectFailure(checkpoint.injectFailureNodeId());
+    }
+    return RuntimeExecutionOptions.DEFAULT;
   }
 }

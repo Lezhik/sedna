@@ -63,6 +63,7 @@ public final class SpringBootNaming {
       case ENTITY -> "domain";
       case SERVICE -> "service";
       case CONTROLLER -> "web";
+      case INTEGRATION -> "integration";
       default -> "generated";
     };
   }

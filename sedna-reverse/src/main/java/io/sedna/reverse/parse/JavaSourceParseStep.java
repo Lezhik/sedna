@@ -18,12 +18,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Stream;
 
-/** Step 1 — parse Java sources (JavaParser; Spoon deferred for generalized projects). */
-public final class JavaSourceParseStep {
+/** Step 1 — JavaParser fallback when Spoon cannot parse the project. */
+public final class JavaSourceParseStep implements SourceParseStep {
 
+  @Override
   public Result<ParsedProject, SemanticError> parse(Path projectRoot) {
     Path sourceRoot = projectRoot.resolve("src/main/java");
     if (!Files.isDirectory(sourceRoot)) {
@@ -51,44 +51,7 @@ public final class JavaSourceParseStep {
     }
 
     ParsedProject raw = new ParsedProject(projectRoot.toAbsolutePath().normalize(), classes);
-    return Result.ok(resolveDependencies(raw));
-  }
-
-  private static ParsedProject resolveDependencies(ParsedProject project) {
-    Map<String, String> simpleToQualified = new TreeMap<>();
-    for (ParsedClass parsed : project.classes()) {
-      simpleToQualified.put(parsed.simpleName(), parsed.qualifiedName());
-    }
-
-    Map<String, ParsedClass> resolved = new TreeMap<>();
-    for (ParsedClass parsed : project.classes()) {
-      List<String> dependencies =
-          parsed.dependencyQualifiedNames().stream()
-              .map(name -> resolveDependencyName(name, simpleToQualified, project.classesByName()))
-              .filter(project.classesByName()::containsKey)
-              .distinct()
-              .sorted()
-              .toList();
-      resolved.put(
-          parsed.qualifiedName(),
-          new ParsedClass(
-              parsed.qualifiedName(),
-              parsed.packageName(),
-              parsed.simpleName(),
-              parsed.annotationSimpleNames(),
-              dependencies,
-              parsed.publicMethodSignatures()));
-    }
-    return new ParsedProject(project.projectRoot(), resolved);
-  }
-
-  private static String resolveDependencyName(
-      String dependency, Map<String, String> simpleToQualified, Map<String, ParsedClass> classesByName) {
-    if (classesByName.containsKey(dependency)) {
-      return dependency;
-    }
-    String qualified = simpleToQualified.get(dependency);
-    return qualified != null ? qualified : dependency;
+    return Result.ok(ParsedClassAssembler.resolveDependencies(raw));
   }
 
   private static Result<ParsedClass, SemanticError> parseFile(Path file, Path sourceRoot)

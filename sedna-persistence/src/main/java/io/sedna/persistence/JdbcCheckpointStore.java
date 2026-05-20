@@ -33,7 +33,8 @@ public final class JdbcCheckpointStore implements CheckpointStore {
             graph_snapshot_ref BYTEA NOT NULL,
             sequence_number BIGINT NOT NULL UNIQUE,
             fsm_state TEXT NOT NULL DEFAULT '',
-            completed_nodes INT NOT NULL DEFAULT 0
+            completed_nodes INT NOT NULL DEFAULT 0,
+            execution_profile TEXT NOT NULL DEFAULT 'DAG'
           )
           """);
       statement.execute(
@@ -46,6 +47,16 @@ public final class JdbcCheckpointStore implements CheckpointStore {
           ALTER TABLE sedna_checkpoint
           ADD COLUMN IF NOT EXISTS completed_nodes INT NOT NULL DEFAULT 0
           """);
+      statement.execute(
+          """
+          ALTER TABLE sedna_checkpoint
+          ADD COLUMN IF NOT EXISTS execution_profile TEXT NOT NULL DEFAULT 'DAG'
+          """);
+      statement.execute(
+          """
+          ALTER TABLE sedna_checkpoint
+          ADD COLUMN IF NOT EXISTS inject_failure_node_id BIGINT NOT NULL DEFAULT 0
+          """);
     }
   }
 
@@ -57,13 +68,25 @@ public final class JdbcCheckpointStore implements CheckpointStore {
   @Override
   public Result<CheckpointRecord, SemanticError> append(
       byte[] graphSnapshotRef, ExecutionToken token, String fsmState, int completedNodes) {
+    return append(graphSnapshotRef, token, fsmState, completedNodes, "DAG");
+  }
+
+  @Override
+  public Result<CheckpointRecord, SemanticError> append(
+      byte[] graphSnapshotRef,
+      ExecutionToken token,
+      String fsmState,
+      int completedNodes,
+      String executionProfile,
+      long injectFailureNodeId) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement =
             connection.prepareStatement(
                 """
                 INSERT INTO sedna_checkpoint (
-                  execution_token, graph_snapshot_ref, sequence_number, fsm_state, completed_nodes)
-                VALUES (?, ?, (SELECT COALESCE(MAX(sequence_number), 0) + 1 FROM sedna_checkpoint), ?, ?)
+                  execution_token, graph_snapshot_ref, sequence_number,
+                  fsm_state, completed_nodes, execution_profile, inject_failure_node_id)
+                VALUES (?, ?, (SELECT COALESCE(MAX(sequence_number), 0) + 1 FROM sedna_checkpoint), ?, ?, ?, ?)
                 RETURNING id, sequence_number
                 """,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -71,6 +94,8 @@ public final class JdbcCheckpointStore implements CheckpointStore {
       statement.setBytes(2, graphSnapshotRef);
       statement.setString(3, fsmState == null ? "" : fsmState);
       statement.setInt(4, completedNodes);
+      statement.setString(5, executionProfile == null ? "DAG" : executionProfile);
+      statement.setLong(6, injectFailureNodeId);
       try (ResultSet keys = statement.executeQuery()) {
         if (!keys.next()) {
           return Result.err(
@@ -79,7 +104,15 @@ public final class JdbcCheckpointStore implements CheckpointStore {
         long id = keys.getLong("id");
         long sequence = keys.getLong("sequence_number");
         return Result.ok(
-            new CheckpointRecord(id, token, graphSnapshotRef, sequence, fsmState, completedNodes));
+            new CheckpointRecord(
+                id,
+                token,
+                graphSnapshotRef,
+                sequence,
+                fsmState,
+                completedNodes,
+                executionProfile,
+                injectFailureNodeId));
       }
     } catch (SQLException ex) {
       return Result.err(SemanticError.global(ErrorCode.INTERNAL, ex.getMessage()));
@@ -92,7 +125,8 @@ public final class JdbcCheckpointStore implements CheckpointStore {
         PreparedStatement statement =
             connection.prepareStatement(
                 """
-                SELECT id, execution_token, graph_snapshot_ref, sequence_number, fsm_state, completed_nodes
+                SELECT id, execution_token, graph_snapshot_ref, sequence_number,
+                       fsm_state, completed_nodes, execution_profile, inject_failure_node_id
                 FROM sedna_checkpoint
                 ORDER BY sequence_number ASC
                 """)) {
@@ -114,7 +148,8 @@ public final class JdbcCheckpointStore implements CheckpointStore {
         PreparedStatement statement =
             connection.prepareStatement(
                 """
-                SELECT id, execution_token, graph_snapshot_ref, sequence_number, fsm_state, completed_nodes
+                SELECT id, execution_token, graph_snapshot_ref, sequence_number,
+                       fsm_state, completed_nodes, execution_profile, inject_failure_node_id
                 FROM sedna_checkpoint
                 WHERE sequence_number = ?
                 """)) {
@@ -139,6 +174,8 @@ public final class JdbcCheckpointStore implements CheckpointStore {
         rs.getBytes("graph_snapshot_ref"),
         rs.getLong("sequence_number"),
         rs.getString("fsm_state"),
-        rs.getInt("completed_nodes"));
+        rs.getInt("completed_nodes"),
+        rs.getString("execution_profile"),
+        rs.getLong("inject_failure_node_id"));
   }
 }

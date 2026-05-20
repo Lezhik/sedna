@@ -20,6 +20,9 @@ public final class VocabularyValidationEngine implements ValidationEngine {
   public Result<ValidationReport, SemanticError> validate(SemanticGraph graph) {
     for (GenomeNode node : graph.nodes()) {
       for (VocabRef ref : allVocabRefs(node)) {
+        if (ref.termPath().startsWith("UNKNOWN.INSTANCE.")) {
+          continue;
+        }
         var resolved = registry.resolve(ref);
         if (!resolved.isOk()) {
           return Result.err(resolved.error());

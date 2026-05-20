@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.sedna.core.ExecutionProfile;
+import io.sedna.core.NodeKind;
 import io.sedna.dna.fixture.CmsReferenceFixtureGraph;
 import io.sedna.persistence.InMemoryCheckpointStore;
 import io.sedna.runtime.execution.RuntimeExecutionOptions;
@@ -19,6 +20,43 @@ class RuntimeReplayTest {
     var graph = CmsReferenceFixtureGraph.create();
 
     var trace = engine.run(graph);
+    assertTrue(trace.isOk(), () -> String.valueOf(trace.error()));
+
+    var replay = RuntimeServices.replayHarness(store).verifyReplayMatches(trace.value());
+    assertTrue(replay.isOk(), () -> String.valueOf(replay.error()));
+  }
+
+  @Test
+  void statefulReplayProducesIdenticalTraceHash() {
+    InMemoryCheckpointStore store = new InMemoryCheckpointStore();
+    RuntimeEngine engine = RuntimeServices.engine(store);
+    var graph = CmsReferenceFixtureGraph.create();
+
+    var trace =
+        engine.run(graph, ExecutionProfile.STATEFUL, RuntimeExecutionOptions.DEFAULT);
+    assertTrue(trace.isOk(), () -> String.valueOf(trace.error()));
+
+    var replay = RuntimeServices.replayHarness(store).verifyReplayMatches(trace.value());
+    assertTrue(replay.isOk(), () -> String.valueOf(replay.error()));
+  }
+
+  @Test
+  void supervisorReplayProducesIdenticalTraceHash() {
+    InMemoryCheckpointStore store = new InMemoryCheckpointStore();
+    RuntimeEngine engine = RuntimeServices.engine(store);
+    var graph = CmsReferenceFixtureGraph.create();
+    long controllerId =
+        graph.nodes().stream()
+            .filter(node -> node.kind() == NodeKind.CONTROLLER)
+            .findFirst()
+            .orElseThrow()
+            .nodeId();
+
+    var trace =
+        engine.run(
+            graph,
+            ExecutionProfile.SUPERVISOR,
+            RuntimeExecutionOptions.injectFailure(controllerId));
     assertTrue(trace.isOk(), () -> String.valueOf(trace.error()));
 
     var replay = RuntimeServices.replayHarness(store).verifyReplayMatches(trace.value());

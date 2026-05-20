@@ -8,6 +8,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import io.sedna.core.Constraint;
 import io.sedna.core.Contract;
 import io.sedna.core.GenomeNode;
 import io.sedna.core.NodeKind;
@@ -88,6 +89,7 @@ public final class SpringBootCodeGenerator {
                 pathFor(qualified),
                 generateController(node, qualified, serviceType, serviceMethodName));
           }
+          case INTEGRATION -> files.put(pathFor(qualified), generateIntegration(node, qualified));
           default -> {
             return Result.err(
                 SemanticError.global(
@@ -185,6 +187,26 @@ public final class SpringBootCodeGenerator {
             .addModifiers(Modifier.PUBLIC)
             .addAnnotation(ClassName.get("org.springframework.stereotype", "Service"))
             .addMethod(method)
+            .build();
+    return JavaFile.builder(packageName, type).build().toString();
+  }
+
+  private String generateIntegration(GenomeNode node, String qualified) throws IOException {
+    int lastDot = qualified.lastIndexOf('.');
+    String packageName = qualified.substring(0, lastDot);
+    String simple = qualified.substring(lastDot + 1);
+    String label =
+        node.constraints().stream()
+            .map(Constraint::code)
+            .filter(code -> code.startsWith("UNKNOWN_LABEL:"))
+            .map(code -> code.substring("UNKNOWN_LABEL:".length()))
+            .sorted()
+            .findFirst()
+            .orElse(simple);
+    TypeSpec type =
+        TypeSpec.classBuilder(simple)
+            .addModifiers(Modifier.PUBLIC)
+            .addJavadoc("SEDNA integration adapter for $L", label)
             .build();
     return JavaFile.builder(packageName, type).build().toString();
   }

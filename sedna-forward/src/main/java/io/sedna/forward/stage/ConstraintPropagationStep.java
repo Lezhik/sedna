@@ -31,7 +31,9 @@ public final class ConstraintPropagationStep {
               || code.startsWith("SOURCE_CLASS:")
               || code.startsWith("MOTIF_REF:")
               || code.startsWith("SEDNA_FOLD_V1:")
-              || code.equals("PARTIAL_MATCH:true");
+              || code.equals("PARTIAL_MATCH:true")
+              || code.startsWith("UNKNOWN_LABEL:")
+              || code.startsWith("LLM_LABEL:");
     };
   }
 }

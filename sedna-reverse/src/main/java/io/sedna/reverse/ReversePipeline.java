@@ -7,15 +7,19 @@ import io.sedna.core.SemanticGraph;
 import io.sedna.dna.DnaEncoder;
 import io.sedna.dna.MotifFolder;
 import io.sedna.registry.SemanticRegistry;
-import io.sedna.reverse.git.GitTrajectoryStep;
+import io.sedna.reverse.model.StructuralGraph;
 import io.sedna.reverse.motif.GraphSignatureMotifFolder;
-import io.sedna.reverse.parse.JavaSourceParseStep;
+import io.sedna.reverse.parse.BytecodeDependencyAugmenter;
+import io.sedna.reverse.parse.PrimarySourceParseStep;
+import io.sedna.reverse.parse.SourceParseStep;
 import io.sedna.reverse.stage.ContextReconstructionStep;
 import io.sedna.reverse.stage.ContractReconstructionStep;
 import io.sedna.reverse.stage.GenomeSerializationStep;
 import io.sedna.reverse.stage.MotifFoldingStep;
 import io.sedna.reverse.stage.SemanticExtractionStep;
 import io.sedna.reverse.structural.StructuralGraphStep;
+import io.sedna.reverse.unknown.DisabledUnknownLabelProvider;
+import io.sedna.reverse.unknown.UnknownNodeEnrichmentStep;
 import io.sedna.validation.CompositeValidationEngine;
 import io.sedna.validation.ValidationEngine;
 import java.io.IOException;
@@ -25,14 +29,16 @@ import java.nio.file.Path;
 /** Spring Boot project → SEDNA DNA reverse pipeline. */
 public final class ReversePipeline {
 
-  private final JavaSourceParseStep javaSourceParseStep = new JavaSourceParseStep();
+  private final SourceParseStep sourceParseStep = PrimarySourceParseStep.spoonWithJavaParserFallback();
+  private final BytecodeDependencyAugmenter bytecodeDependencyAugmenter =
+      new BytecodeDependencyAugmenter();
   private final StructuralGraphStep structuralGraphStep = new StructuralGraphStep();
   private final SemanticExtractionStep semanticExtractionStep = new SemanticExtractionStep();
   private final ContractReconstructionStep contractReconstructionStep = new ContractReconstructionStep();
   private final MotifFoldingStep motifFoldingStep;
   private final ContextReconstructionStep contextReconstructionStep = new ContextReconstructionStep();
   private final GenomeSerializationStep genomeSerializationStep;
-  private final GitTrajectoryStep gitTrajectoryStep = new GitTrajectoryStep();
+  private final UnknownNodeEnrichmentStep unknownNodeEnrichmentStep = new UnknownNodeEnrichmentStep();
   private final ValidationEngine validationEngine;
 
   public ReversePipeline(DnaEncoder encoder, SemanticRegistry registry, MotifFolder motifFolder) {
@@ -46,12 +52,16 @@ public final class ReversePipeline {
   }
 
   public Result<SemanticGraph, SemanticError> reverseGraph(Path projectRoot) {
-    var parsed = javaSourceParseStep.parse(projectRoot);
+    var parsed = sourceParseStep.parse(projectRoot);
     if (!parsed.isOk()) {
       return Result.err(parsed.error());
     }
+    var augmented = bytecodeDependencyAugmenter.augment(parsed.value());
+    if (!augmented.isOk()) {
+      return Result.err(augmented.error());
+    }
 
-    var structural = structuralGraphStep.build(parsed.value());
+    var structural = structuralGraphStep.build(augmented.value());
     if (!structural.isOk()) {
       return Result.err(structural.error());
     }
@@ -66,7 +76,16 @@ public final class ReversePipeline {
       return Result.err(contracts.error());
     }
 
-    var folded = motifFoldingStep.fold(contracts.value());
+    var enriched =
+        unknownNodeEnrichmentStep.enrich(
+            structural.value(),
+            contracts.value(),
+            DisabledUnknownLabelProvider.INSTANCE);
+    if (!enriched.isOk()) {
+      return Result.err(enriched.error());
+    }
+
+    var folded = motifFoldingStep.fold(enriched.value());
     if (!folded.isOk()) {
       return Result.err(folded.error());
     }
@@ -89,8 +108,20 @@ public final class ReversePipeline {
               : errors.getFirst());
     }
 
-    gitTrajectoryStep.extract(projectRoot);
     return Result.ok(graph);
+  }
+
+  /** Exposes structural graph for Git trajectory builders and profile detection. */
+  public Result<StructuralGraph, SemanticError> buildStructuralGraph(Path projectRoot) {
+    var parsed = sourceParseStep.parse(projectRoot);
+    if (!parsed.isOk()) {
+      return Result.err(parsed.error());
+    }
+    var augmented = bytecodeDependencyAugmenter.augment(parsed.value());
+    if (!augmented.isOk()) {
+      return Result.err(augmented.error());
+    }
+    return structuralGraphStep.build(augmented.value());
   }
 
   public Result<byte[], SemanticError> reverse(Path projectRoot) {
