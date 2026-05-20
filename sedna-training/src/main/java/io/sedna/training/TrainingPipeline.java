@@ -24,8 +24,10 @@ public final class TrainingPipeline {
   private final GitTrajectorySnapshots gitTrajectorySnapshots = new GitTrajectorySnapshots();
   private final TrajectoryBuilder trajectoryBuilder = new TrajectoryBuilder();
   private final DeterministicSemanticEmbedder embedder = new DeterministicSemanticEmbedder();
-  private final MutationDatasetGenerator mutationDatasetGenerator = new MutationDatasetGenerator();
+  private final MutationDatasetFromHistory mutationDatasetFromHistory = new MutationDatasetFromHistory();
   private final RegistryUpdateProposer registryUpdateProposer;
+  private final RegistryProposalCorpusValidator registryProposalCorpusValidator =
+      new RegistryProposalCorpusValidator();
 
   public TrainingPipeline(ReversePipeline reversePipeline, DnaEncoder encoder, SemanticRegistry registry) {
     this.reversePipeline = reversePipeline;
@@ -47,6 +49,11 @@ public final class TrainingPipeline {
         return Result.err(trained.error());
       }
       results.add(trained.value());
+    }
+
+    var corpusValidation = registryProposalCorpusValidator.validateCorpus(results);
+    if (!corpusValidation.isOk()) {
+      return Result.err(corpusValidation.error());
     }
 
     TrainingDataset pending = new TrainingDataset(results, "pending");
@@ -91,7 +98,7 @@ public final class TrainingPipeline {
             projectRoot.toString(),
             trajectory,
             embedder.embed(graph.value()),
-            mutationDatasetGenerator.generate(graph.value()),
+            mutationDatasetFromHistory.generate(snapshots),
             registryUpdateProposer.propose(graph.value())));
   }
 }

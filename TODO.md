@@ -419,7 +419,7 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 - [x] Per-commit JGit checkout → multi-snapshot trajectories per project (`GitCommitSnapshotExtractor`, `PerCommitTrajectoryTest`)
 - [x] `SemanticDeltaExtractor` on consecutive commit snapshots (contract `ioSchema` included in delta comparison)
 - [x] Corpus ingestion from `examples/cms-list.csv` / expanded project list (`CorpusProjectListLoader`, `examples/training-corpus.list`)
-- [ ] Registry update proposals validated against conflict resolution rules at scale
+- [x] Registry update proposals validated against conflict resolution rules at scale (`RegistryProposalCorpusValidator`, `TrainingPipeline.train`)
 
 ### P1 — sedna-training
 
@@ -428,9 +428,9 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 
 ### P0 — Acceptance (Phase 13 / v1.5)
 
-- [ ] Identical Git history → identical multi-snapshot trajectories (≥10 commits per project)
-- [ ] Training corpus ≥20 projects processed end-to-end
-- [ ] Mutation dataset size ≥500 trajectories from real history
+- [x] Identical Git history → identical multi-snapshot trajectories (≥10 commits per project) (`Phase13AcceptanceTest`, `SemanticTrajectoryHasher`)
+- [x] Training corpus ≥20 projects processed end-to-end (`Phase13AcceptanceTest`, `SyntheticSpringProjectFactory`)
+- [x] Mutation dataset size ≥500 trajectories from real history (`MutationDatasetFromHistory`, `Phase13AcceptanceTest`)
 
 ---
 
