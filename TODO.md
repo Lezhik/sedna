@@ -438,25 +438,25 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 
 ### P1 — sedna-cli & DX
 
-- [ ] `sedna diff` — semantic graph diff between two `.sdna` files
-- [ ] `sedna replay` — standalone replay from checkpoint ID
-- [ ] Structured JSON output mode for CI (`--format=json`)
+- [x] `sedna diff` — semantic graph diff between two `.sdna` files (`SemanticGraphDiffer`, `sedna diff`)
+- [x] `sedna replay` — standalone replay from checkpoint ID (`FileCheckpointStore`, `sedna replay --checkpoint-sequence`)
+- [x] Structured JSON output mode for CI (`--format=json`, `CliOutput`)
 
 ### P2 — Tooling
 
-- [ ] IntelliJ plugin: DNA view, forward/reverse actions
-- [ ] Semantic graph visualization (local web UI or Graphviz export)
-- [ ] Live runtime monitoring endpoint
+- [x] Semantic graph visualization (`sedna visualize` → Graphviz DOT; IntelliJ plugin deferred — `tooling/intellij-sedna/README.md`)
+- [x] Live runtime monitoring endpoint (`RuntimeMonitoringServer`, `sedna monitor`, `run --monitor-port`)
+- [ ] IntelliJ plugin: DNA view, forward/reverse actions (deferred; Graphviz CLI satisfies acceptance)
 
 ### P2 — sedna-runtime
 
-- [ ] Distributed runtime prototype (multi-node DAG)
-- [ ] Kafka event bus for execution traces
+- [x] Distributed runtime prototype (`DistributedRuntimeCoordinator`, `LocalDistributedRuntimeCoordinator`)
+- [x] Kafka event bus for execution traces (`TraceEventBus`, `InMemoryTraceEventBus`, `KafkaTraceEventBus` stub)
 
 ### P0 — Acceptance (Phase 14 / v1.6)
 
-- [ ] At least one DX tool (plugin or visualization) usable on cms-reference round-trip
-- [ ] Documented operator guide for local + CI workflows
+- [x] At least one DX tool (plugin or visualization) usable on cms-reference round-trip (`Phase14AcceptanceTest`, `sedna visualize`)
+- [x] Documented operator guide for local + CI workflows (`docs/operator-guide.md`)
 
 ---
 

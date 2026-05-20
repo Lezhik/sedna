@@ -32,6 +32,14 @@ public final class ReplayHarness {
     this.checkpointStore = checkpointStore;
   }
 
+  public Result<ExecutionTrace, SemanticError> replayFromCheckpoint(long sequenceNumber) {
+    var checkpoint = checkpointStore.findBySequence(sequenceNumber);
+    if (!checkpoint.isOk()) {
+      return Result.err(checkpoint.error());
+    }
+    return replayFromRecord(checkpoint.value());
+  }
+
   public Result<ExecutionTrace, SemanticError> replayFromLastCheckpoint() {
     var checkpoints = checkpointStore.listOrdered();
     if (!checkpoints.isOk()) {
@@ -41,15 +49,17 @@ public final class ReplayHarness {
       return Result.err(
           SemanticError.global(io.sedna.core.ErrorCode.VALIDATION_FAILED, "No checkpoints"));
     }
+    return replayFromRecord(checkpoints.value().getLast());
+  }
 
-    CheckpointRecord lastCheckpoint = checkpoints.value().getLast();
-    var decoded = decoder.decode(lastCheckpoint.graphSnapshotRef());
+  private Result<ExecutionTrace, SemanticError> replayFromRecord(CheckpointRecord checkpoint) {
+    var decoded = decoder.decode(checkpoint.graphSnapshotRef());
     if (!decoded.isOk()) {
       return Result.err(decoded.error());
     }
 
-    ExecutionProfile profile = profileFromCheckpoint(lastCheckpoint);
-    RuntimeExecutionOptions options = optionsFromCheckpoint(lastCheckpoint);
+    ExecutionProfile profile = profileFromCheckpoint(checkpoint);
+    RuntimeExecutionOptions options = optionsFromCheckpoint(checkpoint);
     Result<RuntimeExecutionPlan, SemanticError> plan = scheduler.build(decoded.value(), profile);
     if (!plan.isOk()) {
       return Result.err(plan.error());
