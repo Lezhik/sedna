@@ -17,6 +17,7 @@ Thumbs.db
 
 # SEDNA outputs
 generated/
+build/test-outputs/
 *.sdna.tmp
 
 # JVM

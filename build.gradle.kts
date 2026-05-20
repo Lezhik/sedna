@@ -57,6 +57,12 @@ tasks.register("jmh") {
     dependsOn(":benchmarks:jmh")
 }
 
+tasks.register("e2e") {
+    group = "verification"
+    description = "Run SEDNA end-to-end tests (see tests/)"
+    dependsOn(":tests:e2e")
+}
+
 fun Project.configureJavaDefaults() {
     extensions.configure<JavaPluginExtension> {
         toolchain.languageVersion.set(JavaLanguageVersion.of(21))

@@ -1,0 +1,6 @@
+{
+  "description": "E2E-019 intent: SUBTREE_REPLACE on CONTROLLER that tampers ENTITY outside subtree",
+  "targetKind": "CONTROLLER",
+  "operation": "SUBTREE_REPLACE",
+  "crossDomain": true
+}

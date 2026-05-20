@@ -1,0 +1,6 @@
+{
+  "description": "E2E-017 intent: inject STATELESS_ONLY on SERVICE node",
+  "targetKind": "SERVICE",
+  "operation": "CONSTRAINT_INJECTION",
+  "constraint": "STATELESS_ONLY"
+}

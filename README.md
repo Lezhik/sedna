@@ -219,6 +219,16 @@ sedna-core::CanonicalOrdering
 ./gradlew test
 ```
 
+## Run E2E Tests
+
+End-to-end suite (31 scenarios, isolated under `build/test-outputs/`, LLM disabled):
+
+```bash
+./gradlew e2e
+```
+
+Contract: [`docs/senda_e2e_tests_detailed_design.md`](docs/senda_e2e_tests_detailed_design.md). Checklist: [`TODO-tests.md`](TODO-tests.md).
+
 ## Run Benchmarks
 
 ```bash id="e0n2ac"

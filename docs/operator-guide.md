@@ -101,4 +101,26 @@ Run full suite:
 ./gradlew build
 ```
 
-Key integration tests: `Phase14AcceptanceTest`, `SpringBootReverseForwardEquivalenceTest`, `RuntimeReplayTest`.
+## E2E test suite
+
+Deterministic platform E2E (CLI + API, per-test output under `build/test-outputs/<test-id>/`):
+
+```bash
+./gradlew e2e
+```
+
+Environment: `SEDNA_LLM_ENABLED=false` (set automatically by the `e2e` task).
+
+Single scenario example:
+
+```bash
+./gradlew e2e --tests "io.sedna.tests.e2e.DnaRoundtripE2eTest"
+```
+
+Performance gates (non-blocking, separate from `e2e`):
+
+```bash
+./gradlew jmh
+```
+
+Key integration tests: `Phase14AcceptanceTest`, `SpringBootReverseForwardEquivalenceTest`, `RuntimeReplayTest`, and `io.sedna.tests.e2e.*`.

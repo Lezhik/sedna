@@ -14,5 +14,16 @@ dependencies {
 }
 
 tasks.named<Test>("test") {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags("e2e")
+    }
+}
+
+tasks.register<Test>("e2e") {
+    description = "End-to-end integration tests"
+    group = "verification"
+    useJUnitPlatform {
+        includeTags("e2e")
+    }
+    environment("SEDNA_LLM_ENABLED", "false")
 }
