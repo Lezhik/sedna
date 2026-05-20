@@ -29,8 +29,13 @@ public final class ProjectListLoader {
         ordered.add(trimmed);
       }
       List<Path> projects = new ArrayList<>();
+      Path listParent = projectsListFile.getParent();
       for (String entry : ordered) {
-        Path project = Path.of(entry).toAbsolutePath().normalize();
+        Path project =
+            listParent == null
+                ? Path.of(entry)
+                : listParent.resolve(entry);
+        project = project.toAbsolutePath().normalize();
         if (!Files.isDirectory(project)) {
           return Result.err(
               SemanticError.global(

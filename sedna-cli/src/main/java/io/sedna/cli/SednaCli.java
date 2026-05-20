@@ -19,6 +19,7 @@ import io.sedna.runtime.trace.TraceHasher;
 import io.sedna.training.ProjectListLoader;
 import io.sedna.training.TrainingDatasetWriter;
 import io.sedna.training.TrainingServices;
+import io.sedna.training.model.TrainingDataset;
 import io.sedna.validation.CompositeValidationEngine;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -183,16 +184,22 @@ public final class SednaCli {
   }
 
   private int runTrain(Map<String, String> options) {
-    Path projects = requirePath(options, "projects");
-    if (projects == null) {
-      return 2;
-    }
     Path output = Path.of(options.getOrDefault("output", "training-out"));
-    var loaded = new ProjectListLoader().load(projects);
-    if (!loaded.isOk()) {
-      return report(loaded, null);
+    Result<TrainingDataset, SemanticError> trained;
+    if (options.containsKey("corpus")) {
+      Path repoRoot = Path.of(options.get("corpus")).toAbsolutePath().normalize();
+      trained = TrainingServices.pipeline().trainCorpus(repoRoot);
+    } else {
+      Path projects = requirePath(options, "projects");
+      if (projects == null) {
+        return 2;
+      }
+      var loaded = new ProjectListLoader().load(projects);
+      if (!loaded.isOk()) {
+        return report(loaded, null);
+      }
+      trained = TrainingServices.pipeline().train(loaded.value());
     }
-    var trained = TrainingServices.pipeline().train(loaded.value());
     if (!trained.isOk()) {
       return report(trained, null);
     }
@@ -200,13 +207,18 @@ public final class SednaCli {
     if (!written.isOk()) {
       return report(written, null);
     }
+    var artifacts = written.value();
     System.out.println(
         "Training completed: projects="
             + trained.value().projects().size()
             + " fingerprint="
             + trained.value().datasetFingerprint()
             + " manifest="
-            + written.value());
+            + artifacts.manifestPath()
+            + " checksum="
+            + artifacts.manifestChecksumPath()
+            + " report="
+            + artifacts.reproducibilityReportPath());
     return 0;
   }
 
@@ -328,7 +340,7 @@ public final class SednaCli {
           sedna validate --input=<file.sdna>
           sedna reverse  --input=<project-dir> [--output=<file.sdna>]
           sedna run      --input=<file.sdna> [--profile=DAG|STATEFUL|SUPERVISOR] [--checkpoint-jdbc-url=<jdbc>]
-          sedna train    --projects=<list.txt> [--output=<dir>]
+          sedna train    --projects=<list.txt> | --corpus=<repo-root> [--output=<dir>]
 
         Global flags: --help
         Errors print: <ErrorCode> [nodeId=…]: message
@@ -345,7 +357,8 @@ public final class SednaCli {
           case "reverse" -> "Reverse-engineer DNA from a project folder.";
           case "run" ->
               "Execute runtime (DAG|STATEFUL|SUPERVISOR) and print trace SHA-256 (optional PostgreSQL checkpoints).";
-          case "train" -> "Build training dataset manifest from project list.";
+          case "train" ->
+              "Build training dataset (manifest + checksum + reproducibility report) from project list or repo corpus.";
           default -> "See `sedna help` for supported commands.";
         };
     out.println(command + ": " + detail);

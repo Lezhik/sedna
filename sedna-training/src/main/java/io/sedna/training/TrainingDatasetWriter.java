@@ -4,50 +4,33 @@ import io.sedna.core.ErrorCode;
 import io.sedna.core.Result;
 import io.sedna.core.SemanticError;
 import io.sedna.training.model.TrainingDataset;
+import io.sedna.training.model.TrainingDatasetArtifacts;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/** Writes a deterministic training dataset manifest. */
+/** Writes manifest, checksum, and reproducibility report for a training dataset. */
 public final class TrainingDatasetWriter {
 
-  public Result<Path, SemanticError> write(TrainingDataset dataset, Path outputDirectory) {
+  public Result<TrainingDatasetArtifacts, SemanticError> write(
+      TrainingDataset dataset, Path outputDirectory) {
     try {
       Files.createDirectories(outputDirectory);
+      SemanticEmbeddingIndex index = SemanticEmbeddingIndex.fromDataset(dataset);
+      String manifestBody = TrainingManifestBuilder.build(dataset);
+      String manifestChecksum = TrainingManifestHasher.sha256(manifestBody);
+      String reportBody = TrainingReproducibilityReport.build(dataset, manifestBody, index);
+
       Path manifest = outputDirectory.resolve("dataset.manifest");
-      StringBuilder builder = new StringBuilder();
-      builder.append("sedna-training-dataset-v1\n");
-      builder.append("fingerprint=").append(dataset.datasetFingerprint()).append('\n');
-      builder.append("projects=").append(dataset.projects().size()).append('\n');
-      for (var project : dataset.projects()) {
-        builder.append("[project]\n");
-        builder.append("path=").append(project.projectPath()).append('\n');
-        builder.append("commits=").append(String.join(",", project.trajectory().commitOrder())).append('\n');
-        builder.append("snapshots=").append(project.trajectory().snapshots().size()).append('\n');
-        builder.append("deltas=").append(project.trajectory().deltas().size()).append('\n');
-        builder.append("embeddings=").append(project.embeddings().size()).append('\n');
-        builder.append("mutations=").append(project.mutationDataset().size()).append('\n');
-        builder.append("registryProposals=").append(project.registryProposals().size()).append('\n');
-        for (var snapshot : project.trajectory().snapshots()) {
-          builder
-              .append("dna:")
-              .append(snapshot.commitHash())
-              .append('=')
-              .append(snapshot.dnaFingerprint())
-              .append('\n');
-        }
-        for (var embedding : project.embeddings()) {
-          builder
-              .append("embed:")
-              .append(embedding.nodeId())
-              .append('=')
-              .append(embedding.embeddingHex())
-              .append('\n');
-        }
-      }
-      Files.writeString(manifest, builder.toString(), StandardCharsets.UTF_8);
-      return Result.ok(manifest);
+      Path checksum = outputDirectory.resolve("dataset.manifest.sha256");
+      Path report = outputDirectory.resolve("reproducibility.report");
+
+      Files.writeString(manifest, manifestBody, StandardCharsets.UTF_8);
+      Files.writeString(checksum, manifestChecksum + System.lineSeparator(), StandardCharsets.UTF_8);
+      Files.writeString(report, reportBody, StandardCharsets.UTF_8);
+
+      return Result.ok(new TrainingDatasetArtifacts(manifest, checksum, report));
     } catch (IOException ex) {
       return Result.err(SemanticError.global(ErrorCode.INTERNAL, ex.getMessage()));
     }

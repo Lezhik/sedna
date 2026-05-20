@@ -55,9 +55,14 @@ class TrainingPipelineTest {
     Path out = temp.resolve("out");
     var written = new TrainingDatasetWriter().write(dataset, out);
     assertTrue(written.isOk());
-    String manifest = java.nio.file.Files.readString(written.value());
-  var again = new TrainingDatasetWriter().write(dataset, temp.resolve("out2"));
-    String manifest2 = java.nio.file.Files.readString(again.value());
+    String manifest = java.nio.file.Files.readString(written.value().manifestPath());
+    String checksum = java.nio.file.Files.readString(written.value().manifestChecksumPath()).trim();
+    String report = java.nio.file.Files.readString(written.value().reproducibilityReportPath());
+    var again = new TrainingDatasetWriter().write(dataset, temp.resolve("out2"));
+    String manifest2 = java.nio.file.Files.readString(again.value().manifestPath());
     assertEquals(manifest, manifest2);
+    assertEquals(checksum, java.nio.file.Files.readString(again.value().manifestChecksumPath()).trim());
+    assertEquals(report, java.nio.file.Files.readString(again.value().reproducibilityReportPath()));
+    assertTrue(report.contains("manifestSha256=" + checksum));
   }
 }

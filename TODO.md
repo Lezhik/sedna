@@ -423,8 +423,8 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 
 ### P1 — sedna-training
 
-- [ ] Optional FAISS or Pure Java approximate NN for embedding retrieval
-- [ ] Dataset manifest checksums and reproducibility report
+- [x] Optional FAISS or Pure Java approximate NN for embedding retrieval (`SemanticEmbeddingIndex` — brute-force cosine; FAISS optional externally)
+- [x] Dataset manifest checksums and reproducibility report (`dataset.manifest.sha256`, `reproducibility.report`, `TrainingReproducibilityReport`)
 
 ### P0 — Acceptance (Phase 13 / v1.5)
 
@@ -538,7 +538,8 @@ Extend beyond the CMS reference profile (`io.sedna.cms.*`).
 | ≥3 non-CMS fixtures with compile acceptance | 10 — done |
 | SEDNA-FOLD-v1 (real motif folding) | 11 — done |
 | STATEFUL / SUPERVISOR replay hash gates | 12 |
-| Corpus scale (20–300 projects) | 13 |
+| External FAISS integration (optional) | 13 — Pure Java index shipped |
+| Corpus scale (20–300 real repos) | 13 — synthetic gates + local examples |
 | Expanded corpus (20–300 projects) | 13 |
 | IntelliJ plugin, visualization, distributed runtime | 14–15 |
 | Multi-language pipelines, Kubernetes | 15 |

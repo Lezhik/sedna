@@ -35,6 +35,15 @@ public final class TrainingPipeline {
     this.registryUpdateProposer = new RegistryUpdateProposer(registry);
   }
 
+  /** Trains all local example projects under {@code repositoryRoot/examples}. */
+  public Result<TrainingDataset, SemanticError> trainCorpus(Path repositoryRoot) {
+    var projects = new CorpusProjectListLoader().loadFromRepository(repositoryRoot);
+    if (!projects.isOk()) {
+      return Result.err(projects.error());
+    }
+    return train(projects.value());
+  }
+
   public Result<TrainingDataset, SemanticError> train(List<Path> projectPaths) {
     List<Path> ordered =
         projectPaths.stream()
