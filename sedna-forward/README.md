@@ -13,4 +13,4 @@ var pipeline = ForwardServices.pipeline(InMemorySemanticRegistry.bootstrap(), Di
 var result = pipeline.run(dnaBytes);
 ```
 
-Target: forward reconstruction &lt;5s on `examples/sedna-cms/cms-reference` (JMH: `ForwardPipelineBenchmark`).
+Target: forward reconstruction &lt;5s on `examples/sedna-e2e-tests/cms-reference` (JMH: `ForwardPipelineBenchmark`).

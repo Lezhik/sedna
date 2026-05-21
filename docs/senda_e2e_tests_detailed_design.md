@@ -188,7 +188,7 @@ Compliance matrix (HIPAA/PCI): **not applicable** — internal toolchain, no PHI
 
 - ✓ Java 21 + Gradle 8.x is the CI standard (`A3`, `A4`).
 - ✓ Canonical fixture path is `examples/sedna-e2e-tests/cms-reference-fixture.sdna` (`ExamplesLayout.GOLDEN_CMS_FIXTURE`).
-- ✓ Primary Spring reference project is `examples/sedna-cms/cms-reference` (`A5`).
+- ✓ Primary Spring reference project is `examples/sedna-e2e-tests/cms-reference` (`A5`).
 - ✓ Demo fixtures `spring-demo`, `inventory-demo`, `order-demo` remain equivalence targets (`A5`).
 - ~ `blog-reference` / `shop-reference` from `A1` §2 — **not present in repo**; equivalence suite uses `sedna-demo` projects instead [scope: fixtures].
 - ~ `--clean` flag on CLI — **not implemented** (`A6`); E2E uses fresh `@TempDir` / `Files.createTempDirectory` until CLI adds `--clean` [assumed].
@@ -200,7 +200,7 @@ Compliance matrix (HIPAA/PCI): **not applicable** — internal toolchain, no PHI
 |----------|--------|------------|-----------|
 | Gradle module `:sedna-tests:e2e` vs `:tests` | A1 vs A5/settings.gradle | Use `:tests` + new `e2e` task | Executable reality in repo |
 | Per-module `run --args=encode` vs unified CLI | A1 vs A6 | All CLI E2E via `:sedna-cli:run` | Single entry point documented in operator guide |
-| Paths `examples/cms-reference`, `examples/dna/*.sdna` | A1 vs A3/A5 | Map to `examples/sedna-cms/cms-reference`, `examples/sedna-e2e-tests/*.sdna` | Actual tree layout |
+| Paths `examples/cms-reference`, `examples/dna/*.sdna` | A1 vs A3/A5 | Map to `examples/sedna-e2e-tests/cms-reference`, `examples/sedna-e2e-tests/*.sdna` | Actual tree layout |
 | `sedna-mutation:run`, `sedna-registry:run` standalone | A1 vs A6 | Implement as JUnit API tests calling engines directly | No CLI subcommands for mutation/registry |
 | PostgreSQL required in §2 Software Baseline | A1 vs A5 file checkpoints | PostgreSQL optional; file store default | Operator guide documents both |
 | E2E-019 / E2E-019B duplicate heading in A1 | A1 internal | Treat 019B as separate test class | Editorial merge in test plan later |
@@ -340,7 +340,7 @@ Format: `FR-<module>.<N> [scope|assumed]: Imperative statement.`
 
 ### sedna-reverse
 
-- FR-rev.01 [scope: E2E-009]: The suite runs `sedna reverse --input=examples/sedna-cms/cms-reference` and produces non-empty `.sdna`.
+- FR-rev.01 [scope: E2E-009]: The suite runs `sedna reverse --input=examples/sedna-e2e-tests/cms-reference` and produces non-empty `.sdna`.
 - FR-rev.02 [scope: E2E-010]: The suite asserts `SemanticEquivalenceChecker` passes on `reverse(forward(fixture))` after motif expansion.
 - FR-rev.03 [scope: E2E-011, assumed]: Git trajectory extraction test is **deferred** until `extract-trajectories` CLI exists; placeholder documents skip reason.
 

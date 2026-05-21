@@ -347,7 +347,7 @@ Targets:
 Reference project:
 
 ```text
-examples/sedna-cms/cms-reference
+examples/sedna-e2e-tests/cms-reference
 ```
 
 ---

@@ -1,0 +1,2 @@
+# E2E training corpus (paths relative to this file)
+cms-reference

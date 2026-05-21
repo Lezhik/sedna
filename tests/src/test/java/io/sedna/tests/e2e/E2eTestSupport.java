@@ -31,6 +31,20 @@ public final class E2eTestSupport {
     throw new IllegalStateException("Cannot locate repository root from " + cwd);
   }
 
+  /** CMS reference Spring Boot tree for E2E reverse/forward (under {@code examples/sedna-e2e-tests}). */
+  public static Path e2eCmsReferenceProject() {
+    Path project = ExamplesLayout.e2eCmsReferenceProject(repoRoot());
+    if (!java.nio.file.Files.isDirectory(project.resolve("src/main/java"))) {
+      throw new IllegalStateException("Missing E2E CMS project: " + project);
+    }
+    return project;
+  }
+
+  /** Manifest for E2E training (projects relative to {@code sedna-e2e-tests}). */
+  public static Path e2eTrainingProjectsManifest() {
+    return ExamplesLayout.e2eTrainingProjectsManifest(repoRoot());
+  }
+
   public static Path exampleProject(String projectFolderName) {
     return ExamplesLayout.findProjectRoot(repoRoot(), projectFolderName)
         .orElseThrow(

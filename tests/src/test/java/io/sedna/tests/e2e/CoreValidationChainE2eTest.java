@@ -67,6 +67,6 @@ class CoreValidationChainE2eTest {
         ForwardServices.pipeline(InMemorySemanticRegistry.bootstrap(), DisabledLlmClient.INSTANCE);
     assertTrue(forwardApi.run(encoded).isOk());
     assertTrue(
-        reversePipeline.reverseGraph(E2eTestSupport.exampleProject("cms-reference")).isOk());
+        reversePipeline.reverseGraph(E2eTestSupport.e2eCmsReferenceProject()).isOk());
   }
 }

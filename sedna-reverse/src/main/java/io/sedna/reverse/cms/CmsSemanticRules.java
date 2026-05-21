@@ -20,7 +20,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-/** Deterministic semantic mapping for {@code examples/sedna-cms/cms-reference}. */
+/** Deterministic semantic mapping for {@code examples/sedna-e2e-tests/cms-reference}. */
 public final class CmsSemanticRules {
 
   private static final VocabRef ENTITY = new VocabRef("core", "DOMAIN.ENTITY.AGGREGATE", "v1");

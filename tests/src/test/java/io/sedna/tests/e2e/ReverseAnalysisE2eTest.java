@@ -14,7 +14,7 @@ class ReverseAnalysisE2eTest {
 
   @Test
   void reverseCmsReferenceProducesDna() throws Exception {
-    Path project = E2eTestSupport.exampleProject("cms-reference");
+    Path project = E2eTestSupport.e2eCmsReferenceProject();
     Path out = E2eTestSupport.outputDir("E2E-009").resolve("reversed.sdna");
     E2eTestSupport.prepareDir(out.getParent());
 

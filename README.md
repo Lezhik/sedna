@@ -245,13 +245,13 @@ Existing Spring Boot project → semantic DNA
 
 ```bash id="u5j1yr"
 ./gradlew :sedna-reverse:run \
-  --args="--input=examples/sedna-cms/cms-reference"
+  --args="--input=examples/sedna-e2e-tests/cms-reference"
 ```
 
 Expected output:
 
 ```text id="d0v8qe"
-examples/sedna-cms/cms-reference.sdna
+examples/sedna-e2e-tests/cms-reference.sdna
 ```
 
 ---
@@ -386,7 +386,7 @@ Warm JVM
 Reference project:
 
 ```text id="y1n4op"
-examples/sedna-cms/cms-reference
+examples/sedna-e2e-tests/cms-reference
 ```
 
 Targets:

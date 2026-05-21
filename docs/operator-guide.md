@@ -13,7 +13,7 @@ Local and CI workflows for semantic DNA pipelines. Example project layout: [exam
 
 ```bash
 # 1. Reverse project → DNA
-./gradlew :sedna-cli:run --args="reverse --input=examples/sedna-cms/cms-reference --output=/tmp/cms.sdna"
+./gradlew :sedna-cli:run --args="reverse --input=examples/sedna-e2e-tests/cms-reference --output=/tmp/cms.sdna"
 
 # 2. Validate DNA
 ./gradlew :sedna-cli:run --args="validate --input=/tmp/cms.sdna"

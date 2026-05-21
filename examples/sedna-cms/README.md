@@ -1,7 +1,5 @@
 # sedna-cms
 
-CMS reference applications for SEDNA equivalence and benchmark targets.
+Reserved category for future CMS sample applications.
 
-| Project | Description |
-|---------|-------------|
-| `cms-reference` | Hand-authored Spring Boot CMS (`io.sedna.cms`) — primary reverse/forward reference |
+The E2E CMS reference project lives under [`../sedna-e2e-tests/cms-reference`](../sedna-e2e-tests/cms-reference) together with `cms-reference-fixture.sdna`.

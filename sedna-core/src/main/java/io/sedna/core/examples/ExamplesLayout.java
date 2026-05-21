@@ -16,8 +16,10 @@ public final class ExamplesLayout {
   public static final String CMS_LIST_CATALOG = "examples/docs/cms-list.csv";
   public static final String TRAINING_CORPUS_MANIFEST = "examples/docs/training-corpus.list";
   public static final String TRAINING_PROJECTS_MANIFEST = "examples/docs/training-projects.txt";
-  public static final String GOLDEN_CMS_FIXTURE =
-      "examples/sedna-e2e-tests/cms-reference-fixture.sdna";
+  public static final String E2E_TESTS = "examples/sedna-e2e-tests";
+  public static final String E2E_CMS_REFERENCE_PROJECT = E2E_TESTS + "/cms-reference";
+  public static final String E2E_TRAINING_PROJECTS_MANIFEST = E2E_TESTS + "/e2e-training-projects.txt";
+  public static final String GOLDEN_CMS_FIXTURE = E2E_TESTS + "/cms-reference-fixture.sdna";
   public static final String GOLDEN_CMS_FIXTURE_DOC = "examples/docs/cms-reference-fixture.md";
 
   private static final String CATEGORY_PREFIX = "sedna-";
@@ -34,6 +36,15 @@ public final class ExamplesLayout {
 
   public static Path goldenCmsFixtureDoc(Path repositoryRoot) {
     return repositoryRoot.resolve(GOLDEN_CMS_FIXTURE_DOC).toAbsolutePath().normalize();
+  }
+
+  /** Spring Boot CMS reference used by E2E reverse/forward scenarios. */
+  public static Path e2eCmsReferenceProject(Path repositoryRoot) {
+    return repositoryRoot.resolve(E2E_CMS_REFERENCE_PROJECT).toAbsolutePath().normalize();
+  }
+
+  public static Path e2eTrainingProjectsManifest(Path repositoryRoot) {
+    return repositoryRoot.resolve(E2E_TRAINING_PROJECTS_MANIFEST).toAbsolutePath().normalize();
   }
 
   /**

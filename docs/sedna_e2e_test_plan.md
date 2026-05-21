@@ -15,7 +15,8 @@
 | Gradle E2E task | `./gradlew e2e` (`:tests:e2e`, tag `@Tag("e2e")`) |
 | CLI entry | `./gradlew :sedna-cli:run --args="<command> ..."` |
 | Golden DNA | `examples/sedna-e2e-tests/cms-reference-fixture.sdna` |
-| CMS reference project | `examples/sedna-cms/cms-reference` |
+| CMS reference project | `examples/sedna-e2e-tests/cms-reference` |
+| E2E training manifest | `examples/sedna-e2e-tests/e2e-training-projects.txt` |
 | Demo equivalence projects | `examples/sedna-demo/{spring-demo,inventory-demo,order-demo}` |
 | Test output isolation | `build/test-outputs/<test-id>/` |
 | JUnit package | `io.sedna.tests.e2e` |
@@ -90,7 +91,7 @@ All tests are executed through CLI commands.
 
 Reference projects:
 
-- `examples/sedna-cms/cms-reference`
+- `examples/sedna-e2e-tests/cms-reference`
 - `examples/sedna-demo/spring-demo`
 - `examples/sedna-demo/inventory-demo`
 - `examples/sedna-demo/order-demo`

@@ -78,7 +78,7 @@ Scenario catalog: [`docs/sedna_e2e_test_plan.md`](docs/sedna_e2e_test_plan.md).
 
 - [x] **E2E-008** `ForwardDeterminismE2eTest` — two forward runs, identical `treeHash`; LLM off.
 
-- [x] **E2E-009** `ReverseAnalysisE2eTest` — CLI reverse on `examples/sedna-cms/cms-reference`; output non-empty `.sdna`.
+- [x] **E2E-009** `ReverseAnalysisE2eTest` — CLI reverse on `examples/sedna-e2e-tests/cms-reference`; output non-empty `.sdna`.
 
 - [x] **E2E-010** Keep `SpringBootReverseForwardEquivalenceTest`; add `@Tag("e2e")` or thin wrapper `ReverseForwardEquivalenceE2eTest` calling same logic for cms-reference + golden fixture path.
 

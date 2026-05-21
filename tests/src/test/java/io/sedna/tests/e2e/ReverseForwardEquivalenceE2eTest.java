@@ -26,7 +26,7 @@ class ReverseForwardEquivalenceE2eTest {
 
   @Test
   void cmsReferenceProjectReverseForwardEquivalence() throws Exception {
-    Path project = E2eTestSupport.exampleProject("cms-reference");
+    Path project = E2eTestSupport.e2eCmsReferenceProject();
     var reverse = ReverseServices.pipeline();
     var original = reverse.reverseGraph(project);
     assertTrue(original.isOk(), () -> String.valueOf(original.error()));
