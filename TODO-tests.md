@@ -64,9 +64,9 @@ Scenario catalog: [`docs/sedna_e2e_test_plan.md`](docs/sedna_e2e_test_plan.md).
 
 - [x] **E2E-012** `ValidateGoldenE2eTest` — CLI `validate --input=<golden> --format=json` exit 0.
 
-- [x] **E2E-013** `ValidateInvalidE2eTest`
-  - [x] Add `tests/fixtures/invalid/invalid-graph.sdna` (generated on first run) (and variants per validation rules)
-  - [x] CLI validate exit 1; assert first `ErrorCode` stable
+- [x] **E2E-013** `ValidateInvalidE2eTest` + `ValidateInvalidVariantsE2eTest`
+  - [x] Add `tests/fixtures/invalid/` variants (orphan, duplicate, unknown-vocab, invalid-dna-magic)
+  - [x] CLI validate exit 1; assert stable `ErrorCode` per fixture
 
 ---
 
@@ -143,49 +143,46 @@ Scenario catalog: [`docs/sedna_e2e_test_plan.md`](docs/sedna_e2e_test_plan.md).
   - replay trace hash
   - optional: train fingerprint
 
-- [ ] **CI split** — PR: `./gradlew e2e`; main/nightly: `./gradlew jmh` with threshold check script (optional `benchmarks/verify-thresholds.sh`).
+- [x] **CI split** — PR: `./gradlew e2e`; main: `./gradlew :benchmarks:jmh` + `benchmarks/verify-thresholds.sh` (`.github/workflows/ci.yml`).
 
 ---
 
 ## Fixtures & data files to add
 
-- [ ] `tests/fixtures/invalid/invalid-graph.sdna`
-- [ ] `tests/fixtures/invalid/` — additional cases (orphan node, broken contract, cyclic dependency)
-- [ ] `tests/fixtures/registry/conflicts/`
-- [ ] `tests/fixtures/mutations/add-payment-module.json`
-- [ ] `tests/fixtures/mutations/invalid-cross-domain.json`
-- [ ] `tests/fixtures/mutations/sequence-10-valid/` (for E2E-019B)
-- [ ] `tests/fixtures/registry/corrupted/` (for E2E-029)
+- [x] `tests/fixtures/invalid/invalid-graph.sdna` (+ `duplicate-node`, `unknown-vocab`, `invalid-dna-magic`, `cyclic-dependency`)
+- [x] `tests/fixtures/registry/conflicts/collision.tlv`
+- [x] `tests/fixtures/mutations/add-payment-module.json`
+- [x] `tests/fixtures/mutations/invalid-cross-domain.json`
+- [x] `tests/fixtures/mutations/sequence-10-valid/` (README; sequence applied in `DeepMutationDriftE2eTest`)
+- [x] `tests/fixtures/registry/corrupted/corrupt.tlv`
+
+Regenerate: `./gradlew :tests:test --tests io.sedna.tests.e2e.E2eFixtureMaterializerTest`
 
 ---
 
 ## Refactor / migrate existing tests
 
-- [ ] Add `@Tag("e2e")` to: `CiDeterminismTest`, `ForwardCompileIntegrationTest`, `SpringBootReverseForwardEquivalenceTest`, `Phase14AcceptanceTest`, `DeterminismStressTest` (review each for runtime — may stay in `test` vs `e2e`).
+- [x] **Decision:** legacy tests stay in `test` (fast CI); E2E classes cover CLI paths. Javadoc cross-links in each legacy class; matrix in `tests/README.md`.
 
-- [ ] Decide: keep fuzz tests (`EncodingFuzzTest`, `MutationFuzzTest`) in default `test` task, not `e2e`.
+- [x] Fuzz tests (`EncodingFuzzTest`, `MutationFuzzTest`) remain in `test` only (not `e2e`).
 
-- [ ] Align `GoldenFixtureReadmeShaTest` with `E2E-001` or merge into `DnaEncodeE2eTest`.
+- [x] `GoldenFixtureReadmeShaTest` aligned with `E2E-001` via shared `E2eTestSupport.GOLDEN_SHA256` (fast README gate + E2E encode).
 
 ---
 
 ## Documentation sync (after implementation)
 
-- [ ] Update `docs/sedna_e2e_test_plan.md` paths:
-  - `:sedna-tests` → `:tests` / `./gradlew e2e`
-  - `examples/dna/` → `examples/sedna-e2e-tests/`
-  - `examples/cms-reference` → `examples/sedna-cms/cms-reference`
-  - Module `run` → `sedna-cli` commands
+- [x] Update `docs/sedna_e2e_test_plan.md` — **Implementation mapping** table (canonical paths); legacy scenario bodies may still cite old `:sedna-*:run` examples
 
 - [x] Add E2E section to `docs/operator-guide.md` (run e2e, output dirs, LLM off).
 
-- [ ] Optional: add `examples/sedna-blog-reference` / `shop-reference` **or** remove from test plan (currently use `sedna-demo` only).
+- [x] Demo equivalence: `examples/sedna-demo/{spring-demo,inventory-demo,order-demo}` (documented in test plan; no separate blog/shop examples).
 
 ---
 
 ## Optional enhancements (post-R5)
 
-- [ ] Implement `--clean` on `sedna-cli` forward/reverse/train; switch `E2eTestSupport` to use it.
+- [x] Implement `--clean` on `sedna-cli` forward/reverse/train; E2E uses `--clean` (`CliCleanForwardE2eTest`); `prepareDir` kept for parent test-id dirs.
 
 - [ ] `sedna-cli` subcommands: `mutate`, `rollback` — then add CLI-level E2E-017–019.
 
@@ -224,4 +221,6 @@ Scenario catalog: [`docs/sedna_e2e_test_plan.md`](docs/sedna_e2e_test_plan.md).
 | R4 Training/CLI | 020–025 | Done |
 | R5 Bench/platform | 026–031 | Done; JMH documented in `benchmarks/README.md` |
 
-**Remaining (optional):** sync `docs/sedna_e2e_test_plan.md` paths; migrate legacy tests to `@Tag("e2e")`; `--clean` CLI; JDBC profile; `verify-thresholds.sh`.
+**Remaining (optional):** rewrite per-scenario CLI blocks in `sedna_e2e_test_plan.md`; `sedna-cli` mutate/rollback subcommands; JDBC `@Tag("jdbc")` profile; parallel E2E.
+
+**Added:** `ValidateInvalidVariantsE2eTest`, `E2eFixtureMaterializerTest`, `CliCleanForwardE2eTest`, `--clean` CLI, `benchmarks/verify-thresholds.sh`, binary fixtures under `tests/fixtures/` (commit when ready).

@@ -19,7 +19,7 @@ class ReverseAnalysisE2eTest {
     E2eTestSupport.prepareDir(out.getParent());
 
     E2eTestSupport.CliResult result =
-        E2eTestSupport.runCli("reverse", "--input=" + project, "--output=" + out);
+        E2eTestSupport.runCli("reverse", "--input=" + project, "--output=" + out, "--clean");
     assertEquals(0, result.exitCode(), () -> result.stdout() + result.stderr());
     assertTrue(Files.size(out) > 0);
   }

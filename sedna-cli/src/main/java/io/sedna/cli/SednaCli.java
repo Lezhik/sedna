@@ -30,9 +30,11 @@ import io.sedna.validation.viz.GraphvizSemanticGraphExporter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.postgresql.ds.PGSimpleDataSource;
 
 /** Minimal CLI for Phase 2: forward, decode, encode, validate. */
@@ -88,11 +90,14 @@ public final class SednaCli {
   private int runForward(Map<String, String> options) {
     CliOutput.Format format = outputFormat(options);
     Path input = requirePath(options, "input");
-    Path output = Path.of(options.getOrDefault("output", "generated"));
+    Path output = Path.of(options.getOrDefault("output", "generated")).toAbsolutePath().normalize();
     if (input == null) {
       return 2;
     }
     try {
+      if (wantsClean(options)) {
+        deleteRecursively(output);
+      }
       byte[] dna = Files.readAllBytes(input);
       var result =
           ForwardServices.pipeline().runToDirectory(dna, output.toAbsolutePath().normalize());
@@ -349,17 +354,32 @@ public final class SednaCli {
       return 2;
     }
     Path output =
-        options.containsKey("output")
-            ? Path.of(options.get("output"))
-            : input.resolveSibling(input.getFileName() + ".sdna");
-    var result =
-        ReverseServices.pipeline().reverseToFile(input, output.toAbsolutePath().normalize());
+        (options.containsKey("output")
+                ? Path.of(options.get("output"))
+                : input.resolveSibling(input.getFileName() + ".sdna"))
+            .toAbsolutePath()
+            .normalize();
+    try {
+      if (wantsClean(options)) {
+        Files.deleteIfExists(output);
+      }
+    } catch (IOException ex) {
+      return ioError(ex, format);
+    }
+    var result = ReverseServices.pipeline().reverseToFile(input, output);
     return report(result, "Reverse completed: " + output, format, "reverse");
   }
 
   private int runTrain(Map<String, String> options) {
     CliOutput.Format format = outputFormat(options);
-    Path output = Path.of(options.getOrDefault("output", "training-out"));
+    Path output = Path.of(options.getOrDefault("output", "training-out")).toAbsolutePath().normalize();
+    try {
+      if (wantsClean(options)) {
+        deleteRecursively(output);
+      }
+    } catch (IOException ex) {
+      return ioError(ex, format);
+    }
     Result<TrainingDataset, SemanticError> trained;
     if (options.containsKey("corpus")) {
       Path repoRoot = Path.of(options.get("corpus")).toAbsolutePath().normalize();
@@ -567,10 +587,35 @@ public final class SednaCli {
         int eq = arg.indexOf('=');
         if (eq > 2) {
           options.put(arg.substring(2, eq), arg.substring(eq + 1));
+        } else if (arg.length() > 2) {
+          options.put(arg.substring(2), "true");
         }
       }
     }
     return options;
+  }
+
+  private static boolean wantsClean(Map<String, String> options) {
+    return "true".equalsIgnoreCase(options.get("clean"));
+  }
+
+  private static void deleteRecursively(Path root) throws IOException {
+    if (!Files.exists(root)) {
+      return;
+    }
+    try (Stream<Path> walk = Files.walk(root)) {
+      walk.sorted(Comparator.reverseOrder())
+          .forEach(
+              path -> {
+                try {
+                  Files.delete(path);
+                } catch (IOException ex) {
+                  throw new java.io.UncheckedIOException(ex);
+                }
+              });
+    } catch (java.io.UncheckedIOException ex) {
+      throw ex.getCause();
+    }
   }
 
   private static boolean isHelp(String arg) {
@@ -585,19 +630,19 @@ public final class SednaCli {
 
         Usage:
           sedna help
-          sedna forward --input=<file.sdna> [--output=<dir>]
+          sedna forward --input=<file.sdna> [--output=<dir>] [--clean]
           sedna decode  --input=<file.sdna>
           sedna encode  --input=<file.sdna> [--output=<file.sdna>]
           sedna validate --input=<file.sdna>
-          sedna reverse  --input=<project-dir> [--output=<file.sdna>]
+          sedna reverse  --input=<project-dir> [--output=<file.sdna>] [--clean]
           sedna run      --input=<file.sdna> [--profile=DAG|STATEFUL|SUPERVISOR] [--checkpoint-dir=<dir>|--checkpoint-jdbc-url=<jdbc>] [--monitor-port=<port>] [--format=json]
           sedna replay   [--checkpoint-sequence=<n>] [--checkpoint-dir=<dir>|--checkpoint-jdbc-url=<jdbc>] [--format=json]
           sedna diff     --left=<a.sdna> --right=<b.sdna> [--format=json]
           sedna visualize --input=<file.sdna> [--output=<file.dot>]
           sedna monitor  --input=<file.sdna> [--port=8080] [--format=json]
-          sedna train    --projects=<list.txt> | --corpus=<repo-root> [--output=<dir>] [--format=json]
+          sedna train    --projects=<list.txt> | --corpus=<repo-root> [--output=<dir>] [--clean] [--format=json]
 
-        Global flags: --help, --format=json
+        Global flags: --help, --format=json, --clean (forward/reverse/train: remove output before write)
         Errors print: <ErrorCode> [nodeId=…]: message
         """);
   }

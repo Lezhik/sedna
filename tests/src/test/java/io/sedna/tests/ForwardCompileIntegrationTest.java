@@ -9,9 +9,15 @@ import io.sedna.registry.InMemorySemanticRegistry;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+/**
+ * Superseded by {@link io.sedna.tests.e2e.ForwardCompileE2eTest} (E2E-007). Kept for fast local runs without
+ * full {@code ./gradlew e2e}.
+ */
+@Disabled("Use ./gradlew e2e — ForwardCompileE2eTest (E2E-007)")
 class ForwardCompileIntegrationTest {
 
   @Test

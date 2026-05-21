@@ -22,8 +22,8 @@ Local and CI workflows for semantic DNA pipelines. Example project layout: [exam
 ./gradlew :sedna-cli:run --args="visualize --input=/tmp/cms.sdna --output=/tmp/cms.dot"
 dot -Tpng /tmp/cms.dot -o /tmp/cms.png
 
-# 4. Forward → Spring Boot tree
-./gradlew :sedna-cli:run --args="forward --input=/tmp/cms.sdna --output=/tmp/generated"
+# 4. Forward → Spring Boot tree (--clean removes prior output)
+./gradlew :sedna-cli:run --args="forward --input=/tmp/cms.sdna --output=/tmp/generated --clean"
 
 # 5. Runtime + file checkpoints
 ./gradlew :sedna-cli:run --args="run --input=/tmp/cms.sdna --checkpoint-dir=/tmp/checkpoints --monitor-port=8080"

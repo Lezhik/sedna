@@ -8,6 +8,25 @@
 
 ---
 
+## Implementation mapping (repository)
+
+| Topic | Canonical value |
+|-------|-----------------|
+| Gradle E2E task | `./gradlew e2e` (`:tests:e2e`, tag `@Tag("e2e")`) |
+| CLI entry | `./gradlew :sedna-cli:run --args="<command> ..."` |
+| Golden DNA | `examples/sedna-e2e-tests/cms-reference-fixture.sdna` |
+| CMS reference project | `examples/sedna-cms/cms-reference` |
+| Demo equivalence projects | `examples/sedna-demo/{spring-demo,inventory-demo,order-demo}` |
+| Test output isolation | `build/test-outputs/<test-id>/` |
+| JUnit package | `io.sedna.tests.e2e` |
+| Performance gates | `./gradlew jmh` + `benchmarks/verify-thresholds.sh` |
+
+Detailed design: [`senda_e2e_tests_detailed_design.md`](senda_e2e_tests_detailed_design.md). Checklist: [`../TODO-tests.md`](../TODO-tests.md).
+
+> **Note:** Sections below (per-scenario commands) may still reference historical `:sedna-*:run` module tasks. Use the table above and `./gradlew :sedna-cli:run --args="..."` for the implemented harness.
+
+---
+
 # 1. Purpose
 
 ### Test Isolation Rule
@@ -71,14 +90,14 @@ All tests are executed through CLI commands.
 
 Reference projects:
 
-- examples/cms-reference
-- examples/blog-reference
-- examples/shop-reference
+- `examples/sedna-cms/cms-reference`
+- `examples/sedna-demo/spring-demo`
+- `examples/sedna-demo/inventory-demo`
+- `examples/sedna-demo/order-demo`
 
 Reference DNA:
 
-- examples/dna/cms-reference.sdna
-- examples/dna/blog-reference.sdna
+- `examples/sedna-e2e-tests/cms-reference-fixture.sdna` (golden minimum CMS graph)
 
 ---
 
@@ -144,7 +163,7 @@ Reference DNA:
 ### CLI
 
 ```bash
-./gradlew :sedna-tests:e2e --tests="DNARoundtripTest"
+./gradlew e2e --tests="DNARoundtripTest"
 ```
 
 ### What is verified
@@ -276,7 +295,7 @@ cd build/generated-cms && ./gradlew build
 ### CLI
 
 ```bash
-./gradlew :sedna-tests:e2e --tests="ForwardDeterminismTest"
+./gradlew e2e --tests="ForwardDeterminismTest"
 ```
 
 ### What is verified
@@ -330,7 +349,7 @@ cd build/generated-cms && ./gradlew build
 ### CLI
 
 ```bash
-./gradlew :sedna-tests:e2e --tests="ReverseForwardEquivalenceTest"
+./gradlew e2e --tests="ReverseForwardEquivalenceTest"
 ```
 
 ### What is verified
@@ -566,7 +585,7 @@ cd build/generated-cms && ./gradlew build
 ### E2E-019B — Deep Mutation Drift Longevity
 * **CLI:**
   ```bash
-  ./gradlew :sedna-tests:e2e --tests="com.sedna.tests.e2e.DeepMutationDriftTest"
+  ./gradlew e2e --tests="com.sedna.tests.e2e.DeepMutationDriftTest"
   ```
 
 * **What is verified:** Long-term mutation stability across repeated evolutionary steps.
@@ -842,7 +861,7 @@ E2E-022 — Embedding Generation
 ### CLI
 
 ```bash
-./gradlew :sedna-tests:e2e --tests="RegistryRecoveryTest"
+./gradlew e2e --tests="RegistryRecoveryTest"
 ```
 
 ### What is verified
@@ -867,7 +886,7 @@ E2E-022 — Embedding Generation
 ### CLI
 
 ```bash
-./gradlew :sedna-tests:e2e --tests="InterruptedRuntimeRecoveryTest"
+./gradlew e2e --tests="InterruptedRuntimeRecoveryTest"
 ```
 
 ### What is verified
@@ -894,7 +913,7 @@ E2E-022 — Embedding Generation
 ### CLI
 
 ```bash
-./gradlew :sedna-tests:e2e --tests="FullDeterminismSuite"
+./gradlew e2e --tests="FullDeterminismSuite"
 ```
 
 ### What is verified

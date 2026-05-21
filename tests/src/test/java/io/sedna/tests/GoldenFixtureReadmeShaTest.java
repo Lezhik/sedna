@@ -3,6 +3,7 @@ package io.sedna.tests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.sedna.tests.e2e.E2eTestSupport;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -11,7 +12,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 
-/** Enforces golden SHA-256 documented in examples/docs/cms-reference-fixture.md. */
+/**
+ * Enforces golden SHA-256 documented in examples/docs/cms-reference-fixture.md.
+ *
+ * <p>Complements {@link io.sedna.tests.e2e.DnaEncodeE2eTest} (E2E-001) in the fast {@code test}
+ * task; shares {@link E2eTestSupport#GOLDEN_SHA256}.
+ */
 class GoldenFixtureReadmeShaTest {
 
   private static final Pattern SHA_LINE =
@@ -27,7 +33,8 @@ class GoldenFixtureReadmeShaTest {
 
     String documentedSha = parseShaFromReadme(Files.readString(readme));
     byte[] bytes = Files.readAllBytes(fixture);
-    assertEquals(documentedSha, sha256(bytes), "Fixture bytes drifted; update README and commit");
+    assertEquals(E2eTestSupport.GOLDEN_SHA256, sha256(bytes));
+    assertEquals(documentedSha, E2eTestSupport.GOLDEN_SHA256, "Fixture README SHA out of sync with E2E contract");
   }
 
   private static String parseShaFromReadme(String readme) {

@@ -14,7 +14,11 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/** Phase 14 acceptance: visualization on cms-reference round-trip. */
+/**
+ * Phase 14 acceptance: Graphviz export on cms-reference round-trip (fast {@code test} task).
+ *
+ * <p>Overlaps chain steps in {@link io.sedna.tests.e2e.CoreValidationChainE2eTest} without CLI.
+ */
 class Phase14AcceptanceTest {
 
   @Test

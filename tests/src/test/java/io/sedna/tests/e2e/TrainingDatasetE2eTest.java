@@ -16,16 +16,13 @@ class TrainingDatasetE2eTest {
   void trainCorpusProducesStableManifest() throws Exception {
     Path out1 = E2eTestSupport.outputDir("E2E-020-a");
     Path out2 = E2eTestSupport.outputDir("E2E-020-b");
-    E2eTestSupport.prepareDir(out1);
-    E2eTestSupport.prepareDir(out2);
-
     Path repo = E2eTestSupport.repoRoot();
     E2eTestSupport.CliResult first =
         E2eTestSupport.runCli(
-            "train", "--corpus=" + repo, "--output=" + out1, "--format=json");
+            "train", "--corpus=" + repo, "--output=" + out1, "--clean", "--format=json");
     E2eTestSupport.CliResult second =
         E2eTestSupport.runCli(
-            "train", "--corpus=" + repo, "--output=" + out2, "--format=json");
+            "train", "--corpus=" + repo, "--output=" + out2, "--clean", "--format=json");
     assertEquals(0, first.exitCode(), () -> first.stdout() + first.stderr());
     assertEquals(0, second.exitCode());
 

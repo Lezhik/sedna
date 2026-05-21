@@ -29,4 +29,18 @@ jmh {
     warmupIterations.set(2)
     iterations.set(5)
     fork.set(1)
+    resultFormat.set("JSON")
+    resultsFile.set(layout.buildDirectory.file("results/jmh/results.json"))
+}
+
+tasks.register<Exec>("verifyJmhThresholds") {
+    group = "verification"
+    description = "Check JMH JSON results against E2E performance targets (Linux/macOS)"
+    dependsOn("jmh")
+    val results = layout.buildDirectory.file("results/jmh/results.json")
+    commandLine(
+        "bash",
+        rootProject.file("benchmarks/verify-thresholds.sh"),
+        results.get().asFile.absolutePath,
+    )
 }

@@ -1,9 +1,15 @@
 # Invalid DNA fixtures
 
-`invalid-graph.sdna` is generated on first E2E run by `ValidateInvalidE2eTest` (orphan link target).
+| File | Error (validate CLI) |
+|------|----------------------|
+| `invalid-graph.sdna` | `VALIDATION_FAILED` — orphan link target |
+| `duplicate-node.sdna` | `VALIDATION_FAILED` — duplicate node id |
+| `unknown-vocab.sdna` | `UNKNOWN_VOCAB` — unknown vocabulary id `nope` |
+| `invalid-dna-magic.sdna` | `INVALID_DNA` — corrupt magic bytes |
+| `cyclic-dependency.sdna` | optional; may pass graph validation (not in E2E matrix) |
 
-To regenerate manually:
+Regenerate all fixtures:
 
 ```bash
-./gradlew e2e --tests "io.sedna.tests.e2e.ValidateInvalidE2eTest"
+./gradlew :tests:test --tests io.sedna.tests.e2e.E2eFixtureMaterializerTest
 ```

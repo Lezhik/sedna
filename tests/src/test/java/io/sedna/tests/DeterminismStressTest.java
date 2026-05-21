@@ -15,7 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
-/** Parallel encode/decode stress (same inputs must yield identical bytes). */
+/**
+ * Parallel encode/decode stress (default {@code test} task, not {@code e2e}).
+ *
+ * <p>Kept separate from {@link io.sedna.tests.e2e.DnaRoundtripE2eTest} due to thread pool load.
+ */
 @Execution(ExecutionMode.CONCURRENT)
 class DeterminismStressTest {
 

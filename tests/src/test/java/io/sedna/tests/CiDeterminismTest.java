@@ -20,7 +20,13 @@ import java.util.Map;
 import java.util.TreeMap;
 import org.junit.jupiter.api.Test;
 
-/** CI determinism gates: DNA byte identity and forward output hash (LLM off). */
+/**
+ * Fast CI determinism gates (default {@code :tests:test}, not {@code e2e}).
+ *
+ * <p>E2E counterparts: {@link io.sedna.tests.e2e.DnaRoundtripE2eTest}, {@link
+ * io.sedna.tests.e2e.DnaEncodeE2eTest}, {@link io.sedna.tests.e2e.ForwardDeterminismE2eTest},
+ * {@link io.sedna.tests.e2e.FullDeterminismSuite}.
+ */
 class CiDeterminismTest {
 
   private static final String GOLDEN_SHA256 =

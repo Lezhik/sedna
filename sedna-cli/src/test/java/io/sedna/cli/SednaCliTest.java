@@ -38,4 +38,24 @@ class SednaCliTest {
     assertEquals(0, exit);
     assertTrue(Files.exists(output.resolve("build.gradle.kts")));
   }
+
+  @Test
+  void forwardCleanRemovesStaleArtifacts() throws java.io.IOException {
+    Path sdna = tempDir.resolve("fixture.sdna");
+    Path output = tempDir.resolve("generated");
+    Files.write(sdna, DnaServices.encoder().encode(CmsReferenceFixtureGraph.create()).value());
+    Files.createDirectories(output);
+    Path stale = output.resolve("stale-marker.txt");
+    Files.writeString(stale, "old");
+
+    int exit =
+        new SednaCli()
+            .run(
+                new String[] {
+                  "forward", "--input=" + sdna, "--output=" + output, "--clean"
+                });
+    assertEquals(0, exit);
+    assertTrue(Files.exists(output.resolve("build.gradle.kts")));
+    assertTrue(!Files.exists(stale));
+  }
 }

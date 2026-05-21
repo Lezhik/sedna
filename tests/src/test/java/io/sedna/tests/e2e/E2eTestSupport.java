@@ -58,6 +58,7 @@ public final class E2eTestSupport {
     return ExamplesLayout.goldenCmsFixture(repoRoot());
   }
 
+  /** Deletes and recreates {@code dir}. Prefer CLI {@code --clean} for command output trees. */
   public static void prepareDir(Path dir) throws IOException {
     if (Files.exists(dir)) {
       deleteRecursive(dir);
@@ -93,15 +94,18 @@ public final class E2eTestSupport {
     return new CliResult(process.exitValue(), extractCliOutput(output), "");
   }
 
-  /** Strips Gradle task noise; keeps Sedna CLI lines only. */
+  /** Strips Gradle task noise; keeps Sedna CLI JSON or semantic lines only. */
   static String extractCliOutput(String raw) {
+    for (String line : raw.split("\n")) {
+      String trimmed = line.trim();
+      if (trimmed.startsWith("{") && trimmed.contains("\"status\"")) {
+        return trimmed;
+      }
+    }
     StringBuilder cli = new StringBuilder();
     for (String line : raw.split("\n")) {
       String trimmed = line.trim();
-      if (trimmed.startsWith("> Task")
-          || trimmed.startsWith("BUILD ")
-          || trimmed.startsWith("Deprecated ")
-          || trimmed.startsWith("For more on this")) {
+      if (isGradleNoise(trimmed)) {
         continue;
       }
       if (!trimmed.isEmpty()) {
@@ -112,6 +116,22 @@ public final class E2eTestSupport {
       }
     }
     return cli.toString();
+  }
+
+  private static boolean isGradleNoise(String trimmed) {
+    return trimmed.startsWith("> Task")
+        || trimmed.startsWith("BUILD ")
+        || trimmed.startsWith("FAILURE:")
+        || trimmed.startsWith("Execution failed")
+        || trimmed.startsWith("* What went wrong")
+        || trimmed.startsWith("* Try:")
+        || trimmed.startsWith("> Process ")
+        || trimmed.startsWith("> Run with")
+        || trimmed.startsWith("> Get more help")
+        || trimmed.contains("actionable tasks:")
+        || trimmed.startsWith("Starting a Gradle Daemon")
+        || trimmed.startsWith("Deprecated ")
+        || trimmed.startsWith("For more on this");
   }
 
   public static String sha256(byte[] bytes) {

@@ -33,19 +33,20 @@ class CoreValidationChainE2eTest {
     assertArrayEquals(encoded, roundTrip);
 
     Path generated = base.resolve("generated");
-    E2eTestSupport.prepareDir(generated);
     E2eTestSupport.CliResult forward =
         E2eTestSupport.runCli(
             "forward",
             "--input=" + E2eTestSupport.readGoldenFixture(),
-            "--output=" + generated);
+            "--output=" + generated,
+            "--clean");
     assertEquals(0, forward.exitCode());
 
     E2eTestSupport.runGradleBuild(E2eTestSupport.repoRoot(), generated);
 
     Path reversed = base.resolve("reversed.sdna");
     E2eTestSupport.CliResult reverse =
-        E2eTestSupport.runCli("reverse", "--input=" + generated, "--output=" + reversed);
+        E2eTestSupport.runCli(
+            "reverse", "--input=" + generated, "--output=" + reversed, "--clean");
     assertEquals(0, reverse.exitCode());
     assertTrue(Files.size(reversed) > 0);
 

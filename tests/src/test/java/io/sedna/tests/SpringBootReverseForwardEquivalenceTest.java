@@ -14,7 +14,12 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-/** Phase 10: reverse(forward(dna)) semantic equivalence for Spring Boot fixtures. */
+/**
+ * Phase 10: reverse(forward(dna)) for {@code examples/sedna-demo/*} (default {@code test} task).
+ *
+ * <p>E2E covers golden + cms-reference in {@link io.sedna.tests.e2e.ReverseForwardEquivalenceE2eTest}
+ * (E2E-010).
+ */
 class SpringBootReverseForwardEquivalenceTest {
 
   @ParameterizedTest
